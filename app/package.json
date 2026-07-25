@@ -1,0 +1,98 @@
+{
+  "name": "earcopy-assist-desktop",
+  "description": "EarCopy Assist",
+  "author": "SheetMusicHelper Contributors",
+  "license": "UNLICENSED",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev:renderer": "vite",
+    "build": "node -e \"require('fs').rmSync('dist-electron',{recursive:true,force:true})\" && tsc -p tsconfig.electron.json && tsc --noEmit -p tsconfig.json && vite build",
+    "build:backend": "uv run --project .. pyinstaller --noconfirm --distpath backend-dist --workpath backend-build packaging/earcopy_service.spec",
+    "build:backend:clean": "uv run --project .. pyinstaller --noconfirm --clean --distpath backend-dist --workpath backend-build packaging/earcopy_service.spec",
+    "dist:win": "npm run build && npm run build:backend && electron-builder --win --dir && powershell -NoProfile -ExecutionPolicy Bypass -File packaging/build-root-launcher.ps1",
+    "smoke:packaged": "node scripts/smoke-packaged.cjs",
+    "start": "npm run build && electron .",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.electron.json"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^5.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "spessasynth_core": "^4.3.15",
+    "spessasynth_lib": "^4.3.11"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.0",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "electron": "^43.2.0",
+    "electron-builder": "^26.15.3",
+    "jsdom": "^26.1.0",
+    "typescript": "^5.8.0",
+    "vite": "^7.0.0",
+    "vitest": "^3.2.0"
+  },
+  "build": {
+    "appId": "jp.local.earcopyassist",
+    "productName": "EarCopy Assist",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist-electron/**/*",
+      "dist/renderer/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "backend-dist/earcopy_service",
+        "to": "backend"
+      },
+      {
+        "from": "resources/soundfonts",
+        "to": "soundfonts"
+      },
+      {
+        "from": "../models/scnet",
+        "to": "models/scnet"
+      },
+      {
+        "from": "resources/licenses",
+        "to": "licenses"
+      },
+      {
+        "from": "../LICENSE",
+        "to": "licenses/EarCopy_Assist_LICENSE.txt"
+      },
+      {
+        "from": "../THIRD_PARTY_NOTICES.md",
+        "to": "licenses/THIRD_PARTY_NOTICES.md"
+      },
+      {
+        "from": "../docs/DISTRIBUTION.md",
+        "to": "licenses/DISTRIBUTION.md"
+      },
+      {
+        "from": "node_modules/spessasynth_core/LICENSE",
+        "to": "licenses/SpessaSynth-Core-LICENSE.txt"
+      },
+      {
+        "from": "node_modules/spessasynth_lib/LICENSE",
+        "to": "licenses/SpessaSynth-Lib-LICENSE.txt"
+      }
+    ],
+    "win": {
+      "executableName": "EarCopyAssist",
+      "target": [
+        "dir"
+      ]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+EarCopy Assist third-party notices
+
+MuScriptor code: MIT License
+MuScriptor model weights (not bundled): CC BY-NC 4.0
+SCNet code: MIT License
+SCNet Large bundled weight: model-specific redistribution terms are not
+separately stated by upstream; see THIRD_PARTY_NOTICES.md
+MuseScore_General SoundFont: MIT License
+Electron: MIT License
+React and React DOM: MIT License
+Python: Python Software Foundation License
+FFmpeg bundled build: GNU General Public License version 3
+SpessaSynth Core and SpessaSynth Lib: Apache License 2.0
+
+Full component versions, source URLs, hashes, attribution notices, dependency
+inventory and redistribution warnings are in THIRD_PARTY_NOTICES.md.
+Corresponding license texts are available from the Licenses screen.
