@@ -149,4 +149,4 @@ git check-ignore -v models/muscriptor/small/model.safetensors
 git check-ignore -v models/bs-roformer/sw-fixed/BS-Rofo-SW-Fixed.ckpt
 ```
 
-Follow the [Release and Distribution Checklist](DISTRIBUTION.en.md) for Windows builds, corresponding source, licenses, and pre-release validation. To build the Windows package with GitHub Actions, use the self-hosted runner and MuScriptor model source described under [Packaging with GitHub Actions](DISTRIBUTION.en.md#packaging-with-github-actions).
+Follow the [Release and Distribution Checklist](DISTRIBUTION.en.md) for Windows builds, corresponding source, licenses, and pre-release validation. To build the Windows package with GitHub Actions, use the GitHub-hosted Windows larger runner and `HF_TOKEN` Secret described under [Packaging with GitHub Actions](DISTRIBUTION.en.md#packaging-with-github-actions).

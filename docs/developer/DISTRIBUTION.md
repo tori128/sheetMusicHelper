@@ -170,15 +170,17 @@ Renderer応答不能時の終了回帰を実行する。
 #### GitHub Actionsによるパッケージ化
 
 `.github/workflows/windows-release.yml`は手動実行だけを受け付け、GitHubの
-`windows-release` environmentを使用する。runnerはWindows x64のself-hosted runnerへ
-`earcopy-release`ラベルを追加し、このリポジトリのRelease作成に限定したrunner groupへ
-登録する。environmentには、モデル供給ディレクトリの絶対パスを変数
-`MUSCRIPTOR_MODEL_ROOT`として設定する。
+`windows-release` environmentを使用する。ジョブはGitHubが管理するWindows x64 larger
+runnerの`earcopy-release`ラベルで実行する。標準のGitHub-hosted Windows runnerはSSDが
+14 GBであり、このパッケージ化には使用できない。GitHub組織で150 GB SSD以上のWindows
+larger runnerを作成し、runner groupの利用リポジトリをこのリポジトリに限定する。
 
-モデル供給ディレクトリは`GITHUB_WORKSPACE`の外部に置き、次の6ファイルを保持する。
+`windows-release` environmentには、MuScriptor small、medium、largeの利用条件へ同意済みの
+Hugging Faceアカウントのread tokenを、Secret `HF_TOKEN`として設定する。ワークフローは
+公式MuScriptorリポジトリから次の6ファイルを取得し、サイズとSHA-256を検査する。
 
 ```text
-<MUSCRIPTOR_MODEL_ROOT>/
+models/muscriptor/
 ├─ small/
 │  ├─ model.safetensors
 │  └─ config.json
@@ -190,16 +192,14 @@ Renderer応答不能時の終了回帰を実行する。
    └─ config.json
 ```
 
-ワークフロー開始前の作業ドライブ空き容量は61.62 GiB以上とする。モデル複製後の
-空き容量が55 GiB未満になる場合、パッケージ化を開始しない。ワークフローはモデル供給
-ディレクトリから6ファイルを複製し、各ファイルのサイズとSHA-256を検査する。
-CIで使用するモデルデータは、モデル供給ディレクトリへ事前配置した6ファイルである。
-Windows本体パッケージで許可するモデル重みはMuScriptorの3ファイルである。
+モデル6ファイルの合計は7,105,675,208 bytesである。ワークフローはハッシュ検査済みの
+モデルディレクトリをGitHub Actions Cacheへ保存し、利用可能なキャッシュがあれば再利用する。
+キャッシュがない実行ではモデルを再取得する。作業ドライブの空き容量が61.62 GiB未満の
+場合、パッケージ化を開始しない。Windows本体パッケージで許可するモデル重みはMuScriptorの
+3ファイルである。
 
-self-hosted runnerにはGitHub Actions runner、GitHub CLI、PowerShell、7-Zip、CMake、
-Ninjaをインストールする。Node.js 24、Python 3.11、uv、MSYS2 MINGW64はワークフローが
-各GitHub Actionで設定する。MSYS2の実際のインストール先は`EARCOPY_MSYS2_ROOT`として
-FFmpegとlibsndfileのビルドへ渡す。
+Node.js 24、Python 3.11、uv、MSYS2 MINGW64はワークフローが各GitHub Actionで設定する。
+MSYS2の実際のインストール先は`EARCOPY_MSYS2_ROOT`としてFFmpegとlibsndfileのビルドへ渡す。
 
 #### CIの起動手順
 

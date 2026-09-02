@@ -899,11 +899,12 @@ def test_ci_and_native_build_configuration() -> None:
     release_workflow = release_workflow_path.read_text(encoding="utf-8")
     for required_text in (
         "workflow_dispatch:",
-        "runs-on: [self-hosted, Windows, X64, earcopy-release]",
+        "runs-on: earcopy-release",
         "environment: windows-release",
-        "MUSCRIPTOR_MODEL_ROOT",
-        "stage_ci_muscriptor_models.ps1",
-        "-MinimumFreeGiB 55",
+        "HF_TOKEN: ${{ secrets.HF_TOKEN }}",
+        "actions/cache/restore",
+        "actions/cache/save",
+        "download_ci_muscriptor_models.py",
         "verify:muscriptor-models",
         "steps.setup_msys2.outputs.msys2-location",
         "EARCOPY_MSYS2_ROOT",
@@ -920,6 +921,26 @@ def test_ci_and_native_build_configuration() -> None:
     assert "pull_request:" not in release_workflow
     assert "\n  push:" not in release_workflow
     assert "huggingface.co" not in release_workflow.lower()
+    assert "self-hosted" not in release_workflow
+    assert "MUSCRIPTOR_MODEL_ROOT" not in release_workflow
+
+    model_downloader = (
+        REPOSITORY_ROOT / "scripts" / "download_ci_muscriptor_models.py"
+    ).read_text(encoding="utf-8")
+    for required_text in (
+        "from huggingface_hub import hf_hub_download",
+        'os.environ.get("HF_TOKEN")',
+        'MODEL_VARIANTS = ("small", "medium", "large")',
+        'MODEL_FILES = ("model.safetensors", "config.json")',
+        "MODEL_TOTAL_BYTES = 7_105_675_208",
+        "MINIMUM_FREE_BYTES = 55 * 1024**3",
+        'repository_id = f"MuScriptor/muscriptor-{variant}"',
+        "force_download=True",
+    ):
+        assert required_text in model_downloader
+    assert not (
+        REPOSITORY_ROOT / "scripts" / "stage_ci_muscriptor_models.ps1"
+    ).exists()
 
     ci_workflow = (
         REPOSITORY_ROOT / ".github" / "workflows" / "ci.yml"
@@ -990,25 +1011,6 @@ def test_ci_and_native_build_configuration() -> None:
     ):
         assert required_text in libsndfile_build
 
-    model_staging = (
-        REPOSITORY_ROOT / "scripts" / "stage_ci_muscriptor_models.ps1"
-    ).read_text(encoding="utf-8")
-    for required_text in (
-        "GITHUB_ACTIONS",
-        "GITHUB_WORKSPACE",
-        "must be outside GITHUB_WORKSPACE",
-        "small\\model.safetensors",
-        "medium\\model.safetensors",
-        "large\\model.safetensors",
-        "MinimumFreeGiB = 55",
-        "verify-muscriptor-models.ps1",
-        "Copy-Item",
-        ".partial",
-    ):
-        assert required_text in model_staging
-    for forbidden_text in ("huggingface.co", "Invoke-WebRequest", "curl.exe"):
-        assert forbidden_text not in model_staging
-
     cleanup = (
         REPOSITORY_ROOT / "scripts" / "cleanup_ci_release_build.ps1"
     ).read_text(encoding="utf-8")
@@ -1059,7 +1061,6 @@ if ($errors.Count -ne 0) {
         REPOSITORY_ROOT / "scripts" / "build_ffmpeg_lgpl.ps1",
         REPOSITORY_ROOT / "scripts" / "build_libsndfile_lgpl.ps1",
         REPOSITORY_ROOT / "scripts" / "cleanup_ci_release_build.ps1",
-        REPOSITORY_ROOT / "scripts" / "stage_ci_muscriptor_models.ps1",
         REPOSITORY_ROOT / "scripts" / "publish_draft_release.ps1",
         REPOSITORY_ROOT / "app" / "packaging" / "verify-muscriptor-models.ps1",
     )

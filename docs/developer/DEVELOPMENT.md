@@ -201,4 +201,4 @@ Windows版のビルド、対応ソース、ライセンス、公開前検査は
 [公開・配布チェックリスト](DISTRIBUTION.md)に従う。
 GitHub ActionsでWindows版を作成する場合は、同書の
 [GitHub Actionsによるパッケージ化](DISTRIBUTION.md#github-actionsによるパッケージ化)に
-記載したself-hosted runnerとMuScriptorモデル供給ディレクトリを使用する。
+記載したGitHub-hosted Windows larger runnerと`HF_TOKEN` Secretを使用する。

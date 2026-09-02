@@ -18,11 +18,11 @@ concurrency:
 jobs:
   build:
     name: Build draft release
-    runs-on: [self-hosted, Windows, X64, earcopy-release]
+    runs-on: earcopy-release
     environment: windows-release
     timeout-minutes: 300
     env:
-      MUSCRIPTOR_MODEL_SOURCE: ${{ vars.MUSCRIPTOR_MODEL_ROOT }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
       NPM_CONFIG_PROGRESS: "false"
       UV_LINK_MODE: copy
       UV_NO_PROGRESS: "1"
@@ -41,12 +41,12 @@ jobs:
         shell: pwsh
         run: ./scripts/check_repository_hygiene.ps1
 
-      - name: Stage verified MuScriptor models
-        shell: pwsh
-        run: >-
-          ./scripts/stage_ci_muscriptor_models.ps1
-          -SourceRoot $env:MUSCRIPTOR_MODEL_SOURCE
-          -MinimumFreeGiB 55
+      - name: Restore MuScriptor model cache
+        id: muscriptor_model_cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: models/muscriptor
+          key: muscriptor-${{ runner.os }}-${{ hashFiles('app/packaging/verify-muscriptor-models.ps1') }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -122,6 +122,21 @@ jobs:
       - name: Install Python dependencies
         timeout-minutes: 25
         run: uv sync --extra dev --locked
+
+      - name: Download MuScriptor models
+        if: steps.muscriptor_model_cache.outputs.cache-hit != 'true'
+        timeout-minutes: 45
+        run: uv run python scripts/download_ci_muscriptor_models.py
+
+      - name: Verify MuScriptor models
+        run: ./app/packaging/verify-muscriptor-models.ps1
+
+      - name: Save MuScriptor model cache
+        if: steps.muscriptor_model_cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: models/muscriptor
+          key: ${{ steps.muscriptor_model_cache.outputs.cache-primary-key }}
 
       - name: Install desktop dependencies
         timeout-minutes: 15

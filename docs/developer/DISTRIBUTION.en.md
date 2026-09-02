@@ -131,12 +131,12 @@ The standard `.github/workflows/ci.yml` runs tests that require no model weights
 
 #### Packaging with GitHub Actions
 
-`.github/workflows/windows-release.yml` accepts manual dispatch only and uses the GitHub `windows-release` environment. Register a Windows x64 self-hosted runner with the `earcopy-release` label in a runner group restricted to this repository's releases. Set the absolute model-source directory as the environment variable `MUSCRIPTOR_MODEL_ROOT`.
+`.github/workflows/windows-release.yml` accepts manual dispatch only and uses the GitHub `windows-release` environment. The job runs on a GitHub-managed Windows x64 larger runner labeled `earcopy-release`. A standard GitHub-hosted Windows runner has 14 GB SSD storage and cannot build this distribution. Create a Windows larger runner with at least 150 GB SSD storage in a GitHub organization and restrict its runner group to this repository.
 
-Place the model-source directory outside `GITHUB_WORKSPACE` with the following six files.
+Set Secret `HF_TOKEN` in the `windows-release` environment to a read token for a Hugging Face account that has accepted the MuScriptor small, medium, and large terms. The workflow downloads and validates the size and SHA-256 of the following six files from the official MuScriptor repositories.
 
 ```text
-<MUSCRIPTOR_MODEL_ROOT>/
+models/muscriptor/
 ├─ small/
 │  ├─ model.safetensors
 │  └─ config.json
@@ -148,9 +148,9 @@ Place the model-source directory outside `GITHUB_WORKSPACE` with the following s
    └─ config.json
 ```
 
-The build drive requires at least 61.62 GiB free before the workflow starts. Packaging stops if less than 55 GiB remains after model staging. The workflow copies the six files from the model-source directory and validates each file's size and SHA-256. CI model data consists of these six prepositioned files. The Windows application package permits only the three MuScriptor model-weight files.
+The six model files total 7,105,675,208 bytes. The workflow saves the validated model directory in GitHub Actions Cache and reuses it when available. A cache miss downloads the models again. The build drive requires at least 61.62 GiB free before packaging starts. The Windows application package permits only the three MuScriptor model-weight files.
 
-Install the GitHub Actions runner, GitHub CLI, PowerShell, 7-Zip, CMake, and Ninja on the self-hosted runner. GitHub Actions configures Node.js 24, Python 3.11, uv, and MSYS2 MINGW64. The workflow passes the actual MSYS2 installation directory to FFmpeg and libsndfile builds as `EARCOPY_MSYS2_ROOT`.
+GitHub Actions configures Node.js 24, Python 3.11, uv, and MSYS2 MINGW64. The workflow passes the actual MSYS2 installation directory to FFmpeg and libsndfile builds as `EARCOPY_MSYS2_ROOT`.
 
 #### Starting CI
 
