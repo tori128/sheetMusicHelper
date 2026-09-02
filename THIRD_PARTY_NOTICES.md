@@ -1,137 +1,156 @@
-# Third-Party Notices
+# 外部ソフトウェアとモデルの利用条件・取得元
 
-EarCopy Assist uses and, in its Windows portable build, redistributes
-third-party software and assets. The EarCopy Assist project license does not
-replace or restrict the licenses listed here.
+[English](THIRD_PARTY_NOTICES.en.md)
 
-Exact package versions are fixed by [`uv.lock`](uv.lock) and
-[`app/package-lock.json`](app/package-lock.json). A runtime dependency inventory
-is included below.
+EarCopy Assistは外部のソフトウェアとデータを利用し、その一部を配布パッケージに同梱します。
+EarCopy Assist本体のライセンスは、ここに記載する個別のライセンスを置き換えたり、制限したりするものではありません。
+
+本書にはEarCopy Assistが実際に使用するバージョンを記載し、依存関係を更新するときに記載内容も更新します。
+
+## 別途取得するモデル
+
+BS-RoFormer SW Fixedの重みはWindows本体パッケージに同梱されません。未配置の場合、
+アプリは配布ページのライセンス表示が`Unknown`であることを表示し、利用者の確認後に
+Hugging Faceから取得します。`Unknown`は利用許諾を意味しません。
 
 ## MuScriptor
 
-- Component: MuScriptor Python package 0.2.2
-- Copyright holders: MuScriptor contributors; developed by Kyutai and Mirelo
-- Source: <https://github.com/muscriptor/muscriptor>
-- Code license: MIT
+### コード
 
-MuScriptor model weights are not stored in this repository and are not bundled
-in the portable EXE. Users obtain and register them separately. The official
-`small`, `medium`, and `large` weights are licensed under
-[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) and are
-restricted to non-commercial use:
-<https://huggingface.co/MuScriptor>.
+- 対象：MuScriptor 0.2.2 Pythonパッケージおよび公式Web UI
+- 利用箇所：モデルの読み込みと音符イベント生成
+- 初期版で参照した範囲：音符イベント表示、ピアノロール、原音・SoundFont同期再生の設計
+- 著作権表示：Copyright (c) 2026 Kyutai x Mirelo
+- 取得元：<https://github.com/muscriptor/muscriptor>
+- ライセンス：MIT
+- 同梱するライセンス本文：`app/resources/licenses/MuScriptor/LICENSE`
 
-## SCNet
+### モデル重み
 
-- Component: SCNet Large
-- Copyright: Copyright (c) 2024 starrytong
-- Source: <https://github.com/starrytong/SCNet>
-- Code license: MIT
-- Bundled weight: `SCNet-large.th`
-- Upstream file: <https://drive.google.com/file/d/1s7QvQwn8ag9oVstGDBQ6KZvacJkvyK7t/view>
-- Weight SHA-256:
-  `719e5abb8ed920305dad546ac3cd6fb0b1e9c3092d14ce21827bfc0423af3070`
-- Configuration SHA-256:
-  `629a4901184bf1d3a75b0b13904f35974785aa042cad3c010fd576248cdce3f0`
+EarCopy Assistは公式の`small`、`medium`、`large`モデル重みを改変せず同梱します。
+モデル重みには[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)が適用され、利用と再配布は非商用目的に制限されます。
+作成者はKyutaiおよびMireloです。各モデルの公式ページには、入力する音楽と生成物、法令遵守、無保証、補償に関する追加条件も掲載されています。
+入力する楽曲について、著作権その他の必要な権利または許諾を保有する必要があります。
+保証の否認はCC BY-NC 4.0第5条、同梱する表示は`app/resources/licenses/MuScriptor/MODEL_NOTICE.txt`を参照してください。
 
-The upstream repository is MIT-licensed and publishes SCNet Large as an
-official pretrained checkpoint. It does not state
-separate model-weight terms next to the downloaded file. Because the
-model-specific redistribution grant is not explicit, distributors should
-obtain confirmation from the upstream rights holder or omit the weight from
-public binary releases. This repository does not grant rights to that weight.
+- <https://huggingface.co/MuScriptor/muscriptor-small>
+- <https://huggingface.co/MuScriptor/muscriptor-medium>
+- <https://huggingface.co/MuScriptor/muscriptor-large>
+- 改変の有無：改変なし
+- small SHA-256：`bbd482c786b895cf7d8f44185073d951adae2ebb8a66f82ca84cd1f84569549c`
+- medium SHA-256：`ac80adbdf85d87231735fd948af7013441c0afced316c4e9067fd5d8a7fb97ec`
+- large SHA-256：`ac4eb6ea87dfc26b6ca6b954c6b967ab87ad4c7d08e078b25214f13ed051f397`
+
+## BS-RoFormer
+
+- 対象：BS-RoFormer SW Fixedの推論コードとモデル
+- コードの著作権表示：Copyright (c) 2024 Roman Solovyev (ZFTurbo)
+- コードの取得元：<https://github.com/ZFTurbo/Music-Source-Separation-Training>
+- コードのライセンス：MIT
+- モデル重み：`BS-Rofo-SW-Fixed.ckpt`
+- 学習者：配布ページに記載なし
+- 配布ページの登録者：jarredou
+- アプリが参照する配布ページ：<https://huggingface.co/jarredou/BS-ROFO-SW-Fixed/tree/ad54168acf271482ad51702953e162a385b8fdcb>
+- モデル重みのライセンス表示：`Unknown`
+- モデル重みのファイルサイズ：`699412152` bytes
+- モデル重みのSHA-256：`24e7d35ee9c64415673d3fd33e06a67cac2c103c5df6267ba1576459c775916e`
 
 ## MuseScore General SoundFont
 
-- Component: `MuseScore_General.sf3`
-- Version: 0.2
-- Upstream: <https://ftp.osuosl.org/pub/musescore/soundfont/MuseScore_General/>
-- Mirror used by MuScriptor: <https://huggingface.co/MuScriptor/assets>
-- License: MIT
-- SHA-256:
-  `5b85b6c2c61d10b2b91cddd41efcce7b25cd31c8271d511c73afafbef20b6fa3`
+- 対象：`MuseScore_General.sf3`
+- バージョン：0.2.0
+- 配布元：<https://ftp.osuosl.org/pub/musescore/soundfont/MuseScore_General/>
+- ライセンス：MIT
+- SHA-256：`5b85b6c2c61d10b2b91cddd41efcce7b25cd31c8271d511c73afafbef20b6fa3`
 
-Required acknowledgements:
+次の著作権表示が必要です。
 
-- FluidR3: Copyright (c) 2000-2002, 2008 Frank Wen
-- FluidR3Mono conversion: Copyright (c) 2014-2017 Michael Cowgill
-- MuseScore General adaptation: Copyright (c) 2018-2019 S. Christian Collins
-- Temple Blocks: Copyright (c) 2002 Ethan Winer
-- Drumline Cymbals: Copyright (c) 2016 Michael Schorsch
+- FluidR3：Copyright (c) 2000-2002, 2008 Frank Wen
+- FluidR3Mono conversion：Copyright (c) 2014-2017 Michael Cowgill
+- MuseScore General adaptation：Copyright (c) 2018-2019 S. Christian Collins
+- Temple Blocks：Copyright (c) 2002 Ethan Winer
+- Drumline Cymbals：Copyright (c) 2016 Michael Schorsch
 
-The complete supplied notice and MIT text are distributed as
-`MuseScore_General/LICENSE.md`.
+配布元の通知全文とMIT Licenseの本文は、`MuseScore_General/LICENSE.md`として同梱します。
 
-## FFmpeg and FFprobe
+## FFmpegとFFprobe
 
-- Component: FFmpeg 8.1.2 full static Windows build
-- Binary distributor: <https://www.gyan.dev/ffmpeg/builds/>
-- Upstream source: <https://github.com/FFmpeg/FFmpeg/commit/38b88335f9>
-- License for this configured build: GNU GPL version 3
-- Build configuration and external-library list: the bundled
-  `FFmpeg/README.txt`
+- 対象：FFmpeg 8.1.2の最小構成によるWindows向け静的コマンドラインビルド
+- 配布形態：公式ソースコードから本プロジェクトでビルドした実行ファイルを配布パッケージに同梱
+- ソースコード：<https://ffmpeg.org/releases/ffmpeg-8.1.2.tar.xz>
+- ソースコードのSHA-256：`464beb5e7bf0c311e68b45ae2f04e9cc2af88851abb4082231742a74d97b524c`
+- この構成に適用されるライセンス：GNU Lesser General Public License version 2.1 or later
+- 再現用ビルドスクリプト：`scripts/build_ffmpeg_lgpl.ps1`
+- ビルド設定：同梱する`FFmpeg/README.txt`
 
-EarCopy Assist invokes `ffmpeg.exe` and `ffprobe.exe` as separate programs.
-The GPLv3 license text and the build README are distributed with the EXE.
-A distributor of the portable EXE must also provide recipients with the
-Complete Corresponding Source in a GPLv3-compliant manner. A link in this
-notice alone must not be assumed to satisfy every distribution method. See
-[`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md).
+EarCopy Assistは、`ffmpeg.exe`と`ffprobe.exe`を別プログラムとして起動します。
+両方の実行ファイルは置き換え可能です。
+ビルド時には、GPL、nonfree、自動検出、外部ライブラリの各機能を無効にしています。
+LGPLのライセンス本文、配布元のライセンス概要、使用したconfigureオプションはアプリと一緒に配布します。
 
-## SpessaSynth
+## libsndfile
 
-- Components: `spessasynth_core` 4.3.15 and `spessasynth_lib` 4.3.11
-- Sources:
-  - <https://github.com/spessasus/spessasynth_core>
-  - <https://github.com/spessasus/spessasynth_lib>
-- License: Apache License 2.0
+- 対象：libsndfile 1.2.2
+- 利用元：python-soundfile 0.14.0
+- 配布形態：公式ソースコードから本プロジェクトでビルドしたDLLを配布パッケージに同梱
+- バイナリ：`_soundfile_data/libsndfile_x64.dll`
+- ソースコード：<https://github.com/libsndfile/libsndfile/releases/download/1.2.2/libsndfile-1.2.2.tar.xz>
+- ソースコードのSHA-256：`3799ca9924d3125038880367bf1468e53a1b7e3686a934f098b7e1d286cdb80e`
+- ライセンス：GNU Lesser General Public License version 2.1 or later
+- 再現用ビルドスクリプト：`scripts/build_libsndfile_lgpl.ps1`
 
-The Apache-2.0 license texts from both npm packages are distributed with the
-portable application.
+EarCopy Assistは正規化したWAVファイルだけをlibsndfileへ渡すため、このDLLでは外部コーデックライブラリとMPEG対応を無効にしています。
+生成したDLLはWindowsのシステムライブラリだけに依存し、同じインターフェースを持つ変更版へ置き換えられます。
 
-## Electron, Chromium, React, and JavaScript runtime packages
+## Python-SoXRとlibsoxr
 
-- Electron 43.2.0: MIT, <https://github.com/electron/electron>
-- Chromium and its bundled components: individual licenses collected in
-  Electron's generated `LICENSES.chromium.html`
-- React 19.2.8: MIT, <https://github.com/facebook/react>
-- React DOM 19.2.8: MIT, <https://github.com/facebook/react>
-- Scheduler 0.27.0: MIT, <https://github.com/facebook/react>
+- 対象：Python-SoXR 1.1.0と同梱の変更版libsoxr
+- 配布形態：PyPI公式Windows wheelのビルド済み拡張モジュールを配布パッケージに同梱
+- バイナリ：`soxr/soxr_ext.cp311-win_amd64.pyd`
+- Windows wheel：<https://files.pythonhosted.org/packages/8f/29/371467eb86c7ba6810df0bfe9409bcd9c52ec5615b111190fafe23e4d2e1/soxr-1.1.0-cp311-cp311-win_amd64.whl>
+- Windows wheelのSHA-256：`ae30c48ac795378cf23ba3c7c640b8ff794af714ac388b9fd6b31a40b39e6e86`
+- 対応ソースコード：<https://files.pythonhosted.org/packages/ed/11/27cebce4a108f77afea7c80545115536b45e3f11ebfb914f638fdd9ba847/soxr-1.1.0.tar.gz>
+- ソースコードのSHA-256：`9f228ae21c78fa9359ca98d8a5e8e91f30639e438e574133dace62c5b5309e44`
+- ライセンス：GNU Lesser General Public License version 2.1 or later
 
-Electron's `LICENSE.electron.txt` and `LICENSES.chromium.html` are emitted by
-Electron Builder next to the unpacked application and remain part of the
-portable package.
+## 対応ソースの配布
 
-## Python and Python runtime packages
+`EarCopyAssist-<version>-copyleft-sources.zip`には、FFmpeg、libsndfile、Python-SoXRの検証済みソースアーカイブと、このプロジェクトが使用したFFmpegおよびlibsndfileのビルドスクリプトを収録します。
+このZIPを配布ZIPと同じGitHub Releaseで公開します。
+ZIP内の`README.txt`には、対応する各バイナリ、ソースURL、SHA-256、ビルド情報を記載します。
 
-- CPython 3.11: Python Software Foundation License
+## 同梱するライセンス文書
 
-The packaging process collects available `LICENSE`, `COPYING`, and `NOTICE`
-files from runtime Python distributions and exposes them in the application's
-license viewer. Some packages include additional notices for bundled native
-libraries; those supplied texts remain controlling.
+Electronの`LICENSE.electron.txt`と`LICENSES.chromium.html`を配布パッケージに収録します。
 
-## Runtime dependency inventory
+パッケージ作成時に、実行時に使用するPythonパッケージから`LICENSE`、`COPYING`、`NOTICE`ファイルを収集し、アプリのライセンス画面に表示します。
+一部のパッケージには、同梱するネイティブライブラリについて追加の通知が含まれています。
+各パッケージに付属するライセンス本文および通知が、本書の記載より優先されます。
 
-Build and test tools such as Vite, TypeScript, Vitest, Testing Library,
-Electron Builder, PyInstaller, and pytest are recorded in the lock files but
-are not listed as application runtime dependencies here.
+## 実行時依存関係一覧
 
-### JavaScript and desktop runtime
+次の一覧は、アプリの実行時に使用するパッケージを示します。
 
-| Package | Version | License | Source |
+### JavaScriptおよびデスクトップ実行時パッケージ
+
+| パッケージ | バージョン | ライセンス | ソースコード |
 |---|---:|---|---|
 | Electron | 43.2.0 | MIT | <https://github.com/electron/electron> |
 | React | 19.2.8 | MIT | <https://github.com/facebook/react> |
 | React DOM | 19.2.8 | MIT | <https://github.com/facebook/react> |
 | scheduler | 0.27.0 | MIT | <https://github.com/facebook/react> |
+| Lucide React | 1.31.0 | ISC | <https://github.com/lucide-icons/lucide> |
+| OpenSheetMusicDisplay | 1.9.9 | BSD-3-Clause | <https://github.com/opensheetmusicdisplay/opensheetmusicdisplay> |
+| JSZip | 3.10.1 | MIT OR GPL-3.0-or-later | <https://github.com/Stuk/jszip> |
+| loglevel | 1.9.2 | MIT | <https://github.com/pimterry/loglevel> |
+| typescript-collections | 1.3.3 | MIT | <https://github.com/basarat/typescript-collections> |
+| VexFlow | 1.2.93 | MIT | <https://github.com/0xfe/vexflow> |
 | spessasynth_core | 4.3.15 | Apache-2.0 | <https://github.com/spessasus/spessasynth_core> |
 | spessasynth_lib | 4.3.11 | Apache-2.0 | <https://github.com/spessasus/spessasynth_lib> |
 
-### Python runtime
+### Python実行時パッケージ
 
-| Package | Version | License | Source |
+| パッケージ | バージョン | ライセンス | ソースコード |
 |---|---:|---|---|
 | CPython | 3.11 | PSF-2.0 | <https://github.com/python/cpython> |
 | annotated-doc | 0.0.4 | MIT | <https://github.com/fastapi/annotated-doc> |
@@ -183,6 +202,7 @@ are not listed as application runtime dependencies here.
 | PyYAML | 6.0.3 | MIT | <https://github.com/yaml/pyyaml> |
 | requests | 2.34.2 | Apache-2.0 | <https://github.com/psf/requests> |
 | rich | 15.0.0 | MIT | <https://github.com/Textualize/rich> |
+| rotary-embedding-torch | 0.8.9 | MIT | <https://github.com/lucidrains/rotary-embedding-torch> |
 | safetensors | 0.8.0 | Apache-2.0 | <https://github.com/huggingface/safetensors> |
 | scikit-learn | 1.9.0 | BSD-3-Clause | <https://github.com/scikit-learn/scikit-learn> |
 | scipy | 1.17.1 | BSD-3-Clause + bundled notices | <https://github.com/scipy/scipy> |
@@ -204,11 +224,4 @@ are not listed as application runtime dependencies here.
 | watchfiles | 1.2.0 | MIT | <https://github.com/samuelcolvin/watchfiles> |
 | websockets | 16.1.1 | BSD-3-Clause | <https://github.com/python-websockets/websockets> |
 
-License, COPYING, and NOTICE files supplied with each distribution take
-precedence over the summary in this table.
-
-## No endorsement
-
-MuScriptor, Kyutai, Mirelo, SCNet, MuseScore, SpessaSynth, FFmpeg, Electron,
-React, Python, and other names are used only to identify upstream components.
-Their inclusion does not imply endorsement of EarCopy Assist.
+各パッケージに付属する`LICENSE`、`COPYING`、`NOTICE`ファイルが、この表の概要より優先されます。

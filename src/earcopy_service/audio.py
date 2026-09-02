@@ -11,6 +11,8 @@ from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from .cache_management import mark_cache_entry_used, prune_cache_entries
+
 SUPPORTED_AUDIO_EXTENSIONS = {".wav", ".mp3", ".flac", ".ogg", ".m4a", ".aac"}
 
 
@@ -23,6 +25,15 @@ class AudioInfo(BaseModel):
     sample_rate: int = Field(alias="sampleRate")
     channels: int
     codec_name: str = Field(alias="codecName")
+
+
+class PlaybackAudioInfo(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    path: str
+    sample_rate: int = Field(alias="sampleRate")
+    channels: int
+    frame_count: int = Field(alias="frameCount")
 
 
 def sha256_file(path: Path) -> str:
@@ -84,6 +95,8 @@ def _inspect_with_ffprobe(
         check=False,
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         timeout=30,
     )
     if completed.returncode != 0:
@@ -172,6 +185,8 @@ def convert_to_analysis_wav(
         check=False,
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         timeout=60 * 60,
     )
     if completed.returncode != 0:
@@ -200,9 +215,85 @@ def prepare_analysis_audio(
     ).hexdigest()
     destination = cache_root.resolve() / cache_key / "analysis.wav"
     if destination.is_file() and destination.stat().st_size > 44:
+        mark_cache_entry_used(destination)
+        mark_cache_entry_used(destination.parent)
+        prune_cache_entries(
+            cache_root.parent,
+            kinds={cache_root.name},
+            protected_paths={destination.parent},
+            protected_paths_count_toward_limit=True,
+        )
         return destination
-    return convert_to_analysis_wav(
+    converted = convert_to_analysis_wav(
         source,
         destination,
         ffmpeg_executable=ffmpeg_executable,
     )
+    prune_cache_entries(
+        cache_root.parent,
+        kinds={cache_root.name},
+        protected_paths={destination.parent},
+    )
+    return converted
+
+
+def playback_audio_info(path: Path) -> PlaybackAudioInfo:
+    """PCMストリーミング再生に使用するWaveファイルを検証する。"""
+
+    import soundfile
+
+    resolved = path.resolve()
+    if not resolved.is_file():
+        raise ValueError(f"再生用Waveファイルが見つかりません: {resolved}")
+    with soundfile.SoundFile(str(resolved)) as audio:
+        if audio.samplerate != 44_100 or audio.channels != 2:
+            raise ValueError(
+                "再生用Waveファイルは44.1 kHzステレオである必要があります: "
+                f"{resolved}"
+            )
+        return PlaybackAudioInfo(
+            path=str(resolved),
+            sampleRate=audio.samplerate,
+            channels=audio.channels,
+            frameCount=len(audio),
+        )
+
+
+def read_playback_audio_frames(
+    source_paths: list[Path],
+    start_frame: int,
+    frame_count: int,
+) -> bytes:
+    """複数の44.1 kHz stereo Waveから同じ範囲をfloat32で読み出す。"""
+
+    import numpy as np
+    import soundfile
+
+    if not source_paths:
+        raise ValueError("再生用Waveファイルが指定されていません")
+    if start_frame < 0:
+        raise ValueError("再生開始サンプル番号は0以上である必要があります")
+    if frame_count < 1 or frame_count > 176_400:
+        raise ValueError("再生サンプル数は1～176400である必要があります")
+
+    output = np.zeros((len(source_paths), frame_count, 2), dtype="<f4")
+    for source_index, source_path in enumerate(source_paths):
+        resolved = source_path.resolve()
+        if not resolved.is_file():
+            raise ValueError(f"再生用Waveファイルが見つかりません: {resolved}")
+        with soundfile.SoundFile(str(resolved)) as audio:
+            if audio.samplerate != 44_100 or audio.channels != 2:
+                raise ValueError(
+                    "再生用Waveファイルは44.1 kHzステレオである必要があります: "
+                    f"{resolved}"
+                )
+            if start_frame >= len(audio):
+                continue
+            audio.seek(start_frame)
+            available = min(frame_count, len(audio) - start_frame)
+            output[source_index, :available] = audio.read(
+                available,
+                dtype="float32",
+                always_2d=True,
+            )
+    return output.tobytes(order="C")

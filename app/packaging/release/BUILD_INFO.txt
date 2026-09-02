@@ -1,0 +1,10 @@
+EarCopy Assist ${VERSION}
+=========================
+
+Source repository: https://github.com/tori128/sheetMusicHelper
+Source commit: ${SOURCE_COMMIT}
+Package created (UTC): ${BUILD_UTC}
+Target: Windows x64 portable
+
+MuScriptor small, medium, and large model weights are bundled without modification.
+The BS-RoFormer SW Fixed model weight is obtained separately.

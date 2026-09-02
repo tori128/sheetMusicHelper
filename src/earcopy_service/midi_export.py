@@ -5,7 +5,40 @@ from pathlib import Path
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
 
 from .models import Project, Track
-from .timebase import seconds_to_ticks
+from .timebase import note_score_ticks
+
+KEY_SIGNATURES = {
+    (0, "major"): "C",
+    (1, "major"): "G",
+    (2, "major"): "D",
+    (3, "major"): "A",
+    (4, "major"): "E",
+    (5, "major"): "B",
+    (6, "major"): "F#",
+    (7, "major"): "C#",
+    (-1, "major"): "F",
+    (-2, "major"): "Bb",
+    (-3, "major"): "Eb",
+    (-4, "major"): "Ab",
+    (-5, "major"): "Db",
+    (-6, "major"): "Gb",
+    (-7, "major"): "Cb",
+    (0, "minor"): "Am",
+    (1, "minor"): "Em",
+    (2, "minor"): "Bm",
+    (3, "minor"): "F#m",
+    (4, "minor"): "C#m",
+    (5, "minor"): "G#m",
+    (6, "minor"): "D#m",
+    (7, "minor"): "A#m",
+    (-1, "minor"): "Dm",
+    (-2, "minor"): "Gm",
+    (-3, "minor"): "Cm",
+    (-4, "minor"): "Fm",
+    (-5, "minor"): "Bbm",
+    (-6, "minor"): "Ebm",
+    (-7, "minor"): "Abm",
+}
 
 
 def _append_absolute_events(
@@ -40,11 +73,7 @@ def _create_note_track(project: Project, track: Track) -> MidiTrack:
     for note in project.notes:
         if note.track_id != track.id:
             continue
-        start_tick = seconds_to_ticks(note.start_sec, project.tempo.bpm, project.tempo.ppq)
-        end_tick = max(
-            start_tick + 1,
-            seconds_to_ticks(note.end_sec, project.tempo.bpm, project.tempo.ppq),
-        )
+        start_tick, end_tick = note_score_ticks(project, note)
         events.append(
             (
                 end_tick,
@@ -92,6 +121,13 @@ def build_midi(project: Project) -> MidiFile:
             time=0,
         )
     )
+    conductor.append(
+        MetaMessage(
+            "key_signature",
+            key=KEY_SIGNATURES[(project.score.key_fifths, project.score.key_mode)],
+            time=0,
+        )
+    )
     conductor.append(MetaMessage("end_of_track", time=0))
     midi.tracks.append(conductor)
     for track in sorted(project.tracks, key=lambda item: item.order):
@@ -104,4 +140,3 @@ def export_midi(project: Project, path: Path) -> None:
         raise ValueError("MIDI出力の拡張子は.midまたは.midiである必要があります")
     path.parent.mkdir(parents=True, exist_ok=True)
     build_midi(project).save(path)
-

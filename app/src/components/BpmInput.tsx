@@ -2,17 +2,22 @@ import { useEffect, useRef, useState } from "react";
 
 interface BpmInputProps {
   value: number;
+  disabled?: boolean;
   onCommit: (value: number) => void;
 }
 
-const MIN_BPM = 20;
-const MAX_BPM = 300;
+export const MIN_BPM = 20;
+export const MAX_BPM = 300;
 
 function formatBpm(value: number): string {
   return String(value);
 }
 
-export function BpmInput({ value, onCommit }: BpmInputProps) {
+export function BpmInput({
+  value,
+  disabled = false,
+  onCommit,
+}: BpmInputProps) {
   const [draft, setDraft] = useState(() => formatBpm(value));
   const focusedRef = useRef(false);
   const skipBlurRef = useRef(false);
@@ -30,6 +35,10 @@ export function BpmInput({ value, onCommit }: BpmInputProps) {
   }, [value]);
 
   function commit(rawValue: string) {
+    if (disabled) {
+      setDraft(formatBpm(value));
+      return;
+    }
     const nextValue = Number(rawValue);
     if (
       rawValue.trim() !== "" &&
@@ -52,11 +61,15 @@ export function BpmInput({ value, onCommit }: BpmInputProps) {
       step="0.1"
       inputMode="decimal"
       value={draft}
+      disabled={disabled}
       aria-invalid={!valid}
       onFocus={() => {
         focusedRef.current = true;
       }}
       onChange={(event) => {
+        if (disabled) {
+          return;
+        }
         setDraft(event.target.value);
       }}
       onBlur={(event) => {
@@ -68,6 +81,9 @@ export function BpmInput({ value, onCommit }: BpmInputProps) {
         commit(event.currentTarget.value);
       }}
       onKeyDown={(event) => {
+        if (disabled) {
+          return;
+        }
         if (event.key === "Enter") {
           event.preventDefault();
           commit(event.currentTarget.value);

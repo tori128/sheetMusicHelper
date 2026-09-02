@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-08-24",
+  "sourceRevision": "345fe2f653225dde3af826ef765bc355bd31bb7e",
+  "sourceWorkingTreeModified": true,
+  "dataset": {
+    "audioRepository": "https://github.com/TempoBeatDownbeat/gtzan_mini",
+    "audioRevision": "a61439e86c13037011fde8e0f0743ec55c50bce3",
+    "annotationRepository": "https://github.com/CPJKU/beat_this_annotations",
+    "annotationRevision": "890407d158078527ab396b49fea3c8a83e5734ee",
+    "annotationVersion": "v1.1",
+    "trackCount": 100,
+    "durationSecPerTrack": 30,
+    "referenceBeatCount": 5719,
+    "meterTrackCounts": {
+      "2": 1,
+      "3": 4,
+      "4": 95
+    }
+  },
+  "evaluation": {
+    "matchToleranceSec": 0.07,
+    "tempoAccuracyTolerancePercent": 4.0,
+    "developmentTrackCount": 50,
+    "evaluationTrackCount": 50,
+    "splitRule": "Within each genre, even sorted indices are development tracks and odd sorted indices are evaluation tracks."
+  },
+  "current": {
+    "all": {
+      "trackCount": 100,
+      "tempoAccuracyWithin4Percent": 0.75,
+      "tempoMeanAbsolutePercentError": 14.841071666666604,
+      "tempoMedianAbsolutePercentError": 0.4261666666664575,
+      "beatMicroF1": 0.7510710053778142,
+      "beatMacroF1": 0.7472575004760277,
+      "downbeatMicroF1": 0.3655837200999643,
+      "downbeatMacroF1": 0.3846288358021251,
+      "estimateElapsedSec": 24.90463640028611
+    },
+    "development": {
+      "trackCount": 50,
+      "tempoAccuracyWithin4Percent": 0.78,
+      "tempoMeanAbsolutePercentError": 10.986193333333242,
+      "tempoMedianAbsolutePercentError": 0.46283333333338805,
+      "beatMacroF1": 0.7294509373282415,
+      "downbeatMacroF1": 0.50274673616288
+    },
+    "evaluation": {
+      "trackCount": 50,
+      "tempoAccuracyWithin4Percent": 0.72,
+      "tempoMeanAbsolutePercentError": 18.69594999999997,
+      "tempoMedianAbsolutePercentError": 0.3516666666663846,
+      "beatMacroF1": 0.7650640636238137,
+      "downbeatMacroF1": 0.2665109354413702
+    }
+  }
+}

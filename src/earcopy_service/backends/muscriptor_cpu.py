@@ -6,7 +6,10 @@ from .muscriptor import MuscriptorBackend
 
 
 class CpuMuscriptorBackend(MuscriptorBackend):
-    def __init__(self, model_class: Any | None = None) -> None:
+    def __init__(
+        self,
+        model_class: Any | None = None,
+    ) -> None:
         super().__init__(
             device="cpu",
             name="MuScriptor PyTorch CPU",

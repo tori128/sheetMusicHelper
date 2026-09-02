@@ -13,6 +13,22 @@ from pydantic import BaseModel, ConfigDict, Field
 from .model_validation import ModelVariant, validate_model_file
 
 InferenceBackend = Literal["Auto", "CPU", "CUDA"]
+_VARIANT_ORDER: dict[ModelVariant, int] = {
+    "large": 0,
+    "medium": 1,
+    "small": 2,
+}
+
+
+def _ordered_profiles(profiles: list[ModelProfile]) -> list[ModelProfile]:
+    return sorted(
+        profiles,
+        key=lambda profile: (
+            _VARIANT_ORDER[profile.variant],
+            profile.profile_name.casefold(),
+            str(profile.id),
+        ),
+    )
 
 
 class ModelProfile(BaseModel):
@@ -35,32 +51,10 @@ class ModelProfileStore:
 
     def list(self) -> list[ModelProfile]:
         with self._lock:
-            return self._load()
+            return _ordered_profiles(self._load())
 
     def discover_local_models(self, directories: list[Path]) -> list[ModelProfile]:
         profiles = self.list()
-        migrated_profiles = []
-        migration_needed = False
-        for profile in profiles:
-            legacy_name = f"MuScriptor {profile.variant.title()} (CPU)"
-            if (
-                profile.profile_name == legacy_name
-                and profile.default_backend == "CPU"
-                and profile.dtype == "float32"
-            ):
-                profile = profile.model_copy(
-                    update={
-                        "profile_name": legacy_name.removesuffix(" (CPU)"),
-                        "default_backend": "Auto",
-                    }
-                )
-                migration_needed = True
-            migrated_profiles.append(profile)
-        profiles = migrated_profiles
-        if migration_needed:
-            with self._lock:
-                self._save(profiles)
-
         known_paths = {Path(item.model_path).resolve() for item in profiles}
         for directory in directories:
             if not directory.is_dir():
@@ -74,7 +68,7 @@ class ModelProfileStore:
                         profile_name=f"MuScriptor {variant.title()}",
                         model_path=model_path,
                         expected_variant=variant,
-                        dtype="float32",
+                        dtype="float16",
                         default_backend="Auto",
                     )
                 except ValueError:
@@ -84,7 +78,7 @@ class ModelProfileStore:
                 ]
                 profiles.append(profile)
                 known_paths.add(model_path.resolve())
-        return profiles
+        return _ordered_profiles(profiles)
 
     def register(
         self,

@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer, webUtils } from "electron";
 import type { ServiceConnection } from "./service-manager.js";
 
 contextBridge.exposeInMainWorld("desktopApi", {
+  quitApplication: (): Promise<void> => ipcRenderer.invoke("app:quit"),
   getServiceConnection: (): Promise<ServiceConnection> =>
     ipcRenderer.invoke("service:get-connection"),
   getAboutInfo: () => ipcRenderer.invoke("app:get-about"),
@@ -9,6 +10,10 @@ contextBridge.exposeInMainWorld("desktopApi", {
     ipcRenderer.invoke("audio:get-local-url", path),
   loadSoundFont: (): Promise<Uint8Array> =>
     ipcRenderer.invoke("soundfont:load"),
+  writeSpectralAnalysisAudio: (bytes: Uint8Array): Promise<string> =>
+    ipcRenderer.invoke("analysis:write-audio", bytes),
+  deleteSpectralAnalysisAudio: (path: string): Promise<void> =>
+    ipcRenderer.invoke("analysis:delete-audio", path),
   selectAudioFile: (): Promise<string | null> =>
     ipcRenderer.invoke("dialog:select-audio"),
   getPathForDroppedFile: (file: File): string => webUtils.getPathForFile(file),

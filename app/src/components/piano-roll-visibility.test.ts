@@ -2,13 +2,14 @@ import { describe, expect, it } from "vitest";
 import type { ProjectNote, ProjectTrack } from "../types";
 import {
   visibleNotesForRoll,
-  visibleTracksForSolo,
+  visibleTracksForRoll,
 } from "./piano-roll-visibility";
 
 function track(
   id: string,
   kind: "pitched" | "drums" = "pitched",
   solo = false,
+  mute = false,
 ): ProjectTrack {
   return {
     id,
@@ -19,7 +20,9 @@ function track(
     order: 1,
     midiChannel: kind === "drums" ? 10 : 1,
     gmProgram: kind === "drums" ? null : 0,
-    mute: false,
+    playbackOctaveShift: 0,
+    playbackVolume: 100,
+    mute,
     solo,
   };
 }
@@ -38,11 +41,11 @@ function note(id: string, trackId: string): ProjectNote {
   };
 }
 
-describe("piano-roll Solo visibility", () => {
+describe("piano-roll track visibility", () => {
   it("shows every track when Solo is inactive", () => {
     const tracks = [track("piano"), track("guitar"), track("drums", "drums")];
 
-    expect(visibleTracksForSolo(tracks).map(({ id }) => id)).toEqual([
+    expect(visibleTracksForRoll(tracks).map(({ id }) => id)).toEqual([
       "piano",
       "guitar",
       "drums",
@@ -56,11 +59,49 @@ describe("piano-roll Solo visibility", () => {
     ).toEqual(["piano", "guitar"]);
   });
 
+  it("hides muted tracks and their notes when Solo is inactive", () => {
+    const tracks = [
+      track("piano"),
+      track("guitar", "pitched", false, true),
+      track("drums", "drums", false, true),
+    ];
+    const notes = tracks.map(({ id }) => note(`${id}-note`, id));
+
+    expect(visibleTracksForRoll(tracks).map(({ id }) => id)).toEqual([
+      "piano",
+    ]);
+    expect(
+      visibleNotesForRoll(notes, tracks, "pitched").map(({ id }) => id),
+    ).toEqual(["piano-note"]);
+    expect(visibleNotesForRoll(notes, tracks, "drums")).toEqual([]);
+  });
+
+  it("shows every track and note when all tracks are muted", () => {
+    const tracks = [
+      track("piano", "pitched", false, true),
+      track("guitar", "pitched", false, true),
+      track("drums", "drums", false, true),
+    ];
+    const notes = tracks.map(({ id }) => note(`${id}-note`, id));
+
+    expect(visibleTracksForRoll(tracks).map(({ id }) => id)).toEqual([
+      "piano",
+      "guitar",
+      "drums",
+    ]);
+    expect(
+      visibleNotesForRoll(notes, tracks, "pitched").map(({ id }) => id),
+    ).toEqual(["piano-note", "guitar-note"]);
+    expect(
+      visibleNotesForRoll(notes, tracks, "drums").map(({ id }) => id),
+    ).toEqual(["drums-note"]);
+  });
+
   it("shows only the selected Solo track", () => {
     const tracks = [track("piano"), track("guitar", "pitched", true)];
     const notes = [note("piano-note", "piano"), note("guitar-note", "guitar")];
 
-    expect(visibleTracksForSolo(tracks).map(({ id }) => id)).toEqual([
+    expect(visibleTracksForRoll(tracks).map(({ id }) => id)).toEqual([
       "guitar",
     ]);
     expect(

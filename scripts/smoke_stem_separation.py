@@ -8,7 +8,10 @@ import tempfile
 import wave
 from pathlib import Path
 
-from earcopy_service.stem_separation import separate_four_stems
+from earcopy_service.stem_separation import (
+    STEM_NAMES,
+    separate_sources,
+)
 
 
 def write_input(path: Path, duration_sec: float = 1.0) -> None:
@@ -27,12 +30,15 @@ def write_input(path: Path, duration_sec: float = 1.0) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--model-dir", type=Path, required=True)
+    parser.add_argument("--duration", type=float, default=1.0)
     args = parser.parse_args()
-    with tempfile.TemporaryDirectory(prefix="earcopy-scnet-smoke-") as temporary:
+    if not 0.1 <= args.duration <= 300:
+        parser.error("--duration must be between 0.1 and 300 seconds")
+    with tempfile.TemporaryDirectory(prefix="earcopy-stem-smoke-") as temporary:
         root = Path(temporary)
         source = root / "input.wav"
-        write_input(source)
-        stems = separate_four_stems(source, root / "stems", args.model_dir)
+        write_input(source, args.duration)
+        stems = separate_sources(source, root / "stems", args.model_dir)
         metadata = {}
         for stem in stems:
             path = Path(stem.cache_path)
@@ -43,17 +49,17 @@ def main() -> None:
                     "sampleWidth": audio.getsampwidth(),
                     "frames": audio.getnframes(),
                 }
-        assert set(metadata) == {"drums", "bass", "vocals", "other"}
+        assert tuple(metadata) == STEM_NAMES
         assert all(
             item == {
                 "sampleRate": 44_100,
                 "channels": 2,
                 "sampleWidth": 3,
-                "frames": 44_100,
+                "frames": int(44_100 * args.duration),
             }
             for item in metadata.values()
         )
-        print(json.dumps(metadata, indent=2))
+        print(json.dumps({"stems": metadata}, indent=2))
 
 
 if __name__ == "__main__":

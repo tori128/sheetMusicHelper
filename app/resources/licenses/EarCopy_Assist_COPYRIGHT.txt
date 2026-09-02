@@ -1,10 +1,8 @@
 EarCopy Assist
 
-Copyright (c) 2026 SheetMusicHelper Contributors.
-All rights reserved.
+Copyright (c) 2026 tori128
 
-No permission to use, copy, modify, or redistribute the original EarCopy
-Assist materials is granted without prior written permission. See
-EarCopy_Assist_LICENSE.txt for the complete project notice.
+EarCopy Assist is provided under the MIT License.
+See EarCopy_Assist_LICENSE.txt for the license terms.
 
 Third-party components remain subject only to their respective license terms.

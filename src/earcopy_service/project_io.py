@@ -39,4 +39,3 @@ def save_project(project: Project, path: Path) -> None:
         temporary.write("\n")
         temporary_path = Path(temporary.name)
     temporary_path.replace(path)
-

@@ -12,6 +12,15 @@ export default defineConfig({
   build: {
     outDir: "dist/renderer",
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          return id.includes("node_modules/spessasynth_")
+            ? "soundfont"
+            : undefined;
+        },
+      },
+    },
   },
   test: {
     environment: "jsdom",

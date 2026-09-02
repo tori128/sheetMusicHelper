@@ -45,4 +45,20 @@ describe("BpmInput", () => {
     expect(onCommit).not.toHaveBeenCalled();
     expect(input).toHaveValue(120);
   });
+
+  it("cannot be changed while editing is disabled", () => {
+    const onCommit = vi.fn();
+    render(
+      <label>
+        BPM
+        <BpmInput value={120} disabled onCommit={onCommit} />
+      </label>,
+    );
+
+    const input = screen.getByLabelText("BPM");
+    expect(input).toBeDisabled();
+    fireEvent.change(input, { target: { value: "90" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(onCommit).not.toHaveBeenCalled();
+  });
 });

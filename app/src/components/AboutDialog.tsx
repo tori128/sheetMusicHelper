@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { AppAboutInfo, ModelProfile } from "../types";
+import { Localized } from "../i18n";
 
 interface AboutDialogProps {
   models: ModelProfile[];
@@ -33,6 +34,7 @@ export function AboutDialog({ models, onClose }: AboutDialogProps) {
   const notice = about?.notices[selectedNotice];
 
   return (
+    <Localized>
     <div
       className="modal-backdrop"
       role="presentation"
@@ -66,7 +68,7 @@ export function AboutDialog({ models, onClose }: AboutDialogProps) {
           </div>
           <div>
             <dt>著作権表示</dt>
-            <dd>Copyright © 2026 SheetMusicHelper Contributors</dd>
+            <dd>Copyright © 2026 tori128</dd>
           </div>
         </dl>
 
@@ -87,7 +89,7 @@ export function AboutDialog({ models, onClose }: AboutDialogProps) {
               <tbody>
                 {models.map((model) => (
                   <tr key={model.id}>
-                    <td>{model.profileName}</td>
+                    <td data-localize="false">{model.profileName}</td>
                     <td>{model.variant}</td>
                     <td title={model.sha256}>{model.sha256}</td>
                     <td>CC BY-NC 4.0</td>
@@ -118,5 +120,6 @@ export function AboutDialog({ models, onClose }: AboutDialogProps) {
         )}
       </section>
     </div>
+    </Localized>
   );
 }

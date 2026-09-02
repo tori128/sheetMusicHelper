@@ -1,0 +1,261 @@
+name: Windows Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Optional draft release tag (blank uses v<package version>)
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: windows-release-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build draft release
+    runs-on: [self-hosted, Windows, X64, earcopy-release]
+    environment: windows-release
+    timeout-minutes: 300
+    env:
+      MUSCRIPTOR_MODEL_SOURCE: ${{ vars.MUSCRIPTOR_MODEL_ROOT }}
+      NPM_CONFIG_PROGRESS: "false"
+      UV_LINK_MODE: copy
+      UV_NO_PROGRESS: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          clean: true
+          persist-credentials: false
+
+      - name: Remove previous build outputs
+        shell: pwsh
+        run: ./scripts/cleanup_ci_release_build.ps1 -Phase BeforeBuild
+
+      - name: Check repository hygiene
+        shell: pwsh
+        run: ./scripts/check_repository_hygiene.ps1
+
+      - name: Stage verified MuScriptor models
+        shell: pwsh
+        run: >-
+          ./scripts/stage_ci_muscriptor_models.ps1
+          -SourceRoot $env:MUSCRIPTOR_MODEL_SOURCE
+          -MinimumFreeGiB 55
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+
+      - name: Set up MSYS2 toolchain
+        id: setup_msys2
+        uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884 # v2
+        with:
+          msystem: MINGW64
+          release: true
+          update: false
+          install: >-
+            mingw-w64-x86_64-binutils
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-make
+            diffutils
+            zip
+
+      - name: Configure native build paths
+        shell: pwsh
+        env:
+          MSYS2_LOCATION: ${{ steps.setup_msys2.outputs.msys2-location }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:MSYS2_LOCATION)) {
+            throw "MSYS2 setup did not return its installation directory."
+          }
+          $msys2Root = [IO.Path]::GetFullPath($env:MSYS2_LOCATION)
+          $required = @(
+            (Join-Path $msys2Root "usr\bin\bash.exe"),
+            (Join-Path $msys2Root "usr\bin\cmp.exe"),
+            (Join-Path $msys2Root "usr\bin\zip.exe"),
+            (Join-Path $msys2Root "msys2_shell.cmd"),
+            (Join-Path $msys2Root "mingw64\bin\gcc.exe"),
+            (Join-Path $msys2Root "mingw64\bin\g++.exe"),
+            (Join-Path $msys2Root "mingw64\bin\objdump.exe")
+          )
+          foreach ($path in $required) {
+            if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+              throw "Required native build tool was not found: $path"
+            }
+          }
+          $sevenZip = Get-Command "7z.exe" -ErrorAction SilentlyContinue
+          if (
+            $null -eq $sevenZip -and
+            -not (Test-Path -LiteralPath "C:\Program Files\7-Zip\7z.exe" -PathType Leaf)
+          ) {
+            throw "Required native build command was not found: 7z.exe"
+          }
+          foreach ($command in @("cmake.exe", "ninja.exe")) {
+            if (-not (Get-Command $command -ErrorAction SilentlyContinue)) {
+              throw "Required native build command was not found: $command"
+            }
+          }
+          "EARCOPY_MSYS2_ROOT=$msys2Root" |
+            Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          "EARCOPY_ZIP_EXECUTABLE=$(Join-Path $msys2Root 'usr\bin\zip.exe')" |
+            Out-File $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Install Python dependencies
+        timeout-minutes: 25
+        run: uv sync --extra dev --locked
+
+      - name: Install desktop dependencies
+        timeout-minutes: 15
+        working-directory: app
+        run: npm ci
+
+      - name: Run Python tests
+        timeout-minutes: 20
+        run: uv run pytest -q
+
+      - name: Run desktop tests
+        timeout-minutes: 15
+        working-directory: app
+        run: npm test -- --run
+
+      - name: Check desktop types
+        timeout-minutes: 10
+        working-directory: app
+        run: npm run typecheck
+
+      - name: Verify models for packaging
+        working-directory: app
+        run: npm run verify:muscriptor-models
+
+      - name: Restore LGPL FFmpeg cache
+        id: ffmpeg_cache_restore
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: |
+            tools/ffmpeg-lgpl/downloads
+            tools/ffmpeg-lgpl/bin
+          key: ffmpeg-lgpl-${{ runner.os }}-${{ hashFiles('scripts/build_ffmpeg_lgpl.ps1') }}
+
+      - name: Build LGPL FFmpeg
+        timeout-minutes: 25
+        shell: pwsh
+        run: ./scripts/build_ffmpeg_lgpl.ps1
+
+      - name: Save LGPL FFmpeg cache
+        if: steps.ffmpeg_cache_restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: |
+            tools/ffmpeg-lgpl/downloads
+            tools/ffmpeg-lgpl/bin
+          key: ffmpeg-lgpl-${{ runner.os }}-${{ hashFiles('scripts/build_ffmpeg_lgpl.ps1') }}
+
+      - name: Restore LGPL libsndfile cache
+        id: libsndfile_cache_restore
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: |
+            app/release-sources/libsndfile-1.2.2.tar.xz
+            tools/libsndfile-lgpl/bin
+          key: libsndfile-lgpl-${{ runner.os }}-${{ hashFiles('scripts/build_libsndfile_lgpl.ps1') }}
+
+      - name: Build LGPL libsndfile
+        timeout-minutes: 15
+        shell: pwsh
+        run: ./scripts/build_libsndfile_lgpl.ps1
+
+      - name: Save LGPL libsndfile cache
+        if: steps.libsndfile_cache_restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: |
+            app/release-sources/libsndfile-1.2.2.tar.xz
+            tools/libsndfile-lgpl/bin
+          key: libsndfile-lgpl-${{ runner.os }}-${{ hashFiles('scripts/build_libsndfile_lgpl.ps1') }}
+
+      - name: Build desktop application
+        timeout-minutes: 15
+        working-directory: app
+        env:
+          EARCOPY_REUSE_TRACKED_ICON: "1"
+        run: |
+          npm run assert:app-stopped
+          npm run build:icon
+          npm run build
+
+      - name: Build packaged Python backend
+        timeout-minutes: 30
+        working-directory: app
+        run: >-
+          uv run --project .. pyinstaller --noconfirm
+          --distpath backend-dist
+          --workpath backend-build
+          packaging/earcopy_service.spec
+
+      - name: Package desktop application
+        timeout-minutes: 30
+        working-directory: app
+        run: >-
+          npm exec electron-builder --
+          --win --dir
+          --config.directories.output=release-staging
+
+      - name: Promote packaged application
+        timeout-minutes: 20
+        working-directory: app
+        run: >-
+          powershell -NoProfile -ExecutionPolicy Bypass
+          -File packaging/promote-packaged-build.ps1
+
+      - name: Run packaged application smoke test
+        timeout-minutes: 10
+        working-directory: app
+        run: npm run smoke:packaged
+
+      - name: Remove build intermediates
+        timeout-minutes: 20
+        shell: pwsh
+        run: ./scripts/cleanup_ci_release_build.ps1 -Phase AfterPackaging
+
+      - name: Build release archives
+        timeout-minutes: 90
+        shell: powershell
+        run: >-
+          powershell -NoProfile -ExecutionPolicy Bypass
+          -File app/packaging/build-release-package.ps1
+
+      - name: Verify release archives
+        timeout-minutes: 30
+        shell: powershell
+        run: >-
+          powershell -NoProfile -ExecutionPolicy Bypass
+          -File app/packaging/verify-release-package.ps1
+
+      - name: Create or update draft GitHub Release
+        timeout-minutes: 60
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_TAG: ${{ inputs.release_tag }}
+        run: >-
+          ./scripts/publish_draft_release.ps1
+          -RequestedTag $env:REQUESTED_TAG

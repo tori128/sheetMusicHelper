@@ -6,8 +6,10 @@ import {
   type SoundFontSmokeResult,
 } from "./soundfont-playback";
 import { runPerformanceSmoke } from "./performance-smoke";
+import { runMusicXmlPreviewSmoke } from "./musicxml-preview";
 import "./styles.css";
 import type { DesktopApi } from "./types";
+import { LanguageProvider } from "./i18n";
 
 const developmentWindow = window as unknown as { desktopApi?: DesktopApi };
 if (new URLSearchParams(window.location.search).has("smoke")) {
@@ -17,6 +19,7 @@ if (new URLSearchParams(window.location.search).has("smoke")) {
         audioUrl: string,
       ) => Promise<SoundFontSmokeResult>;
       runPerformanceSmoke?: typeof runPerformanceSmoke;
+      runMusicXmlPreviewSmoke?: typeof runMusicXmlPreviewSmoke;
     }
   ).runSoundFontSmoke = runSoundFontSmoke;
   (
@@ -24,9 +27,15 @@ if (new URLSearchParams(window.location.search).has("smoke")) {
       runPerformanceSmoke?: typeof runPerformanceSmoke;
     }
   ).runPerformanceSmoke = runPerformanceSmoke;
+  (
+    window as unknown as {
+      runMusicXmlPreviewSmoke?: typeof runMusicXmlPreviewSmoke;
+    }
+  ).runMusicXmlPreviewSmoke = runMusicXmlPreviewSmoke;
 }
 if (import.meta.env.DEV && developmentWindow.desktopApi === undefined) {
   developmentWindow.desktopApi = {
+    quitApplication: async () => undefined,
     getServiceConnection: async () => ({
       baseUrl: window.location.origin,
       token: "",
@@ -38,6 +47,8 @@ if (import.meta.env.DEV && developmentWindow.desktopApi === undefined) {
     }),
     getLocalAudioUrl: async (path) => `file:///${path.replaceAll("\\", "/")}`,
     loadSoundFont: async () => new Uint8Array(),
+    writeSpectralAnalysisAudio: async () => "",
+    deleteSpectralAnalysisAudio: async () => undefined,
     selectAudioFile: async () => null,
     getPathForDroppedFile: () => "",
     selectModelFile: async () => null,
@@ -51,6 +62,8 @@ if (import.meta.env.DEV && developmentWindow.desktopApi === undefined) {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <LanguageProvider>
+      <App />
+    </LanguageProvider>
   </StrictMode>,
 );

@@ -14,6 +14,7 @@ export interface RollViewport {
   rowHeight: number;
   headerHeight: number;
   maxPitch?: number;
+  pitchRows?: readonly number[];
 }
 
 export interface Rectangle {
@@ -133,6 +134,36 @@ export function buildBeatGridLines(
   return lines;
 }
 
+export function snapTimeToQuarterNote(
+  timeSec: number,
+  bpm: number,
+  beatOffsetSec: number,
+  durationSec: number,
+): number {
+  const maximum = Number.isFinite(durationSec)
+    ? Math.max(0, durationSec)
+    : 0;
+  const normalized = Math.min(
+    maximum,
+    Math.max(0, Number.isFinite(timeSec) ? timeSec : 0),
+  );
+  if (
+    !Number.isFinite(bpm) ||
+    bpm <= 0 ||
+    !Number.isFinite(beatOffsetSec)
+  ) {
+    return normalized;
+  }
+  const quarterNoteSec = 60 / bpm;
+  const quarterIndex = Math.floor(
+    (normalized - beatOffsetSec) / quarterNoteSec + 1e-9,
+  );
+  return Math.min(
+    maximum,
+    Math.max(0, beatOffsetSec + quarterIndex * quarterNoteSec),
+  );
+}
+
 export function buildNoteTimeIndex(notes: ProjectNote[]): NoteTimeIndex {
   const sorted = [...notes].sort(
     (left, right) =>
@@ -197,11 +228,15 @@ export function noteRectangle(
   viewport: RollViewport,
   minimumWidth = 3,
 ): Rectangle {
+  const pitchRow = viewport.pitchRows?.indexOf(note.pitch);
   return {
     x: note.startSec * viewport.pixelsPerSecond - viewport.scrollLeft,
     y:
       viewport.headerHeight +
-      ((viewport.maxPitch ?? 127) - note.pitch) * viewport.rowHeight -
+      (pitchRow === undefined
+        ? (viewport.maxPitch ?? 127) - note.pitch
+        : pitchRow) *
+        viewport.rowHeight -
       viewport.scrollTop,
     width: Math.max(
       minimumWidth,

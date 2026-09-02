@@ -1,73 +1,44 @@
 # EarCopy Assist
 
-EarCopy Assistは、音源から楽器ごとの演奏ノートを採譜し、ピアノロールで修正して
-MIDIまたはMusicXMLへ書き出すWindowsデスクトップアプリケーションです。音源解析と
-モデル推論はPC内で実行されます。
+[English Version](README.en.md)
 
-## 主な機能
+EarCopy Assistは、音源から楽器ごとの演奏情報を採譜し、結果の確認、修正、保存、書き出しを行うWindowsアプリケーションです。  
+音源分離と組み合わせて採譜精度を向上させることを特徴としています。
 
-- MuScriptor `small`、`medium`、`large`モデルによるCPU／CUDA採譜
-- 直接採譜とSCNet Largeによる4ステム分離後採譜
-- 音程パートの統合ピアノロールとGMドラムロール
-- BPM、拍位相、拍子に基づく小節線、拍線、クオンタイズ
-- ノート選択、パート移動、全体位置補正
-- 原音とSoundFontによる採譜結果の切替再生
-- Mute、Solo、再生位置追従、Windows出力デバイス選択
-- `.ecaproj`形式によるプロジェクト保存と再読込
-- Standard MIDI File Format 1、MusicXML 4.0、4ステムWAV出力
+
 
 ## 必要なもの
+- Windows 10またはWindows 11 64ビット版
+- 音源分離してから採譜する場合はBS-RoFormer SW Fixed
+- CUDAを使用する場合は対応するNVIDIA GPUとドライバ  
+※ NVIDIA GPUを使用できない環境ではCPU処理で採譜できます
 
-- Windows 10またはWindows 11 64-bit
-- MuScriptorモデルの`model.safetensors`と`config.json`
-- CUDA利用時は対応するNVIDIA GPUとドライバー
-- 配布物にSCNet Largeが含まれない場合は`SCNet-large.th`と`config.yaml`
 
-モデルファイルは各モデルの正規配布元から取得してください。MuScriptor公式モデルは
-[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)で提供され、
-非商用用途に制限されます。
 
-## 利用方法
+## 機能
+- **採譜**：原音を直接採譜する方法と、音源分離してから採譜する方法を選べます。
+- **楽器の指定**：編成プリセットで出力トラックの候補を指定する方法と、楽器を自動推定する方法を選べます。
+- **確認と修正**：音符の試聴、追加、範囲削除、移動、長さ変更、別パートへの移動、Undo／Redoができます。
+- **拍に沿った編集**：推定テンポと拍子に基づく小節・拍表示、クオンタイズ、拍位置の設定ができます。
+- **コード名の表示**：採譜結果からコードを推定します。
+- **原音との差を表示**：原音との不一致度を1拍単位で色分け表示します。
+- **再生による確認**：原音と採譜結果の切替、左右チャンネルでの同時比較、Mute、Solo、メトロノームを利用できます。
+- **表示言語**：日本語、英語、中国語から選択できます。
+- **保存と書き出し**：`*.ecaproj`（独自形式）、MIDI、MusicXML、分離WAVを保存できます。
 
-1. `EarCopyAssist.exe`を起動します。
-2. MuScriptorモデルを登録します。
-3. 音源、編成プリセット、処理モード、推論バックエンド、拍子を選択します。
-4. 採譜を実行し、ピアノロールでノートを修正します。
-5. プロジェクト、MIDI、MusicXML、または分離WAVを保存します。分離WAVの保存後は、
-   保存先がエクスプローラーで開きます。
 
-EXEと同じ場所にモデルを配置する場合は、次のフォルダー構成にします。
 
-```text
-models/
-├─ muscriptor/
-│  ├─ small/
-│  │  ├─ model.safetensors
-│  │  └─ config.json
-│  ├─ medium/
-│  │  ├─ model.safetensors
-│  │  └─ config.json
-│  └─ large/
-│     ├─ model.safetensors
-│     └─ config.json
-└─ scnet/
-   └─ large/
-      ├─ SCNet-large.th
-      └─ config.yaml
-```
+## 関連文書
+- [使い方](docs/USER_GUIDE.md) / [How to use](docs/USER_GUIDE.en.md)
+- [性能評価](docs/TRANSCRIPTION_METHOD_BENCHMARK.md) / [Public transcription benchmark](docs/TRANSCRIPTION_METHOD_BENCHMARK.en.md)
+- [テンポ・拍・小節先頭推定の公開評価](docs/developer/TEMPO_DOWNBEAT_EVALUATION.md) / [Public tempo, beat, and downbeat evaluation](docs/developer/TEMPO_DOWNBEAT_EVALUATION.en.md)
+- [開発ガイド](docs/developer/DEVELOPMENT.md) / [Development guide](docs/developer/DEVELOPMENT.en.md)
+- [公開・配布チェックリスト](docs/developer/DISTRIBUTION.md) / [Release and distribution checklist](docs/developer/DISTRIBUTION.en.md)
 
-推論バックエンドの`Auto`はCUDAを優先し、対応するGPUがない環境ではCPUを使用します。
 
-## ドキュメント
-
-- [ドキュメント一覧](docs/README.md)
-- [機能・技術仕様](docs/SPECIFICATION.md)
-- [開発ガイド](docs/DEVELOPMENT.md)
-- [公開・配布チェックリスト](docs/DISTRIBUTION.md)
-- [第三者コンポーネント通知](THIRD_PARTY_NOTICES.md)
 
 ## ライセンス
-
-EarCopy Assist本体の原著作物は現在All rights reservedです。詳細は
-[LICENSE](LICENSE)を参照してください。第三者コンポーネントには、それぞれの
-ライセンス条件が適用されます。
+EarCopy Assist本体は[MIT License](LICENSE)で提供します。  
+外部ソフトウェア、再生用音源、AIモデルには、それぞれのライセンスと利用条件が適用されます。  
+MuScriptor公式モデルは[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)と各配布ページの追加条件により、非商用用途に制限されます。  
+詳細は[外部ソフトウェアとモデルの利用条件・取得元](THIRD_PARTY_NOTICES.md)を参照してください。

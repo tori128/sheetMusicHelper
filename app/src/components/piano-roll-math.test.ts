@@ -10,6 +10,7 @@ import {
   pianoRollWheelAction,
   playheadFollowScrollLeft,
   notesIntersectingRectangle,
+  snapTimeToQuarterNote,
   timeToViewportX,
   zoomedScrollOffset,
   zoomFromWheel,
@@ -130,6 +131,12 @@ describe("piano roll time index", () => {
     expect(at100[1].timeSec).toBe(0.6);
   });
 
+  it("snaps ruler clicks down to quarter notes from the analyzed beat phase", () => {
+    expect(snapTimeToQuarterNote(1.4, 120, 0.1, 30)).toBeCloseTo(1.1);
+    expect(snapTimeToQuarterNote(1.6, 120, 0.1, 30)).toBeCloseTo(1.6);
+    expect(snapTimeToQuarterNote(31, 120, 0.1, 30)).toBeCloseTo(29.6);
+  });
+
   it("finds long overlapping notes that start before the viewport", () => {
     const index = buildNoteTimeIndex([
       note("long", 0, 20, 60),
@@ -172,10 +179,10 @@ describe("piano roll time index", () => {
   it("maps drum pitches against the dedicated lane range", () => {
     const rectangle = noteRectangle(note("kick", 0, 0.1, 36), {
       ...viewport,
-      maxPitch: 87,
+      pitchRows: [51, 49, 42, 38, 36, 35],
     });
 
-    expect(rectangle.y).toBe(24 + (87 - 36) * 10);
+    expect(rectangle.y).toBe(24 + 4 * 10);
   });
 
   it("keeps short drum notes wide enough to select at every horizontal zoom", () => {

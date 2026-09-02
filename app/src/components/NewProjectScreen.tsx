@@ -1,6 +1,17 @@
-import { useMemo, useState, type DragEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type DragEvent } from "react";
+import {
+  ArrowRight,
+  CircleHelp,
+  FolderOpen,
+  Music2,
+  Settings as SettingsIcon,
+} from "lucide-react";
 import type { LocalApiClient } from "../api";
-import { projectStore } from "../store/project-store";
+import {
+  DEFAULT_SEPARATED_SETTINGS,
+  projectStore,
+  type NewProjectSourceSelection,
+} from "../store/project-store";
 import type {
   AudioInfo,
   BackendCapability,
@@ -8,11 +19,18 @@ import type {
   InstrumentDefinition,
   ModelProfile,
   PresetDefinition,
+  StemSeparationCapability,
+  TranscriptionProfile,
 } from "../types";
 import { BpmInput } from "./BpmInput";
 import { PresetEditor } from "./PresetEditor";
 import { AboutDialog } from "./AboutDialog";
 import { SettingsDialog } from "./SettingsDialog";
+import { SourceSeparationOptions } from "./SourceSeparationOptions";
+import { StemModelDownloadDialog } from "./StemModelDownloadDialog";
+import { readPostTranscriptionOptions } from "../transcription-option-settings";
+import { Localized, useAppLanguage } from "../i18n";
+import { LanguageSelect } from "./LanguageSelect";
 
 interface NewProjectScreenProps {
   client: LocalApiClient;
@@ -20,9 +38,14 @@ interface NewProjectScreenProps {
   presets: PresetDefinition[];
   models: ModelProfile[];
   backends: BackendCapability[];
+  stemSeparation: StemSeparationCapability;
+  initialSourceSelection?: NewProjectSourceSelection | null;
   onModelsChange(models: ModelProfile[]): void;
   onPresetsChange(presets: PresetDefinition[]): void;
+  onStemSeparationChange?(capability: StemSeparationCapability): void;
 }
+
+const AUTOMATIC_PRESET_ID = "__automatic__";
 
 function fileStem(path: string): string {
   const name = path.split(/[\\/]/).pop() ?? "new-project";
@@ -49,35 +72,68 @@ export function NewProjectScreen({
   presets,
   models,
   backends,
+  stemSeparation,
+  initialSourceSelection = null,
   onModelsChange,
   onPresetsChange,
+  onStemSeparationChange,
 }: NewProjectScreenProps) {
-  const [audio, setAudio] = useState<AudioInfo | null>(null);
-  const [name, setName] = useState("");
-  const [presetId, setPresetId] = useState(presets[0]?.id ?? "");
+  const { locale, t } = useAppLanguage();
+  const [audio, setAudio] = useState<AudioInfo | null>(
+    initialSourceSelection?.audio ?? null,
+  );
+  const [name, setName] = useState(initialSourceSelection?.name ?? "");
+  const [presetId, setPresetId] = useState(
+    presets[0]?.id ?? AUTOMATIC_PRESET_ID,
+  );
   const [modelId, setModelId] = useState(models[0]?.id ?? "");
   const [backend, setBackend] = useState<InferenceBackend>(
     availableBackend(models[0]?.defaultBackend ?? "Auto", backends),
   );
-  const [bpm, setBpm] = useState(120);
-  const [beatOffsetSec, setBeatOffsetSec] = useState(0);
+  const [bpm, setBpm] = useState(initialSourceSelection?.bpm ?? 120);
+  const [beatOffsetSec, setBeatOffsetSec] = useState(
+    initialSourceSelection?.beatOffsetSec ?? 0,
+  );
   const [numerator, setNumerator] = useState(4);
   const [denominator, setDenominator] = useState<2 | 4 | 8 | 16>(4);
-  const [mode, setMode] = useState<"direct" | "four_stem">("direct");
+  const [mode, setMode] = useState<"direct" | "separated">("direct");
+  const [transcriptionProfile, setTranscriptionProfile] =
+    useState<TranscriptionProfile>("high_accuracy");
+  const [separatedSettings, setSeparatedSettings] = useState(() =>
+    readPostTranscriptionOptions(DEFAULT_SEPARATED_SETTINGS),
+  );
   const [busy, setBusy] = useState(false);
+  const [measurePositionAnalyzing, setMeasurePositionAnalyzing] =
+    useState(false);
+  const measurePositionRequestId = useRef(0);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [editingPreset, setEditingPreset] = useState(false);
+  const [presetPendingDeletion, setPresetPendingDeletion] =
+    useState<PresetDefinition | null>(null);
   const [showAbout, setShowAbout] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showStemModelDownload, setShowStemModelDownload] = useState(false);
   const selectedPreset = useMemo(
     () => presets.find((preset) => preset.id === presetId),
     [presetId, presets],
   );
+  const automaticInstrumentSelection = presetId === AUTOMATIC_PRESET_ID;
   const selectedModel = useMemo(
     () => models.find((model) => model.id === modelId) ?? null,
     [modelId, models],
   );
+
+  useEffect(() => {
+    if (
+      presetId !== AUTOMATIC_PRESET_ID &&
+      !presets.some((preset) => preset.id === presetId)
+    ) {
+      setPresetId(presets[0]?.id ?? AUTOMATIC_PRESET_ID);
+      setEditingPreset(false);
+      setPresetPendingDeletion(null);
+    }
+  }, [presetId, presets]);
 
   async function selectAudio() {
     const path = await window.desktopApi.selectAudioFile();
@@ -88,13 +144,15 @@ export function NewProjectScreen({
   }
 
   async function loadAudioPath(path: string) {
+    measurePositionRequestId.current += 1;
+    setMeasurePositionAnalyzing(false);
     setBusy(true);
     setError(null);
     setMessage(null);
     try {
       const [info, tempo] = await Promise.all([
         client.inspectAudio(path),
-        client.estimateTempo(path),
+        client.estimateTempo(path, numerator, denominator),
       ]);
       setAudio(info);
       setName(fileStem(path));
@@ -104,6 +162,42 @@ export function NewProjectScreen({
       setError(reason instanceof Error ? reason.message : String(reason));
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function fitMeasurePosition(
+    nextNumerator: number,
+    nextDenominator: 2 | 4 | 8 | 16,
+  ) {
+    if (
+      audio === null ||
+      !Number.isInteger(nextNumerator) ||
+      nextNumerator < 1 ||
+      nextNumerator > 12
+    ) {
+      return;
+    }
+    const requestId = measurePositionRequestId.current + 1;
+    measurePositionRequestId.current = requestId;
+    setMeasurePositionAnalyzing(true);
+    setError(null);
+    try {
+      const tempo = await client.estimateTempo(
+        audio.absolutePath,
+        nextNumerator,
+        nextDenominator,
+      );
+      if (measurePositionRequestId.current === requestId) {
+        setBeatOffsetSec(tempo.beatOffsetSec);
+      }
+    } catch (reason) {
+      if (measurePositionRequestId.current === requestId) {
+        setError(reason instanceof Error ? reason.message : String(reason));
+      }
+    } finally {
+      if (measurePositionRequestId.current === requestId) {
+        setMeasurePositionAnalyzing(false);
+      }
     }
   }
 
@@ -129,23 +223,12 @@ export function NewProjectScreen({
     setMessage(null);
     try {
       const project = await client.loadProject(path);
-      const tempo = await client.estimateTempo(
-        project.sourceAudio.absolutePath,
-      );
-      const analyzedProject = {
-        ...project,
-        tempo: {
-          ...project.tempo,
-          bpm: tempo.bpm,
-          beatOffsetSec: tempo.beatOffsetSec,
-        },
-      };
       const model =
         models.find(
           (candidate) =>
-            candidate.id === analyzedProject.transcription?.modelProfileId,
+            candidate.id === project.transcription?.modelProfileId,
         ) ?? null;
-      projectStore.openProject(analyzedProject, model);
+      projectStore.openProject(project, model);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : String(reason));
     } finally {
@@ -160,7 +243,7 @@ export function NewProjectScreen({
     }
     const suggestedName = path.split(/[\\/]/).slice(-2, -1)[0] ?? fileStem(path);
     const profileName = window.prompt(
-      "モデルプロファイル名を入力してください",
+      t("モデルプロファイル名を入力してください"),
       suggestedName,
     );
     if (profileName === null || !profileName.trim()) {
@@ -197,7 +280,11 @@ export function NewProjectScreen({
   }
 
   function createProject() {
-    if (audio === null || selectedPreset === undefined) {
+    if (
+      audio === null ||
+      (!automaticInstrumentSelection && selectedPreset === undefined) ||
+      (automaticInstrumentSelection && selectedModel === null)
+    ) {
       return;
     }
     try {
@@ -210,8 +297,13 @@ export function NewProjectScreen({
         denominator,
         preset: selectedPreset,
         instruments,
+        instrumentSelectionMode: automaticInstrumentSelection
+          ? "automatic"
+          : "fixed",
         model: selectedModel,
         mode,
+        transcriptionProfile,
+        separatedSettings,
         backend,
       });
     } catch (reason) {
@@ -219,7 +311,7 @@ export function NewProjectScreen({
     }
   }
 
-  async function savePreset(
+  async function savePresetAs(
     presetName: string,
     tracks: PresetDefinition["tracks"],
   ) {
@@ -229,36 +321,105 @@ export function NewProjectScreen({
     setEditingPreset(false);
   }
 
+  async function overwritePreset(
+    presetId: string,
+    presetName: string,
+    tracks: PresetDefinition["tracks"],
+  ) {
+    const saved = await client.overwritePreset(presetId, presetName, tracks);
+    onPresetsChange(
+      presets.map((preset) => (preset.id === saved.id ? saved : preset)),
+    );
+    setPresetId(saved.id);
+    setEditingPreset(false);
+  }
+
+  function requestPresetDeletion() {
+    if (
+      selectedPreset === undefined ||
+      !selectedPreset.key.startsWith("user:")
+    ) {
+      return;
+    }
+    setPresetPendingDeletion(selectedPreset);
+  }
+
+  async function deletePendingPreset() {
+    if (presetPendingDeletion === null) {
+      return;
+    }
+    const deletingPreset = presetPendingDeletion;
+    setBusy(true);
+    setError(null);
+    try {
+      await client.deletePreset(deletingPreset.id);
+      const remaining = presets.filter(
+        (preset) => preset.id !== deletingPreset.id,
+      );
+      setPresetId(remaining[0]?.id ?? AUTOMATIC_PRESET_ID);
+      setEditingPreset(false);
+      setPresetPendingDeletion(null);
+      onPresetsChange(remaining);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : String(reason));
+      setPresetPendingDeletion(null);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function downloadStemModel() {
+    const capability = await client.downloadStemSeparationModel(true);
+    if (!capability.available) {
+      throw new Error(capability.reason || "音源分離モデルを利用できません");
+    }
+    onStemSeparationChange?.(capability);
+    setMode("separated");
+    setMessage(
+      `${capability.modelName}のダウンロードとSHA-256検証が完了しました。`,
+    );
+    setShowStemModelDownload(false);
+  }
+
   return (
+    <Localized>
     <main className="new-project-screen">
       <section className="welcome-panel">
         <h1>EarCopy Assist</h1>
-        <button
-          className="about-button"
-          type="button"
-          onClick={() => setShowAbout(true)}
-        >
-          バージョン・ライセンス
-        </button>
-        <button
-          className="about-button"
-          type="button"
-          onClick={() => setShowSettings(true)}
-        >
-          設定
-        </button>
+        <div className="welcome-actions">
+          <LanguageSelect />
+          <button
+            className="header-icon-button"
+            type="button"
+            aria-label="バージョン・ライセンス"
+            title="バージョン・ライセンス"
+            onClick={() => setShowAbout(true)}
+          >
+            <CircleHelp size={17} aria-hidden="true" />
+          </button>
+          <button
+            className="header-icon-button"
+            type="button"
+            aria-label="設定"
+            title="設定"
+            onClick={() => setShowSettings(true)}
+          >
+            <SettingsIcon size={17} aria-hidden="true" />
+          </button>
+        </div>
       </section>
 
       <section className="project-card" aria-label="新規プロジェクト">
         <div className="card-heading">
+          <h2>新規プロジェクト</h2>
           <button
             className="open-project-button"
             disabled={busy}
             onClick={() => void openProject()}
           >
+            <FolderOpen size={14} aria-hidden="true" />
             .ecaprojを開く
           </button>
-          <h2>新規プロジェクト</h2>
         </div>
 
         <button
@@ -268,12 +429,14 @@ export function NewProjectScreen({
           onDrop={(event) => void dropAudio(event)}
           disabled={busy}
         >
-          <span className="dropzone-icon">♪</span>
+          <span className="dropzone-icon">
+            <Music2 size={20} aria-hidden="true" />
+          </span>
           {audio ? (
             <>
               <strong>{fileStem(audio.absolutePath)}</strong>
               <span>
-                {audio.durationSec.toFixed(1)}秒 · {audio.sampleRate.toLocaleString()} Hz ·{" "}
+                {audio.durationSec.toFixed(1)}秒 · {audio.sampleRate.toLocaleString(locale)} Hz ·{" "}
                 {audio.channels} ch
               </span>
             </>
@@ -295,26 +458,58 @@ export function NewProjectScreen({
         </label>
 
         <div className="form-grid">
-          <label className="form-field">
+          <div className="form-field">
             <span className="field-heading">
-              編成プリセット
-              <button
-                type="button"
-                className="inline-action"
-                disabled={selectedPreset === undefined}
-                onClick={() => setEditingPreset(true)}
-              >
-                編集
-              </button>
+              <label htmlFor="instrument-selection">楽器の決め方</label>
+              <span className="field-actions">
+                <button
+                  type="button"
+                  className="inline-action"
+                  disabled={
+                    automaticInstrumentSelection || selectedPreset === undefined
+                  }
+                  onClick={() => setEditingPreset(true)}
+                >
+                  編集
+                </button>
+                <button
+                  type="button"
+                  className="inline-action inline-action--danger"
+                  disabled={
+                    busy ||
+                    selectedPreset === undefined ||
+                    !selectedPreset.key.startsWith("user:")
+                  }
+                  onClick={requestPresetDeletion}
+                >
+                  削除
+                </button>
+              </span>
             </span>
-            <select value={presetId} onChange={(event) => setPresetId(event.target.value)}>
+            <select
+              id="instrument-selection"
+              value={presetId}
+              onChange={(event) => setPresetId(event.target.value)}
+            >
+              <option
+                value={AUTOMATIC_PRESET_ID}
+                disabled={models.length === 0}
+              >
+                自動推定
+              </option>
               {presets.map((preset) => (
-                <option key={preset.id} value={preset.id}>
+                <option
+                  key={preset.id}
+                  value={preset.id}
+                  data-localize={
+                    preset.key.startsWith("user:") ? "false" : undefined
+                  }
+                >
                   {preset.name}（{preset.trackCount}）
                 </option>
               ))}
             </select>
-          </label>
+          </div>
           <label className="form-field">
             <span className="field-heading">
               MuScriptorモデル
@@ -345,7 +540,11 @@ export function NewProjectScreen({
                 <option value="">モデル未登録</option>
               ) : (
                 models.map((model) => (
-                  <option key={model.id} value={model.id}>
+                  <option
+                    key={model.id}
+                    value={model.id}
+                    data-localize="false"
+                  >
                     {model.profileName} · {model.variant}
                   </option>
                 ))
@@ -386,17 +585,24 @@ export function NewProjectScreen({
             <div className="signature-input">
               <input
                 type="number"
+                aria-label="拍子の分子"
                 min="1"
                 max="12"
                 value={numerator}
                 onChange={(event) => setNumerator(Number(event.target.value))}
+                onBlur={() => void fitMeasurePosition(numerator, denominator)}
+                disabled={busy}
               />
               <span>/</span>
               <select
+                aria-label="拍子の分母"
                 value={denominator}
-                onChange={(event) =>
-                  setDenominator(Number(event.target.value) as 2 | 4 | 8 | 16)
-                }
+                onChange={(event) => {
+                  const value = Number(event.target.value) as 2 | 4 | 8 | 16;
+                  setDenominator(value);
+                  void fitMeasurePosition(numerator, value);
+                }}
+                disabled={busy}
               >
                 {[2, 4, 8, 16].map((value) => (
                   <option key={value} value={value}>
@@ -411,18 +617,63 @@ export function NewProjectScreen({
             <select
               value={mode}
               onChange={(event) =>
-                setMode(event.target.value as "direct" | "four_stem")
+                setMode(event.target.value as "direct" | "separated")
               }
             >
               <option value="direct">直接採譜</option>
-              <option value="four_stem">4ステム分離後に採譜</option>
+              <option
+                value="separated"
+                disabled={!stemSeparation.available}
+              >
+                音源分離してから採譜
+              </option>
+            </select>
+          </label>
+          <label className="form-field mode-field">
+            <span>採譜モード</span>
+            <select
+              value={transcriptionProfile}
+              onChange={(event) =>
+                setTranscriptionProfile(
+                  event.target.value as TranscriptionProfile,
+                )
+              }
+            >
+              <option value="high_accuracy">高精度</option>
+              <option value="fast">高速</option>
             </select>
           </label>
         </div>
 
+        {mode === "separated" && (
+          <SourceSeparationOptions
+            settings={separatedSettings}
+            onChange={setSeparatedSettings}
+          />
+        )}
+
+        {!stemSeparation.available && (
+          <section
+            className="stem-model-download-notice"
+            aria-label="音源分離モデルのダウンロード"
+          >
+            <div>
+              <strong>音源分離モデルがありません</strong>
+              <span>ライセンス: {stemSeparation.licenseStatus}</span>
+            </div>
+            <p>{stemSeparation.reason}</p>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={() => setShowStemModelDownload(true)}
+            >
+              警告を確認してダウンロード
+            </button>
+          </section>
+        )}
         {models.length === 0 && (
           <p className="notice">
-            モデル未登録。モデルなしでは採譜を実行しません。
+            採譜にはMuScriptorモデルの登録が必要です。
           </p>
         )}
         {message && <p className="notice">{message}</p>}
@@ -430,11 +681,17 @@ export function NewProjectScreen({
 
         <button
           className="primary-button"
-          disabled={audio === null || selectedPreset === undefined || busy}
+          disabled={
+            audio === null ||
+            (!automaticInstrumentSelection && selectedPreset === undefined) ||
+            (automaticInstrumentSelection && selectedModel === null) ||
+            measurePositionAnalyzing ||
+            busy
+          }
           onClick={createProject}
         >
           {selectedModel ? "採譜を開始" : "プロジェクトを作成"}
-          <span>→</span>
+          <ArrowRight size={17} aria-hidden="true" />
         </button>
       </section>
       {editingPreset && selectedPreset !== undefined && (
@@ -442,8 +699,41 @@ export function NewProjectScreen({
           instruments={instruments}
           preset={selectedPreset}
           onCancel={() => setEditingPreset(false)}
-          onSave={savePreset}
+          onSaveAs={savePresetAs}
+          onOverwrite={overwritePreset}
         />
+      )}
+      {presetPendingDeletion !== null && (
+        <div className="modal-backdrop">
+          <section
+            className="preset-delete-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-label="プリセット削除の確認"
+          >
+            <h2>プリセットを削除</h2>
+            <p>{t(`「${presetPendingDeletion.name}」を削除します。`)}</p>
+            <div className="preset-delete-dialog__actions">
+              <button
+                type="button"
+                className="secondary-button"
+                disabled={busy}
+                autoFocus
+                onClick={() => setPresetPendingDeletion(null)}
+              >
+                キャンセル
+              </button>
+              <button
+                type="button"
+                className="secondary-button danger-button"
+                disabled={busy}
+                onClick={() => void deletePendingPreset()}
+              >
+                {busy ? "削除中…" : "プリセットを削除"}
+              </button>
+            </div>
+          </section>
+        </div>
       )}
       {showAbout && (
         <AboutDialog models={models} onClose={() => setShowAbout(false)} />
@@ -454,6 +744,14 @@ export function NewProjectScreen({
           onClose={() => setShowSettings(false)}
         />
       )}
+      {showStemModelDownload && !stemSeparation.available && (
+        <StemModelDownloadDialog
+          capability={stemSeparation}
+          onCancel={() => setShowStemModelDownload(false)}
+          onDownload={downloadStemModel}
+        />
+      )}
     </main>
+    </Localized>
   );
 }

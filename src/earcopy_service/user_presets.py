@@ -18,6 +18,7 @@ class UserPresetTrack(BaseModel):
     color: str = Field(pattern=r"^#[0-9A-Fa-f]{6}$")
     kind: Literal["pitched", "drums"]
     order: int = Field(ge=1, le=16)
+    gm_program: int | None = Field(default=None, ge=0, le=127, alias="gmProgram")
 
     @model_validator(mode="after")
     def validate_instrument(self) -> UserPresetTrack:
@@ -25,6 +26,15 @@ class UserPresetTrack(BaseModel):
         if self.kind != instrument.kind:
             raise ValueError(
                 f"{self.instrument_id} のkindは {instrument.kind} です"
+            )
+        if self.kind == "drums":
+            if self.gm_program is not None:
+                raise ValueError("ドラムにGM音色は指定できません")
+        elif self.gm_program is None:
+            self.gm_program = instrument.gm_program
+        elif not instrument.supports_gm_program(self.gm_program):
+            raise ValueError(
+                f"{self.instrument_id} で使用できないGM音色です: {self.gm_program}"
             )
         return self
 
@@ -66,6 +76,38 @@ class UserPresetStore:
         preset = UserPreset(name=name.strip(), tracks=tracks)
         presets = self.list()
         presets.append(preset)
+        self._write(presets)
+        return preset
+
+    def overwrite(
+        self,
+        preset_id: UUID,
+        name: str,
+        tracks: list[UserPresetTrack],
+    ) -> UserPreset | None:
+        presets = self.list()
+        for index, preset in enumerate(presets):
+            if preset.id != preset_id:
+                continue
+            updated = UserPreset(
+                id=preset.id,
+                name=name.strip(),
+                tracks=tracks,
+            )
+            presets[index] = updated
+            self._write(presets)
+            return updated
+        return None
+
+    def delete(self, preset_id: UUID) -> bool:
+        presets = self.list()
+        remaining = [preset for preset in presets if preset.id != preset_id]
+        if len(remaining) == len(presets):
+            return False
+        self._write(remaining)
+        return True
+
+    def _write(self, presets: list[UserPreset]) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         temporary = self.path.with_suffix(f"{self.path.suffix}.tmp")
         temporary.write_text(
@@ -80,7 +122,6 @@ class UserPresetStore:
             encoding="utf-8",
         )
         temporary.replace(self.path)
-        return preset
 
 
 def user_preset_response(preset: UserPreset) -> dict:

@@ -1,5 +1,5 @@
 from pathlib import Path
-import shutil
+import os
 import sys
 from importlib.metadata import PackageNotFoundError, distribution
 
@@ -11,11 +11,33 @@ repository_root = app_root.parent
 muscriptor_datas, muscriptor_binaries, muscriptor_hidden = collect_all(
     "muscriptor"
 )
-ffmpeg_path = Path(shutil.which("ffmpeg") or "")
-ffprobe_path = Path(shutil.which("ffprobe") or "")
+excluded_muscriptor_media_extensions = {
+    ".aac",
+    ".ecaproj",
+    ".flac",
+    ".m4a",
+    ".mp3",
+    ".ogg",
+    ".wav",
+}
+muscriptor_datas = [
+    entry
+    for entry in muscriptor_datas
+    if Path(entry[0]).suffix.lower() not in excluded_muscriptor_media_extensions
+]
+ffmpeg_root = Path(
+    os.getenv(
+        "EARCOPY_FFMPEG_ROOT",
+        repository_root / "tools" / "ffmpeg-lgpl" / "bin",
+    )
+)
+ffmpeg_path = ffmpeg_root / "ffmpeg.exe"
+ffprobe_path = ffmpeg_root / "ffprobe.exe"
 if not ffmpeg_path.is_file() or not ffprobe_path.is_file():
-    raise RuntimeError("配布ビルドにはffmpegとffprobeが必要です")
-ffmpeg_root = ffmpeg_path.parent.parent
+    raise RuntimeError(
+        "LGPL版ffmpegとffprobeが見つかりません。"
+        "scripts/build_ffmpeg_lgpl.ps1を実行してください"
+    )
 ffmpeg_license = ffmpeg_root / "LICENSE"
 ffmpeg_readme = ffmpeg_root / "README.txt"
 media_binaries = [
@@ -24,7 +46,34 @@ media_binaries = [
 ]
 media_datas = [
     (str(path), "licenses/ffmpeg")
-    for path in (ffmpeg_license, ffmpeg_readme)
+    for path in (
+        ffmpeg_license,
+        ffmpeg_readme,
+        ffmpeg_root / "COPYING.LGPLv3",
+        ffmpeg_root / "LICENSE.md",
+    )
+    if path.is_file()
+]
+
+libsndfile_root = Path(
+    os.getenv(
+        "EARCOPY_LIBSNDFILE_ROOT",
+        repository_root / "tools" / "libsndfile-lgpl" / "bin",
+    )
+)
+libsndfile_path = libsndfile_root / "libsndfile_x64.dll"
+if not libsndfile_path.is_file():
+    raise RuntimeError(
+        "外部コーデックなしのLGPL版libsndfileが見つかりません。"
+        "scripts/build_libsndfile_lgpl.ps1を実行してください"
+    )
+libsndfile_binaries = [(str(libsndfile_path), "_soundfile_data")]
+libsndfile_datas = [
+    (str(path), "licenses/libsndfile")
+    for path in (
+        libsndfile_root / "COPYING",
+        libsndfile_root / "README.txt",
+    )
     if path.is_file()
 ]
 
@@ -78,6 +127,7 @@ runtime_distributions = [
     "PyYAML",
     "requests",
     "rich",
+    "rotary-embedding-torch",
     "safetensors",
     "scikit-learn",
     "scipy",
@@ -143,10 +193,11 @@ runtime_license_datas.append(
 analysis = Analysis(
     [str(app_root / "packaging" / "backend_entry.py")],
     pathex=[str(repository_root / "src")],
-    binaries=muscriptor_binaries + media_binaries,
+    binaries=libsndfile_binaries + muscriptor_binaries + media_binaries,
     datas=(
         muscriptor_datas
         + media_datas
+        + libsndfile_datas
         + runtime_license_datas
     ),
     hiddenimports=(

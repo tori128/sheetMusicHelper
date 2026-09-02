@@ -2,8 +2,23 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.codex-*/
 .ruff_cache/
 .coverage
+*.bak
+*.exe
+*.dll
+*.pdb
+*.lib
+*.obj
+*.pem
+*.key
+*.pfx
+*.p12
+.env
+.env.*
+id_rsa
+id_ed25519
 dist/
 build/
 *.egg-info/
@@ -12,12 +27,25 @@ app/dist/
 app/dist-electron/
 app/backend-build/
 app/backend-dist/
+app/benchmark/
 app/release/
 app/release-*/
-EarCopyAssist.exe
+tools/ffmpeg-lgpl/
+tools/libsndfile-lgpl/
 
-# Local machine-learning model weights
-models/
+# Local machine-learning model files; keep only placement guides.
+/models/**
+!/models/README.txt
+!/models/bs-roformer/
+!/models/bs-roformer/sw-fixed/
+!/models/bs-roformer/sw-fixed/PLACE_MODEL_FILES_HERE.txt
+!/models/muscriptor/
+!/models/muscriptor/small/
+!/models/muscriptor/small/PLACE_MODEL_FILES_HERE.txt
+!/models/muscriptor/medium/
+!/models/muscriptor/medium/PLACE_MODEL_FILES_HERE.txt
+!/models/muscriptor/large/
+!/models/muscriptor/large/PLACE_MODEL_FILES_HERE.txt
 *.safetensors
 *.ckpt
 *.pt
@@ -29,3 +57,12 @@ models/
 UserData/
 *.ecaproj
 *.wav
+
+# Local tempo-analysis fixtures
+tests/bpm*.mp3
+tests/bpm*.m4a
+tests/bpm*.flac
+tests/bpm*.ogg
+tests/bpm*.aac
+tests/sh6.mid
+tests/風色メロディ.mp3

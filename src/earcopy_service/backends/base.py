@@ -35,7 +35,17 @@ class BackendProgress:
     total: int
 
 
-BackendEvent: TypeAlias = BackendNoteStart | BackendNoteEnd | BackendProgress
+@dataclass(frozen=True, slots=True)
+class BackendInvalidChunk:
+    chunk_index: int
+    start_sec: float
+    end_sec: float
+    reason: str
+
+
+BackendEvent: TypeAlias = (
+    BackendNoteStart | BackendNoteEnd | BackendProgress | BackendInvalidChunk
+)
 
 
 class TranscriptionBackend(Protocol):
@@ -46,9 +56,12 @@ class TranscriptionBackend(Protocol):
     def transcribe(
         self,
         audio_path: Path,
-        instruments: list[str],
+        instruments: list[str] | None,
         on_event: Callable[[BackendEvent], None],
+        *,
+        beam_size: Literal[1, 2] = 1,
+        prelude_forcing: bool = True,
+        batch_size: int = 1,
     ) -> None: ...
 
     def unload(self) -> None: ...
-

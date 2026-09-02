@@ -1,0 +1,32 @@
+アプリは、ライセンス`Unknown`の警告確認後に次のファイルをこのフォルダーへ保存します。
+
+  BS-Rofo-SW-Fixed.ckpt
+
+取得元:
+https://huggingface.co/jarredou/BS-ROFO-SW-Fixed/resolve/ad54168acf271482ad51702953e162a385b8fdcb/BS-Rofo-SW-Fixed.ckpt?download=true
+
+配布ページのライセンス表示:
+Unknown
+
+ファイルサイズ:
+699412152 bytes
+
+SHA-256:
+24e7d35ee9c64415673d3fd33e06a67cac2c103c5df6267ba1576459c775916e
+
+After the user acknowledges the `Unknown` license warning, the application
+stores this file in this directory:
+
+  BS-Rofo-SW-Fixed.ckpt
+
+Source:
+https://huggingface.co/jarredou/BS-ROFO-SW-Fixed/resolve/ad54168acf271482ad51702953e162a385b8fdcb/BS-Rofo-SW-Fixed.ckpt?download=true
+
+License status shown by the distribution page:
+Unknown
+
+File size:
+699412152 bytes
+
+SHA-256:
+24e7d35ee9c64415673d3fd33e06a67cac2c103c5df6267ba1576459c775916e

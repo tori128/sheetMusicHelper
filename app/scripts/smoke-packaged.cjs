@@ -5,13 +5,65 @@ const {
   openSync,
   readFileSync,
   rmSync,
+  statSync,
   unlinkSync,
   writeSync,
   writeFileSync,
 } = require("node:fs");
+const { createHash } = require("node:crypto");
 const { tmpdir } = require("node:os");
-const { join, resolve } = require("node:path");
+const { dirname, join, resolve } = require("node:path");
 const { spawn, spawnSync } = require("node:child_process");
+
+const PROCESS_COMMAND_TIMEOUT_MS = 3_000;
+const MAX_RENDERER_HANG_SHUTDOWN_MS = 3_000;
+
+function terminateProcessTree(processId) {
+  return spawnSync(
+    "taskkill.exe",
+    ["/pid", String(processId), "/T", "/F"],
+    {
+      windowsHide: true,
+      stdio: "ignore",
+      timeout: PROCESS_COMMAND_TIMEOUT_MS,
+    },
+  );
+}
+
+function backendProcessIds() {
+  if (process.platform !== "win32") {
+    return [];
+  }
+  const result = spawnSync(
+    "tasklist.exe",
+    ["/FI", "IMAGENAME eq earcopy_service.exe", "/FO", "CSV", "/NH"],
+    {
+      encoding: "utf8",
+      windowsHide: true,
+      timeout: PROCESS_COMMAND_TIMEOUT_MS,
+    },
+  );
+  return Array.from(
+    (result.stdout ?? "").matchAll(/"earcopy_service\.exe","(\d+)"/gi),
+    (match) => Number.parseInt(match[1], 10),
+  );
+}
+
+function waitForNewBackendProcessesToExit(existingProcessIds) {
+  const waitArray = new Int32Array(new SharedArrayBuffer(4));
+  const deadline = Date.now() + 10_000;
+  let remaining = [];
+  do {
+    remaining = backendProcessIds().filter(
+      (processId) => !existingProcessIds.has(processId),
+    );
+    if (remaining.length === 0) {
+      return [];
+    }
+    Atomics.wait(waitArray, 0, 0, 100);
+  } while (Date.now() < deadline);
+  return remaining;
+}
 
 const executable = resolve(
   process.argv[2] ?? "release/win-unpacked/EarCopyAssist.exe",
@@ -19,11 +71,77 @@ const executable = resolve(
 const executableArgs = process.env.EARCOPY_SMOKE_APP_DIR
   ? [resolve(process.env.EARCOPY_SMOKE_APP_DIR)]
   : [];
+const existingBackendProcessIds = new Set(backendProcessIds());
 
 if (!existsSync(executable)) {
   console.error(`配布EXEが見つかりません: ${executable}`);
   process.exit(1);
 }
+
+const expectedSoundFontHash =
+  "5b85b6c2c61d10b2b91cddd41efcce7b25cd31c8271d511c73afafbef20b6fa3";
+const soundFontPath = join(
+  dirname(executable),
+  "resources",
+  "soundfonts",
+  "MuseScore_General.sf3",
+);
+if (!existsSync(soundFontPath)) {
+  console.error(`配布SoundFontが見つかりません: ${soundFontPath}`);
+  process.exit(1);
+}
+const soundFontHash = createHash("sha256")
+  .update(readFileSync(soundFontPath))
+  .digest("hex");
+if (soundFontHash !== expectedSoundFontHash) {
+  console.error(
+    `配布SoundFontのSHA-256が不正です: ${soundFontHash}`,
+  );
+  process.exit(1);
+}
+console.log(`packaged-soundfont-hash: ${soundFontHash}`);
+
+const bundledStemWeightPath = join(
+  dirname(executable),
+  "resources",
+  "models",
+  "bs-roformer",
+  "sw-fixed",
+  "BS-Rofo-SW-Fixed.ckpt",
+);
+if (existsSync(bundledStemWeightPath)) {
+  console.error(
+    `分離モデル重みが配布物内部に含まれています: ${bundledStemWeightPath}`,
+  );
+  process.exit(1);
+}
+console.log("packaged-stem-weight: absent");
+
+const bundledMuScriptorModels = [
+  ["small", 411888600],
+  ["medium", 1228144472],
+  ["large", 5465642136],
+];
+for (const [variant, expectedSize] of bundledMuScriptorModels) {
+  const variantRoot = join(
+    dirname(executable),
+    "resources",
+    "models",
+    "muscriptor",
+    variant,
+  );
+  const weightPath = join(variantRoot, "model.safetensors");
+  const configPath = join(variantRoot, "config.json");
+  if (!existsSync(weightPath) || statSync(weightPath).size !== expectedSize) {
+    console.error(`MuScriptor ${variant}の同梱状態が不正です: ${weightPath}`);
+    process.exit(1);
+  }
+  if (!existsSync(configPath) || statSync(configPath).size === 0) {
+    console.error(`MuScriptor ${variant}の設定がありません: ${configPath}`);
+    process.exit(1);
+  }
+}
+console.log("packaged-muscriptor-models: small, medium, large");
 
 const resultPath = join(
   tmpdir(),
@@ -86,9 +204,18 @@ const tempoOffsetSamples = Math.floor(tempoSampleRate * 0.2);
 const tempoPeriodSamples = Math.floor(tempoSampleRate * 0.5);
 for (let index = tempoOffsetSamples; index < tempoSampleCount; index += 1) {
   const withinBeat = (index - tempoOffsetSamples) % tempoPeriodSamples;
+  const beatIndex = Math.floor(
+    (index - tempoOffsetSamples) / tempoPeriodSamples,
+  );
   const envelope = Math.max(0, 1 - withinBeat / (tempoSampleRate * 0.04));
+  const downbeat =
+    beatIndex % 4 === 0
+      ? 14_000 * Math.sin((2 * Math.PI * 80 * index) / tempoSampleRate)
+      : 0;
   const sample = Math.floor(
-    16_000 * envelope * Math.sin((2 * Math.PI * 880 * index) / tempoSampleRate),
+    envelope *
+      (10_000 * Math.sin((2 * Math.PI * 880 * index) / tempoSampleRate) +
+        downbeat),
   );
   tempoWave.writeInt16LE(sample, 44 + index * 2);
 }
@@ -98,18 +225,28 @@ const child = spawn(executable, executableArgs, {
   env: {
     ...process.env,
     EARCOPY_SMOKE_TEST: "1",
+    EARCOPY_SMOKE_REQUIRE_MODELS: "1",
     EARCOPY_SMOKE_RESULT_PATH: resultPath,
     EARCOPY_SMOKE_USER_DATA_PATH: userDataPath,
     EARCOPY_SMOKE_AUDIO_PATH: audioPath,
     EARCOPY_SMOKE_TEMPO_AUDIO_PATH: tempoAudioPath,
+    ...(process.env.EARCOPY_SMOKE_MUSICXML_PATH
+      ? { EARCOPY_SMOKE_MUSICXML_PATH: process.env.EARCOPY_SMOKE_MUSICXML_PATH }
+      : {}),
+    EARCOPY_SMOKE_HANG_RENDERER: "1",
   },
   windowsHide: true,
   stdio: ["ignore", "pipe", "pipe"],
 });
 let output = "";
 let result = "";
+let shutdownStartedAt = null;
 child.stdout.on("data", (chunk) => {
-  output += chunk.toString();
+  const text = chunk.toString();
+  output += text;
+  if (shutdownStartedAt === null && text.includes("electron-smoke-ready")) {
+    shutdownStartedAt = Date.now();
+  }
   process.stdout.write(chunk);
 });
 child.stderr.on("data", (chunk) => {
@@ -123,10 +260,7 @@ const poll = setInterval(() => {
     if (result.startsWith("error\n")) {
       clearTimeout(timer);
       if (child.pid !== undefined) {
-        spawnSync("taskkill.exe", ["/pid", String(child.pid), "/T", "/F"], {
-          windowsHide: true,
-          stdio: "ignore",
-        });
+        terminateProcessTree(child.pid);
       }
       cleanup();
       console.error(`配布EXEの起動確認に失敗しました\n${result}\n${output}`);
@@ -153,10 +287,7 @@ function cleanup() {
 
 const timer = setTimeout(() => {
   if (child.pid !== undefined) {
-    spawnSync("taskkill.exe", ["/pid", String(child.pid), "/T", "/F"], {
-      windowsHide: true,
-      stdio: "ignore",
-    });
+    terminateProcessTree(child.pid);
   }
   cleanup();
   console.error(
@@ -179,10 +310,27 @@ child.on("exit", (code) => {
   }
   cleanup();
   const ready =
-    result.trim() === "ok" || output.includes("electron-smoke-ready");
-  if (code !== 0 || !ready) {
+    (result.trim() === "ok" || output.includes("electron-smoke-ready")) &&
+    output.includes("renderer-hang-smoke-armed");
+  const shutdownElapsedMs =
+    shutdownStartedAt === null
+      ? Number.POSITIVE_INFINITY
+      : Date.now() - shutdownStartedAt;
+  const remainingBackendProcessIds =
+    waitForNewBackendProcessesToExit(existingBackendProcessIds);
+  if (remainingBackendProcessIds.length > 0) {
+    for (const processId of remainingBackendProcessIds) {
+      terminateProcessTree(processId);
+    }
+  }
+  if (
+    code !== 0 ||
+    !ready ||
+    shutdownElapsedMs > MAX_RENDERER_HANG_SHUTDOWN_MS ||
+    remainingBackendProcessIds.length > 0
+  ) {
     console.error(
-      `配布EXEの起動確認に失敗しました (exit=${code})\n${result}\n${output}`,
+      `配布EXEの起動確認に失敗しました (exit=${code}, shutdownMs=${shutdownElapsedMs}, remainingBackendPids=${remainingBackendProcessIds.join(",")})\n${result}\n${output}`,
     );
     process.exit(code || 2);
   }
@@ -190,10 +338,21 @@ child.on("exit", (code) => {
   if (soundFont) {
     console.log(`packaged-${soundFont[0]}`);
   }
+  const musicXmlPreview = output.match(
+    /musicxml-preview-smoke: (\{[^\r\n]+\})/,
+  );
+  if (!musicXmlPreview) {
+    console.error("MusicXMLプレビュー試験結果を取得できません");
+    process.exit(1);
+  }
+  console.log(`packaged-${musicXmlPreview[0]}`);
   console.log(`packaged-wave-smoke: ${sampleRate} Hz`);
   const performance = output.match(/performance-smoke: (\{[^\r\n]+\})/);
   if (performance) {
     console.log(`packaged-${performance[0]}`);
   }
+  console.log(
+    `packaged-renderer-hang-shutdown-smoke: ${shutdownElapsedMs} ms`,
+  );
   console.log("packaged-electron-smoke: ok");
 });

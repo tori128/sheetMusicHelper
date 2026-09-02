@@ -1,0 +1,5 @@
+Place model.safetensors and config.json here.
+
+Direct downloads (Hugging Face sign-in and acceptance of the model terms are required):
+https://huggingface.co/MuScriptor/muscriptor-small/resolve/main/model.safetensors?download=true
+https://huggingface.co/MuScriptor/muscriptor-small/resolve/main/config.json?download=true

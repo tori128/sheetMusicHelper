@@ -34,6 +34,35 @@ def ticks_to_seconds(ticks: int, bpm: float, ppq: int = 480) -> float:
     return ticks * 60 / (bpm * ppq)
 
 
+def score_origin_seconds(project: Project) -> float:
+    pickup_seconds = ticks_to_seconds(
+        project.score.pickup_ticks,
+        project.tempo.bpm,
+        project.tempo.ppq,
+    )
+    return max(0.0, project.tempo.beat_offset_sec - pickup_seconds)
+
+
+def score_time_to_ticks(project: Project, seconds: float) -> int:
+    absolute_tick = seconds_to_ticks(
+        seconds,
+        project.tempo.bpm,
+        project.tempo.ppq,
+    )
+    origin_tick = seconds_to_ticks(
+        score_origin_seconds(project),
+        project.tempo.bpm,
+        project.tempo.ppq,
+    )
+    return max(0, absolute_tick - origin_tick)
+
+
+def note_score_ticks(project: Project, note: Note) -> tuple[int, int]:
+    start_tick = score_time_to_ticks(project, note.start_sec)
+    end_tick = score_time_to_ticks(project, note.end_sec)
+    return start_tick, max(start_tick + 1, end_tick)
+
+
 def quantize_tick(tick: int, grid_tick: int) -> int:
     if grid_tick <= 0:
         raise ValueError("grid_tickは0より大きい必要があります")

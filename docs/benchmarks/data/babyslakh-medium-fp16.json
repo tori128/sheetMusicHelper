@@ -1,0 +1,884 @@
+{
+  "schemaVersion": 5,
+  "generatedAtUtc": "2026-08-16T20:07:34+00:00",
+  "sourceRevision": "8ddde74d74389f6e05dea609f27a02efa5fdc84c",
+  "sourceWorkingTreeModified": true,
+  "dataset": {
+    "name": "BabySlakh",
+    "version": "v2",
+    "doi": "10.5281/zenodo.4603870",
+    "archiveUrl": "https://zenodo.org/records/4603870/files/babyslakh_16k.tar.gz?download=1",
+    "archiveMd5": "311096dc2bde7d61c97e930edbfc7f78",
+    "datasetDirectory": "babyslakh_16k"
+  },
+  "evaluation": {
+    "segments": 5,
+    "totalAudioSec": 100.0,
+    "pitchMatch": "exact MIDI pitch",
+    "onsetToleranceMs": 120,
+    "additionalOnsetToleranceMs": [
+      50
+    ],
+    "fullTimingPenaltyMs": 50,
+    "instrumentLabels": "ignored",
+    "offsets": "not scored"
+  },
+  "configuration": {
+    "transcriptionModel": "medium",
+    "backend": "CUDA",
+    "dtype": "float16",
+    "instrumentSelection": "automatic",
+    "sourceSeparation": {
+      "drumComponentMixing": {
+        "drumOnsetGuide": true,
+        "inputs": [
+          "bass",
+          "piano",
+          "guitar",
+          "vocals",
+          "other"
+        ],
+        "timingGuideGains": {
+          "bass": 0.2,
+          "piano": 0.2,
+          "guitar": 0.2,
+          "vocals": 0.2,
+          "other": 0.2
+        },
+        "bassTimingGuideHighpassHz": 350.0,
+        "discardDrumEvents": true,
+        "timingGuideNoteFilter": true
+      }
+    }
+  },
+  "environment": {
+    "operatingSystem": "Windows",
+    "python": "3.11.15",
+    "gpu": {
+      "name": "NVIDIA GeForce RTX 3060 Laptop GPU",
+      "memoryMiB": "6144",
+      "driverVersion": "592.00"
+    }
+  },
+  "aggregate": {
+    "direct": {
+      "referenceNotes": 1433,
+      "predictedNotes": 904,
+      "matches": 483,
+      "falsePositiveNotes": 421,
+      "falseNegativeNotes": 950,
+      "microPrecision": 0.5343,
+      "microRecall": 0.3371,
+      "microF1": 0.4134,
+      "macroF1": 0.3958,
+      "score50Ms": {
+        "matches": 462,
+        "falsePositiveNotes": 442,
+        "falseNegativeNotes": 971,
+        "microPrecision": 0.5111,
+        "microRecall": 0.3224,
+        "microF1": 0.3954,
+        "macroF1": 0.3682
+      },
+      "medianOfTrackMedianErrorMs": -9.0,
+      "medianOfTrackP95AbsoluteErrorMs": 74.6,
+      "crossInstrumentDuplicateGroups": 0,
+      "timingAndMismatchScore": {
+        "matches": 483,
+        "falsePositiveNotes": 421,
+        "falseNegativeNotes": 950,
+        "falsePositiveRate": 0.4657,
+        "falseNegativeRate": 0.6629,
+        "mismatchRate": 0.5866,
+        "timingCredit": 292.962,
+        "onsetTimingScore": 0.6065,
+        "score": 0.2507,
+        "onsetToleranceMs": 120,
+        "fullTimingPenaltyMs": 50
+      }
+    },
+    "separatedRouted": {
+      "referenceNotes": 1433,
+      "predictedNotes": 1350,
+      "matches": 788,
+      "falsePositiveNotes": 562,
+      "falseNegativeNotes": 645,
+      "microPrecision": 0.5837,
+      "microRecall": 0.5499,
+      "microF1": 0.5663,
+      "macroF1": 0.5415,
+      "score50Ms": {
+        "matches": 731,
+        "falsePositiveNotes": 619,
+        "falseNegativeNotes": 702,
+        "microPrecision": 0.5415,
+        "microRecall": 0.5101,
+        "microF1": 0.5253,
+        "macroF1": 0.4958
+      },
+      "medianOfTrackMedianErrorMs": -1.1,
+      "medianOfTrackP95AbsoluteErrorMs": 69.7,
+      "crossInstrumentDuplicateGroups": 99,
+      "timingAndMismatchScore": {
+        "matches": 788,
+        "falsePositiveNotes": 562,
+        "falseNegativeNotes": 645,
+        "falsePositiveRate": 0.4163,
+        "falseNegativeRate": 0.4501,
+        "mismatchRate": 0.4337,
+        "timingCredit": 523.052,
+        "onsetTimingScore": 0.6638,
+        "score": 0.3759,
+        "onsetToleranceMs": 120,
+        "fullTimingPenaltyMs": 50
+      }
+    },
+    "separatedRoutedGuidedNoNoteFilter": {
+      "referenceNotes": 1433,
+      "predictedNotes": 1430,
+      "matches": 758,
+      "falsePositiveNotes": 672,
+      "falseNegativeNotes": 675,
+      "microPrecision": 0.5301,
+      "microRecall": 0.529,
+      "microF1": 0.5295,
+      "macroF1": 0.4799,
+      "score50Ms": {
+        "matches": 718,
+        "falsePositiveNotes": 712,
+        "falseNegativeNotes": 715,
+        "microPrecision": 0.5021,
+        "microRecall": 0.501,
+        "microF1": 0.5016,
+        "macroF1": 0.4528
+      },
+      "medianOfTrackMedianErrorMs": 5.9,
+      "medianOfTrackP95AbsoluteErrorMs": 53.6,
+      "crossInstrumentDuplicateGroups": 197,
+      "timingAndMismatchScore": {
+        "matches": 758,
+        "falsePositiveNotes": 672,
+        "falseNegativeNotes": 675,
+        "falsePositiveRate": 0.4699,
+        "falseNegativeRate": 0.471,
+        "mismatchRate": 0.4705,
+        "timingCredit": 505.734,
+        "onsetTimingScore": 0.6672,
+        "score": 0.3533,
+        "onsetToleranceMs": 120,
+        "fullTimingPenaltyMs": 50
+      }
+    },
+    "separatedRoutedGuided": {
+      "referenceNotes": 1433,
+      "predictedNotes": 1284,
+      "matches": 737,
+      "falsePositiveNotes": 547,
+      "falseNegativeNotes": 696,
+      "microPrecision": 0.574,
+      "microRecall": 0.5143,
+      "microF1": 0.5425,
+      "macroF1": 0.4855,
+      "score50Ms": {
+        "matches": 702,
+        "falsePositiveNotes": 582,
+        "falseNegativeNotes": 731,
+        "microPrecision": 0.5467,
+        "microRecall": 0.4899,
+        "microF1": 0.5167,
+        "macroF1": 0.4617
+      },
+      "medianOfTrackMedianErrorMs": 6.1,
+      "medianOfTrackP95AbsoluteErrorMs": 31.0,
+      "crossInstrumentDuplicateGroups": 162,
+      "timingAndMismatchScore": {
+        "matches": 737,
+        "falsePositiveNotes": 547,
+        "falseNegativeNotes": 696,
+        "falsePositiveRate": 0.426,
+        "falseNegativeRate": 0.4857,
+        "mismatchRate": 0.4575,
+        "timingCredit": 495.29,
+        "onsetTimingScore": 0.672,
+        "score": 0.3646,
+        "onsetToleranceMs": 120,
+        "fullTimingPenaltyMs": 50
+      }
+    }
+  },
+  "runtime": {
+    "directTotalSec": 56.831,
+    "separatedRoutedColdTotalSec": 149.558,
+    "separatedRoutedGuidedWarmTotalSec": 242.805,
+    "separatedRoutedGuidedNoNoteFilterWarmTotalSec": 47.503,
+    "separatedRoutedColdToDirectRatio": 2.632,
+    "note": "The routed condition includes source separation. The guided conditions reuse the same cached separated audio, so their elapsed times are not directly comparable with the cold routed condition."
+  },
+  "cases": [
+    {
+      "trackId": "Track00001",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "conditions": {
+        "direct": {
+          "referenceNotes": 241,
+          "predictedNotes": 191,
+          "matches": 46,
+          "precision": 0.2408,
+          "recall": 0.1909,
+          "f1": 0.213,
+          "score50Ms": {
+            "matches": 42,
+            "precision": 0.2199,
+            "recall": 0.1743,
+            "f1": 0.1944
+          },
+          "medianPredictionErrorMs": -9.0,
+          "p95AbsoluteErrorMs": 78.2,
+          "crossInstrumentDuplicateGroups": 0,
+          "timingAndMismatchScore": {
+            "matches": 46,
+            "falsePositiveNotes": 145,
+            "falseNegativeNotes": 189,
+            "falsePositiveRate": 0.7592,
+            "falseNegativeRate": 0.8043,
+            "mismatchRate": 0.784,
+            "timingCredit": 21.678,
+            "onsetTimingScore": 0.4713,
+            "score": 0.1018,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        },
+        "separatedRouted": {
+          "referenceNotes": 241,
+          "predictedNotes": 237,
+          "matches": 82,
+          "precision": 0.346,
+          "recall": 0.3402,
+          "f1": 0.3431,
+          "score50Ms": {
+            "matches": 74,
+            "precision": 0.3122,
+            "recall": 0.3071,
+            "f1": 0.3096
+          },
+          "medianPredictionErrorMs": -1.1,
+          "p95AbsoluteErrorMs": 73.3,
+          "crossInstrumentDuplicateGroups": 11,
+          "timingAndMismatchScore": {
+            "matches": 81,
+            "falsePositiveNotes": 156,
+            "falseNegativeNotes": 154,
+            "falsePositiveRate": 0.6582,
+            "falseNegativeRate": 0.6553,
+            "mismatchRate": 0.6568,
+            "timingCredit": 51.264,
+            "onsetTimingScore": 0.6329,
+            "score": 0.2172,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        },
+        "separatedRoutedGuidedNoNoteFilter": {
+          "referenceNotes": 241,
+          "predictedNotes": 253,
+          "matches": 75,
+          "precision": 0.2964,
+          "recall": 0.3112,
+          "f1": 0.3036,
+          "score50Ms": {
+            "matches": 70,
+            "precision": 0.2767,
+            "recall": 0.2905,
+            "f1": 0.2834
+          },
+          "medianPredictionErrorMs": 7.6,
+          "p95AbsoluteErrorMs": 53.6,
+          "crossInstrumentDuplicateGroups": 23,
+          "timingAndMismatchScore": {
+            "matches": 75,
+            "falsePositiveNotes": 178,
+            "falseNegativeNotes": 160,
+            "falsePositiveRate": 0.7036,
+            "falseNegativeRate": 0.6809,
+            "mismatchRate": 0.6926,
+            "timingCredit": 56.238,
+            "onsetTimingScore": 0.7498,
+            "score": 0.2305,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        },
+        "separatedRoutedGuided": {
+          "referenceNotes": 241,
+          "predictedNotes": 152,
+          "matches": 64,
+          "precision": 0.4211,
+          "recall": 0.2656,
+          "f1": 0.3257,
+          "score50Ms": {
+            "matches": 63,
+            "precision": 0.4145,
+            "recall": 0.2614,
+            "f1": 0.3206
+          },
+          "medianPredictionErrorMs": 7.6,
+          "p95AbsoluteErrorMs": 28.5,
+          "crossInstrumentDuplicateGroups": 0,
+          "timingAndMismatchScore": {
+            "matches": 64,
+            "falsePositiveNotes": 88,
+            "falseNegativeNotes": 171,
+            "falsePositiveRate": 0.5789,
+            "falseNegativeRate": 0.7277,
+            "mismatchRate": 0.6693,
+            "timingCredit": 51.924,
+            "onsetTimingScore": 0.8113,
+            "score": 0.2683,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        }
+      },
+      "runtimeSec": {
+        "direct": 12.342,
+        "separatedRoutedCold": 27.66,
+        "separatedRoutedGuidedNoNoteFilterWarm": 9.975,
+        "separatedRoutedGuidedWarm": 28.755
+      }
+    },
+    {
+      "trackId": "Track00004",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "conditions": {
+        "direct": {
+          "referenceNotes": 371,
+          "predictedNotes": 156,
+          "matches": 95,
+          "precision": 0.609,
+          "recall": 0.2561,
+          "f1": 0.3605,
+          "score50Ms": {
+            "matches": 95,
+            "precision": 0.609,
+            "recall": 0.2561,
+            "f1": 0.3605
+          },
+          "medianPredictionErrorMs": -13.7,
+          "p95AbsoluteErrorMs": 34.4,
+          "crossInstrumentDuplicateGroups": 0,
+          "timingAndMismatchScore": {
+            "matches": 95,
+            "falsePositiveNotes": 61,
+            "falseNegativeNotes": 276,
+            "falsePositiveRate": 0.391,
+            "falseNegativeRate": 0.7439,
+            "mismatchRate": 0.6395,
+            "timingCredit": 65.556,
+            "onsetTimingScore": 0.6901,
+            "score": 0.2488,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        },
+        "separatedRouted": {
+          "referenceNotes": 371,
+          "predictedNotes": 328,
+          "matches": 187,
+          "precision": 0.5701,
+          "recall": 0.504,
+          "f1": 0.5351,
+          "score50Ms": {
+            "matches": 174,
+            "precision": 0.5305,
+            "recall": 0.469,
+            "f1": 0.4979
+          },
+          "medianPredictionErrorMs": 10.7,
+          "p95AbsoluteErrorMs": 69.7,
+          "crossInstrumentDuplicateGroups": 3,
+          "timingAndMismatchScore": {
+            "matches": 187,
+            "falsePositiveNotes": 141,
+            "falseNegativeNotes": 184,
+            "falsePositiveRate": 0.4299,
+            "falseNegativeRate": 0.496,
+            "mismatchRate": 0.4649,
+            "timingCredit": 126.154,
+            "onsetTimingScore": 0.6746,
+            "score": 0.361,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        },
+        "separatedRoutedGuidedNoNoteFilter": {
+          "referenceNotes": 371,
+          "predictedNotes": 415,
+          "matches": 210,
+          "precision": 0.506,
+          "recall": 0.566,
+          "f1": 0.5344,
+          "score50Ms": {
+            "matches": 188,
+            "precision": 0.453,
+            "recall": 0.5067,
+            "f1": 0.4784
+          },
+          "medianPredictionErrorMs": 5.9,
+          "p95AbsoluteErrorMs": 100.1,
+          "crossInstrumentDuplicateGroups": 66,
+          "timingAndMismatchScore": {
+            "matches": 210,
+            "falsePositiveNotes": 205,
+            "falseNegativeNotes": 161,
+            "falsePositiveRate": 0.494,
+            "falseNegativeRate": 0.434,
+            "mismatchRate": 0.4656,
+            "timingCredit": 141.408,
+            "onsetTimingScore": 0.6734,
+            "score": 0.3598,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        },
+        "separatedRoutedGuided": {
+          "referenceNotes": 371,
+          "predictedNotes": 382,
+          "matches": 203,
+          "precision": 0.5314,
+          "recall": 0.5472,
+          "f1": 0.5392,
+          "score50Ms": {
+            "matches": 181,
+            "precision": 0.4738,
+            "recall": 0.4879,
+            "f1": 0.4807
+          },
+          "medianPredictionErrorMs": 6.1,
+          "p95AbsoluteErrorMs": 100.7,
+          "crossInstrumentDuplicateGroups": 57,
+          "timingAndMismatchScore": {
+            "matches": 203,
+            "falsePositiveNotes": 179,
+            "falseNegativeNotes": 168,
+            "falsePositiveRate": 0.4686,
+            "falseNegativeRate": 0.4528,
+            "mismatchRate": 0.4608,
+            "timingCredit": 136.624,
+            "onsetTimingScore": 0.673,
+            "score": 0.3629,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        }
+      },
+      "runtimeSec": {
+        "direct": 11.756,
+        "separatedRoutedCold": 33.794,
+        "separatedRoutedGuidedNoNoteFilterWarm": 10.846,
+        "separatedRoutedGuidedWarm": 50.159
+      }
+    },
+    {
+      "trackId": "Track00010",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "conditions": {
+        "direct": {
+          "referenceNotes": 421,
+          "predictedNotes": 358,
+          "matches": 225,
+          "precision": 0.6285,
+          "recall": 0.5344,
+          "f1": 0.5777,
+          "score50Ms": {
+            "matches": 225,
+            "precision": 0.6285,
+            "recall": 0.5344,
+            "f1": 0.5777
+          },
+          "medianPredictionErrorMs": 19.4,
+          "p95AbsoluteErrorMs": 25.9,
+          "crossInstrumentDuplicateGroups": 0,
+          "timingAndMismatchScore": {
+            "matches": 225,
+            "falsePositiveNotes": 133,
+            "falseNegativeNotes": 196,
+            "falsePositiveRate": 0.3715,
+            "falseNegativeRate": 0.4656,
+            "mismatchRate": 0.4223,
+            "timingCredit": 137.944,
+            "onsetTimingScore": 0.6131,
+            "score": 0.3542,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        },
+        "separatedRouted": {
+          "referenceNotes": 421,
+          "predictedNotes": 471,
+          "matches": 321,
+          "precision": 0.6815,
+          "recall": 0.7625,
+          "f1": 0.7197,
+          "score50Ms": {
+            "matches": 318,
+            "precision": 0.6752,
+            "recall": 0.7553,
+            "f1": 0.713
+          },
+          "medianPredictionErrorMs": 15.9,
+          "p95AbsoluteErrorMs": 29.9,
+          "crossInstrumentDuplicateGroups": 56,
+          "timingAndMismatchScore": {
+            "matches": 321,
+            "falsePositiveNotes": 150,
+            "falseNegativeNotes": 100,
+            "falsePositiveRate": 0.3185,
+            "falseNegativeRate": 0.2375,
+            "mismatchRate": 0.2803,
+            "timingCredit": 224.254,
+            "onsetTimingScore": 0.6986,
+            "score": 0.5028,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        },
+        "separatedRoutedGuidedNoNoteFilter": {
+          "referenceNotes": 421,
+          "predictedNotes": 531,
+          "matches": 320,
+          "precision": 0.6026,
+          "recall": 0.7601,
+          "f1": 0.6723,
+          "score50Ms": {
+            "matches": 320,
+            "precision": 0.6026,
+            "recall": 0.7601,
+            "f1": 0.6723
+          },
+          "medianPredictionErrorMs": 17.5,
+          "p95AbsoluteErrorMs": 31.0,
+          "crossInstrumentDuplicateGroups": 87,
+          "timingAndMismatchScore": {
+            "matches": 320,
+            "falsePositiveNotes": 211,
+            "falseNegativeNotes": 101,
+            "falsePositiveRate": 0.3974,
+            "falseNegativeRate": 0.2399,
+            "mismatchRate": 0.3277,
+            "timingCredit": 207.666,
+            "onsetTimingScore": 0.649,
+            "score": 0.4363,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        },
+        "separatedRoutedGuided": {
+          "referenceNotes": 421,
+          "predictedNotes": 521,
+          "matches": 318,
+          "precision": 0.6104,
+          "recall": 0.7553,
+          "f1": 0.6752,
+          "score50Ms": {
+            "matches": 318,
+            "precision": 0.6104,
+            "recall": 0.7553,
+            "f1": 0.6752
+          },
+          "medianPredictionErrorMs": 17.5,
+          "p95AbsoluteErrorMs": 31.0,
+          "crossInstrumentDuplicateGroups": 84,
+          "timingAndMismatchScore": {
+            "matches": 318,
+            "falsePositiveNotes": 203,
+            "falseNegativeNotes": 103,
+            "falsePositiveRate": 0.3896,
+            "falseNegativeRate": 0.2447,
+            "mismatchRate": 0.3248,
+            "timingCredit": 206.32,
+            "onsetTimingScore": 0.6488,
+            "score": 0.438,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        }
+      },
+      "runtimeSec": {
+        "direct": 15.327,
+        "separatedRoutedCold": 37.528,
+        "separatedRoutedGuidedNoNoteFilterWarm": 12.213,
+        "separatedRoutedGuidedWarm": 58.864
+      }
+    },
+    {
+      "trackId": "Track00015",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "conditions": {
+        "direct": {
+          "referenceNotes": 261,
+          "predictedNotes": 113,
+          "matches": 60,
+          "precision": 0.531,
+          "recall": 0.2299,
+          "f1": 0.3209,
+          "score50Ms": {
+            "matches": 51,
+            "precision": 0.4513,
+            "recall": 0.1954,
+            "f1": 0.2727
+          },
+          "medianPredictionErrorMs": -26.6,
+          "p95AbsoluteErrorMs": 74.6,
+          "crossInstrumentDuplicateGroups": 0,
+          "timingAndMismatchScore": {
+            "matches": 60,
+            "falsePositiveNotes": 53,
+            "falseNegativeNotes": 201,
+            "falsePositiveRate": 0.469,
+            "falseNegativeRate": 0.7701,
+            "mismatchRate": 0.6791,
+            "timingCredit": 26.468,
+            "onsetTimingScore": 0.4411,
+            "score": 0.1415,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        },
+        "separatedRouted": {
+          "referenceNotes": 261,
+          "predictedNotes": 176,
+          "matches": 121,
+          "precision": 0.6875,
+          "recall": 0.4636,
+          "f1": 0.5538,
+          "score50Ms": {
+            "matches": 88,
+            "precision": 0.5,
+            "recall": 0.3372,
+            "f1": 0.4027
+          },
+          "medianPredictionErrorMs": -5.8,
+          "p95AbsoluteErrorMs": 95.0,
+          "crossInstrumentDuplicateGroups": 0,
+          "timingAndMismatchScore": {
+            "matches": 122,
+            "falsePositiveNotes": 54,
+            "falseNegativeNotes": 139,
+            "falsePositiveRate": 0.3068,
+            "falseNegativeRate": 0.5326,
+            "mismatchRate": 0.4416,
+            "timingCredit": 60.774,
+            "onsetTimingScore": 0.4981,
+            "score": 0.2781,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        },
+        "separatedRoutedGuidedNoNoteFilter": {
+          "referenceNotes": 261,
+          "predictedNotes": 176,
+          "matches": 120,
+          "precision": 0.6818,
+          "recall": 0.4598,
+          "f1": 0.5492,
+          "score50Ms": {
+            "matches": 107,
+            "precision": 0.608,
+            "recall": 0.41,
+            "f1": 0.4897
+          },
+          "medianPredictionErrorMs": -9.2,
+          "p95AbsoluteErrorMs": 63.4,
+          "crossInstrumentDuplicateGroups": 13,
+          "timingAndMismatchScore": {
+            "matches": 120,
+            "falsePositiveNotes": 56,
+            "falseNegativeNotes": 141,
+            "falsePositiveRate": 0.3182,
+            "falseNegativeRate": 0.5402,
+            "mismatchRate": 0.4508,
+            "timingCredit": 72.682,
+            "onsetTimingScore": 0.6057,
+            "score": 0.3326,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        },
+        "separatedRoutedGuided": {
+          "referenceNotes": 261,
+          "predictedNotes": 174,
+          "matches": 119,
+          "precision": 0.6839,
+          "recall": 0.4559,
+          "f1": 0.5471,
+          "score50Ms": {
+            "matches": 107,
+            "precision": 0.6149,
+            "recall": 0.41,
+            "f1": 0.492
+          },
+          "medianPredictionErrorMs": -9.1,
+          "p95AbsoluteErrorMs": 63.4,
+          "crossInstrumentDuplicateGroups": 13,
+          "timingAndMismatchScore": {
+            "matches": 119,
+            "falsePositiveNotes": 55,
+            "falseNegativeNotes": 142,
+            "falsePositiveRate": 0.3161,
+            "falseNegativeRate": 0.5441,
+            "mismatchRate": 0.4529,
+            "timingCredit": 72.682,
+            "onsetTimingScore": 0.6108,
+            "score": 0.3342,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        }
+      },
+      "runtimeSec": {
+        "direct": 9.649,
+        "separatedRoutedCold": 24.369,
+        "separatedRoutedGuidedNoNoteFilterWarm": 8.214,
+        "separatedRoutedGuidedWarm": 25.818
+      }
+    },
+    {
+      "trackId": "Track00018",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "conditions": {
+        "direct": {
+          "referenceNotes": 139,
+          "predictedNotes": 86,
+          "matches": 57,
+          "precision": 0.6628,
+          "recall": 0.4101,
+          "f1": 0.5067,
+          "score50Ms": {
+            "matches": 49,
+            "precision": 0.5698,
+            "recall": 0.3525,
+            "f1": 0.4356
+          },
+          "medianPredictionErrorMs": -0.7,
+          "p95AbsoluteErrorMs": 116.2,
+          "crossInstrumentDuplicateGroups": 0,
+          "timingAndMismatchScore": {
+            "matches": 57,
+            "falsePositiveNotes": 29,
+            "falseNegativeNotes": 82,
+            "falsePositiveRate": 0.3372,
+            "falseNegativeRate": 0.5899,
+            "mismatchRate": 0.4933,
+            "timingCredit": 41.316,
+            "onsetTimingScore": 0.7248,
+            "score": 0.3673,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        },
+        "separatedRouted": {
+          "referenceNotes": 139,
+          "predictedNotes": 138,
+          "matches": 77,
+          "precision": 0.558,
+          "recall": 0.554,
+          "f1": 0.556,
+          "score50Ms": {
+            "matches": 77,
+            "precision": 0.558,
+            "recall": 0.554,
+            "f1": 0.556
+          },
+          "medianPredictionErrorMs": -3.0,
+          "p95AbsoluteErrorMs": 23.0,
+          "crossInstrumentDuplicateGroups": 29,
+          "timingAndMismatchScore": {
+            "matches": 77,
+            "falsePositiveNotes": 61,
+            "falseNegativeNotes": 62,
+            "falsePositiveRate": 0.442,
+            "falseNegativeRate": 0.446,
+            "mismatchRate": 0.444,
+            "timingCredit": 60.606,
+            "onsetTimingScore": 0.7871,
+            "score": 0.4376,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        },
+        "separatedRoutedGuidedNoNoteFilter": {
+          "referenceNotes": 139,
+          "predictedNotes": 55,
+          "matches": 33,
+          "precision": 0.6,
+          "recall": 0.2374,
+          "f1": 0.3402,
+          "score50Ms": {
+            "matches": 33,
+            "precision": 0.6,
+            "recall": 0.2374,
+            "f1": 0.3402
+          },
+          "medianPredictionErrorMs": -0.3,
+          "p95AbsoluteErrorMs": 21.3,
+          "crossInstrumentDuplicateGroups": 8,
+          "timingAndMismatchScore": {
+            "matches": 33,
+            "falsePositiveNotes": 22,
+            "falseNegativeNotes": 106,
+            "falsePositiveRate": 0.4,
+            "falseNegativeRate": 0.7626,
+            "mismatchRate": 0.6598,
+            "timingCredit": 27.74,
+            "onsetTimingScore": 0.8406,
+            "score": 0.286,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        },
+        "separatedRoutedGuided": {
+          "referenceNotes": 139,
+          "predictedNotes": 55,
+          "matches": 33,
+          "precision": 0.6,
+          "recall": 0.2374,
+          "f1": 0.3402,
+          "score50Ms": {
+            "matches": 33,
+            "precision": 0.6,
+            "recall": 0.2374,
+            "f1": 0.3402
+          },
+          "medianPredictionErrorMs": -0.3,
+          "p95AbsoluteErrorMs": 21.3,
+          "crossInstrumentDuplicateGroups": 8,
+          "timingAndMismatchScore": {
+            "matches": 33,
+            "falsePositiveNotes": 22,
+            "falseNegativeNotes": 106,
+            "falsePositiveRate": 0.4,
+            "falseNegativeRate": 0.7626,
+            "mismatchRate": 0.6598,
+            "timingCredit": 27.74,
+            "onsetTimingScore": 0.8406,
+            "score": 0.286,
+            "onsetToleranceMs": 120,
+            "fullTimingPenaltyMs": 50
+          }
+        }
+      },
+      "runtimeSec": {
+        "direct": 7.757,
+        "separatedRoutedCold": 26.207,
+        "separatedRoutedGuidedNoNoteFilterWarm": 6.255,
+        "separatedRoutedGuidedWarm": 79.209
+      }
+    }
+  ]
+}

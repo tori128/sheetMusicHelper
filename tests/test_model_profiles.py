@@ -78,36 +78,41 @@ def test_profile_store_persists_multiple_model_sizes(tmp_path) -> None:
 def test_profile_store_discovers_models_beside_portable_executable(tmp_path) -> None:
     models = tmp_path / "models" / "muscriptor"
     _write_model(models / "small", "small")
+    _write_model(models / "medium", "medium")
     _write_model(models / "large", "large")
     store = ModelProfileStore(tmp_path / "UserData" / "model-profiles.json")
 
     discovered = store.discover_local_models([models])
 
-    assert {profile.variant for profile in discovered} == {"small", "large"}
+    assert [profile.variant for profile in discovered] == [
+        "large",
+        "medium",
+        "small",
+    ]
     assert {profile.profile_name for profile in discovered} == {
         "MuScriptor Small",
+        "MuScriptor Medium",
         "MuScriptor Large",
     }
     assert all(profile.default_backend == "Auto" for profile in discovered)
-    assert all(profile.dtype == "float32" for profile in discovered)
+    assert all(profile.dtype == "float16" for profile in discovered)
 
 
-def test_discovery_migrates_legacy_cpu_only_labels(tmp_path) -> None:
+def test_discovery_preserves_a_registered_profile(tmp_path) -> None:
     models = tmp_path / "models" / "muscriptor"
-    model_path = _write_model(models / "small", "small")
+    model_path = _write_model(models / "large", "large")
     store = ModelProfileStore(tmp_path / "UserData" / "model-profiles.json")
-    legacy = store.register(
-        profile_name="MuScriptor Small (CPU)",
+    existing = store.register(
+        profile_name="MuScriptor Large",
         model_path=model_path,
-        expected_variant="small",
+        expected_variant="large",
         dtype="float32",
-        default_backend="CPU",
+        default_backend="Auto",
     )
 
     discovered = store.discover_local_models([models])
 
     assert len(discovered) == 1
-    assert discovered[0].id == legacy.id
-    assert discovered[0].profile_name == "MuScriptor Small"
-    assert discovered[0].default_backend == "Auto"
-    assert store.list()[0].default_backend == "Auto"
+    assert discovered[0].id == existing.id
+    assert discovered[0].dtype == "float32"
+    assert store.list()[0].dtype == "float32"

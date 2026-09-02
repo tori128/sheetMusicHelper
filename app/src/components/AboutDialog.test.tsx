@@ -29,6 +29,10 @@ describe("AboutDialog", () => {
           notices: [
             { name: "THIRD_PARTY_NOTICES.txt", text: "notices" },
             { name: "MuScriptor/LICENSE", text: "MIT License" },
+            {
+              name: "MuScriptor/README.md",
+              text: "Copyright (c) 2026 Kyutai x Mirelo",
+            },
           ],
         }),
       } as unknown as DesktopApi,
@@ -46,5 +50,9 @@ describe("AboutDialog", () => {
 
     fireEvent.click(screen.getByText("MuScriptor/LICENSE"));
     expect(screen.getByText("MIT License")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("MuScriptor/README.md"));
+    expect(
+      screen.getByText("Copyright (c) 2026 Kyutai x Mirelo"),
+    ).toBeInTheDocument();
   });
 });
