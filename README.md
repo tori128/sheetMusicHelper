@@ -44,8 +44,6 @@ EarCopy Assistは、音源から楽器ごとの演奏情報を採譜し、結果
 - [使い方](docs/USER_GUIDE.md) / [How to use](docs/USER_GUIDE.en.md)
 - [性能評価](docs/TRANSCRIPTION_METHOD_BENCHMARK.md) / [Public transcription benchmark](docs/TRANSCRIPTION_METHOD_BENCHMARK.en.md)
 - [テンポ・拍・小節先頭推定の公開評価](docs/developer/TEMPO_DOWNBEAT_EVALUATION.md) / [Public tempo, beat, and downbeat evaluation](docs/developer/TEMPO_DOWNBEAT_EVALUATION.en.md)
-- [開発ガイド](docs/developer/DEVELOPMENT.md) / [Development guide](docs/developer/DEVELOPMENT.en.md)
-- [公開・配布チェックリスト](docs/developer/DISTRIBUTION.md) / [Release and distribution checklist](docs/developer/DISTRIBUTION.en.md)
 
 
 

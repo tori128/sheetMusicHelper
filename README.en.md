@@ -48,8 +48,6 @@ To use another BS-RoFormer weight for source separation, place one weight and it
 - [User Guide](docs/USER_GUIDE.en.md) / [使い方](docs/USER_GUIDE.md)
 - [Performance Evaluation](docs/TRANSCRIPTION_METHOD_BENCHMARK.en.md) / [性能評価](docs/TRANSCRIPTION_METHOD_BENCHMARK.md)
 - [Public Tempo, Beat, and Downbeat Evaluation](docs/developer/TEMPO_DOWNBEAT_EVALUATION.en.md) / [テンポ・拍・小節先頭推定の公開評価](docs/developer/TEMPO_DOWNBEAT_EVALUATION.md)
-- [Development Guide](docs/developer/DEVELOPMENT.en.md) / [開発ガイド](docs/developer/DEVELOPMENT.md)
-- [Release and Distribution Checklist](docs/developer/DISTRIBUTION.en.md) / [公開・配布チェックリスト](docs/developer/DISTRIBUTION.md)
 
 
 
