@@ -117,7 +117,7 @@ jobs:
       - name: Install desktop dependencies
         timeout-minutes: 15
         working-directory: app
-        run: npm ci
+        run: npm ci --omit=optional
 
       - name: Run Python tests
         timeout-minutes: 20

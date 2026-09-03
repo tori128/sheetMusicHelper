@@ -901,6 +901,7 @@ def test_ci_and_native_build_configuration() -> None:
         "EARCOPY_ZIP_EXECUTABLE",
         "cleanup_ci_release_build.ps1 -Phase BeforeBuild",
         "cleanup_ci_release_build.ps1 -Phase AfterPackaging",
+        "npm ci --omit=optional",
         "npm run smoke:packaged",
         "build-release-package.ps1",
         "verify-release-package.ps1",
