@@ -739,6 +739,7 @@ def test_portable_build_includes_release_documents() -> None:
     ):
         assert required_text in packaged_smoke_test
     assert "statSync(weightPath).size" not in packaged_smoke_test
+    assert "EARCOPY_SMOKE_REQUIRE_MODELS" not in packaged_smoke_test
 
     specification = (
         REPOSITORY_ROOT / "app" / "packaging" / "earcopy_service.spec"

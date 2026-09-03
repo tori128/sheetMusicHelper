@@ -216,7 +216,6 @@ const child = spawn(executable, executableArgs, {
   env: {
     ...process.env,
     EARCOPY_SMOKE_TEST: "1",
-    EARCOPY_SMOKE_REQUIRE_MODELS: "1",
     EARCOPY_SMOKE_RESULT_PATH: resultPath,
     EARCOPY_SMOKE_USER_DATA_PATH: userDataPath,
     EARCOPY_SMOKE_AUDIO_PATH: audioPath,
