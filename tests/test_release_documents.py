@@ -899,6 +899,7 @@ def test_ci_and_native_build_configuration() -> None:
     for required_text in (
         "workflow_dispatch:",
         "resume_release:",
+        "publish_existing_release:",
         "runs-on: windows-latest",
         "environment: windows-release",
         "actions/cache/restore",
@@ -926,7 +927,8 @@ def test_ci_and_native_build_configuration() -> None:
         "publish-release:",
         "publish_github_release.ps1",
         "cancel-in-progress: false",
-        "always() && (inputs.resume_release || needs.build.result == 'success')",
+        "always() && !inputs.publish_existing_release && (inputs.resume_release || needs.build.result == 'success')",
+        "always() && (inputs.publish_existing_release || needs.publish-muscriptor-models.result == 'success')",
     ):
         assert required_text in release_workflow
     assert "pull_request:" not in release_workflow

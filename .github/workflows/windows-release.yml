@@ -12,6 +12,11 @@ on:
         required: false
         default: false
         type: boolean
+      publish_existing_release:
+        description: Publish the existing non-public release without rebuilding or adding assets
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -23,7 +28,7 @@ concurrency:
 jobs:
   prepare-muscriptor-models:
     name: Validate MuScriptor model sources
-    if: ${{ !inputs.resume_release }}
+    if: ${{ !inputs.resume_release && !inputs.publish_existing_release }}
     runs-on: windows-latest
     environment: windows-release
     timeout-minutes: 180
@@ -135,7 +140,7 @@ jobs:
   build:
     name: Build release assets
     needs: prepare-muscriptor-models
-    if: ${{ !inputs.resume_release && needs.prepare-muscriptor-models.result == 'success' }}
+    if: ${{ !inputs.resume_release && !inputs.publish_existing_release && needs.prepare-muscriptor-models.result == 'success' }}
     runs-on: windows-latest
     timeout-minutes: 300
     env:
@@ -380,7 +385,7 @@ jobs:
   publish-muscriptor-models:
     name: Add MuScriptor model assets
     needs: build
-    if: ${{ always() && (inputs.resume_release || needs.build.result == 'success') }}
+    if: ${{ always() && !inputs.publish_existing_release && (inputs.resume_release || needs.build.result == 'success') }}
     runs-on: windows-latest
     environment: windows-release
     timeout-minutes: 240
@@ -513,6 +518,7 @@ jobs:
   publish-release:
     name: Publish GitHub Release
     needs: publish-muscriptor-models
+    if: ${{ always() && (inputs.publish_existing_release || needs.publish-muscriptor-models.result == 'success') }}
     runs-on: windows-latest
     timeout-minutes: 20
     steps:
