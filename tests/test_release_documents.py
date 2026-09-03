@@ -1100,6 +1100,7 @@ def test_ci_and_native_build_configuration() -> None:
     for required_text in (
         "Draft release was not found",
         "SHA256SUMS does not match draft release assets",
+        '$_ -ne "SHA256SUMS.txt"',
         "Large model ZIP volume numbering is incomplete",
         "gh release download",
         "gh release edit $tag",

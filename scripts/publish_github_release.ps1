@@ -108,7 +108,9 @@ try {
             }
     )
     $expectedChecksumNames = @(
-        $assetNames | Where-Object { $_ -ne "RELEASE_NOTES.md" }
+        $assetNames | Where-Object {
+            $_ -ne "RELEASE_NOTES.md" -and $_ -ne "SHA256SUMS.txt"
+        }
     )
     $missingChecksums = @(
         $expectedChecksumNames | Where-Object { $_ -notin $recordedNames }
