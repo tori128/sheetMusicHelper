@@ -7,15 +7,19 @@ Release内の次のファイルをすべてダウンロードしてください�
 
 - `EarCopyAssist-<version>-win-x64.zip`
 - `EarCopyAssist-<version>-win-x64.z01, .z02, ...`
+- `EarCopyAssist-<version>-muscriptor-small.zip`
+- `EarCopyAssist-<version>-muscriptor-medium.zip`
+- `EarCopyAssist-<version>-muscriptor-large.zip`と`.z01, .z02, ...`
 
 分割ZIPの展開には[7-Zip](https://www.7-zip.org/)などの解凍ツールを使用します。
 
 
 
 ## インストール
-1. ダウンロードした圧縮ファイルを展開します。
-2. `EarCopyAssist.exe`を起動し、MuScriptorモデルの利用条件を確認します。  
-同梱するsmall、medium、largeのモデル重みは非商用用途に限定されます。
+1. Windows版の`.z01`以降の全ボリュームと最後の`.zip`を同じフォルダーへ置き、最後の`.zip`を開いて展開します。
+2. MuScriptor small、medium、largeの各アーカイブを、Windows版を展開したフォルダーの親フォルダーへ展開します。`EarCopyAssist-<version>-win-x64\\models\\muscriptor\\small`、`medium`、`large`が作成されます。
+3. 展開したWindows版フォルダー内の`EarCopyAssist.exe`を起動し、MuScriptorモデルの利用条件を確認します。
+   MuScriptor small、medium、largeのモデル重みは非商用用途に限定されます。
 
 表示言語は、新規プロジェクト画面上部または「設定」で日本語、英語、中国語から選択できます。
 
@@ -57,6 +61,10 @@ BS-RoFormer SW Fixedのモデル重みはアプリに同梱されていません
 4. ダイアログの「警告を確認してダウンロード」を押します。
 
 ダウンロードが完了すると、「音源分離してから採譜」を選択できます。
+
+##### 別のBS-RoFormer重みを利用する
+
+別のBS-RoFormer重みは、`models\\bs-roformer\\sw-fixed`へ1件だけ配置できます。重みファイルと、その重みに対応するYAML構成ファイルを同じフォルダーへ置いてください。YAMLの`training.instruments`には`drums`、`bass`、`vocals`、`other`、`piano`、`guitar`のうち、そのモデルが出力する成分名を記載します。
 
 ##### 利用可能なオプション
 | 設定 | 推奨既定 | 内容 |

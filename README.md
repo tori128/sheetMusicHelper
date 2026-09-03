@@ -15,6 +15,16 @@ EarCopy Assistは、音源から楽器ごとの演奏情報を採譜し、結果
 - CUDAを使用する場合は対応するNVIDIA GPUとドライバ  
 ※ NVIDIA GPUを使用できない環境ではCPU処理で採譜できます
 
+## Windows版の準備
+
+1. [GitHub Releases](https://github.com/tori128/sheetMusicHelper/releases)から、Windows版のすべての分割ZIPと最後の`.zip`を取得して展開します。
+2. 同じReleaseのMuScriptor small、medium、largeモデルアーカイブを、Windows版を展開したフォルダーの親フォルダーへ展開します。`EarCopyAssist-<version>-win-x64\\models\\muscriptor\\small`、`medium`、`large`が作成されます。
+3. 展開したWindows版フォルダー内の`EarCopyAssist.exe`を起動します。
+
+分割ZIPは[7-Zip](https://www.7-zip.org/)などの対応ソフトで、最後の`.zip`を開いて展開してください。
+
+音源分離に別のBS-RoFormer重みを使う場合は、`models\\bs-roformer\\sw-fixed`へ重みファイルと対応するYAML構成ファイルを1組だけ配置します。
+
 
 
 ## 機能

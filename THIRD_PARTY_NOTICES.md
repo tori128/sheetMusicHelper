@@ -49,8 +49,8 @@ EarCopy AssistのGitHub Releaseは、公式の`small`、`medium`、`large`モデ
 - コードのライセンス：MIT
 - モデル重み：`BS-Rofo-SW-Fixed.ckpt`
 - 学習者：配布ページに記載なし
-- 配布ページの登録者：jarredou
-- アプリが参照する配布ページ：<https://huggingface.co/jarredou/BS-ROFO-SW-Fixed/tree/ad54168acf271482ad51702953e162a385b8fdcb>
+- 配布ページの登録者：enerjazzer
+- アプリが参照する配布ページ：<https://huggingface.co/enerjazzer/BS-ROFO-SW-Fixed/tree/main>
 - モデル重みのライセンス表示：`Unknown`
 - モデル重みのファイルサイズ：`699412152` bytes
 - モデル重みのSHA-256：`24e7d35ee9c64415673d3fd33e06a67cac2c103c5df6267ba1576459c775916e`

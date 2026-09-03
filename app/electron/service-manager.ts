@@ -138,10 +138,7 @@ export class ServiceManager {
     const portableRoot = resolvePortableRoot();
     const portableUserData = resolvePortableUserDataPath();
     const modelDirectories = app.isPackaged
-      ? [
-          join(process.resourcesPath, "models", "muscriptor"),
-          join(portableRoot, "models", "muscriptor"),
-        ]
+      ? [join(portableRoot, "models", "muscriptor")]
       : [join(projectRoot, "models", "muscriptor")];
     const env = {
       ...process.env,

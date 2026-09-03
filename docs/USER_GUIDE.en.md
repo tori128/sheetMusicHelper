@@ -9,6 +9,9 @@ Download all of the following files from the release:
 
 - `EarCopyAssist-<version>-win-x64.zip`
 - `EarCopyAssist-<version>-win-x64.z01, .z02, ...`
+- `EarCopyAssist-<version>-muscriptor-small.zip`
+- `EarCopyAssist-<version>-muscriptor-medium.zip`
+- `EarCopyAssist-<version>-muscriptor-large.zip` and `.z01, .z02, ...`
 
 Use an extraction tool that supports split ZIP archives, such as [7-Zip](https://www.7-zip.org/).
 
@@ -16,8 +19,9 @@ Use an extraction tool that supports split ZIP archives, such as [7-Zip](https:/
 
 ## Installation
 
-1. Extract the downloaded archive.
-2. Launch `EarCopyAssist.exe` and review the MuScriptor model terms. The bundled small, medium, and large model weights are restricted to non-commercial use.
+1. Put every Windows `.z01` and later volume with the final `.zip` in one folder, then open the final `.zip`.
+2. Extract the MuScriptor small, medium, and large archives into the parent folder of the extracted Windows package. This creates `EarCopyAssist-<version>-win-x64\\models\\muscriptor\\small`, `medium`, and `large`.
+3. Launch `EarCopyAssist.exe` in the extracted Windows-package folder and review the MuScriptor model terms. MuScriptor small, medium, and large model weights are restricted to non-commercial use.
 
 Select Japanese, English, or Chinese from the language control at the top of the new-project screen or in **設定 (Settings)**.
 
@@ -59,6 +63,10 @@ Confirm that you have the right to obtain and use the model because its distribu
 4. Select **警告を確認してダウンロード** in the dialog.
 
 After the download completes, **音源分離してから採譜 (Transcribe after source separation)** becomes available.
+
+##### Use another BS-RoFormer weight
+
+Place one other BS-RoFormer weight in `models\\bs-roformer\\sw-fixed` with the YAML configuration file for that weight. The YAML `training.instruments` list must contain the component names produced by the model from `drums`, `bass`, `vocals`, `other`, `piano`, and `guitar`.
 
 ##### Available options
 

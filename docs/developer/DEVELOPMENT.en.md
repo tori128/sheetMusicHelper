@@ -20,7 +20,7 @@ cd app
 npm ci
 ```
 
-Place model files used for local validation under `models/`. The three MuScriptor model weights remain outside Git and are built as model archives separate from the Windows application package. Users extract the model archives beside the Windows package to place them under `resources/models/muscriptor/`. The Windows application package excludes BS-RoFormer SW Fixed. When it is absent, the new-project screen displays its `Unknown` license status, distribution page, 699,412,152-byte size, destination, and SHA-256. After the user acknowledges the warning, the local Python service downloads the file from a URL for a specific commit into a temporary file and moves it to `models/bs-roformer/sw-fixed/` only after the size and SHA-256 match.
+Place model files used for local validation under `models/`. The three MuScriptor model weights remain outside Git and are built as model archives separate from the Windows application package. Users extract the model archives into the parent folder of the Windows package to place them under `models/muscriptor/`. The Windows application package excludes BS-RoFormer SW Fixed. When it is absent, the new-project screen displays its `Unknown` license status, distribution page, 699,412,152-byte size, destination, and SHA-256. After the user acknowledges the warning, the local Python service downloads the file into a temporary file and moves it to `models/bs-roformer/sw-fixed/` only after the size and SHA-256 match.
 
 ```text
 models/

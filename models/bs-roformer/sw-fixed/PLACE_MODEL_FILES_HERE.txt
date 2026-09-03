@@ -3,7 +3,7 @@ Place this file here:
   BS-Rofo-SW-Fixed.ckpt
 
 Direct download:
-https://huggingface.co/jarredou/BS-ROFO-SW-Fixed/resolve/ad54168acf271482ad51702953e162a385b8fdcb/BS-Rofo-SW-Fixed.ckpt?download=true
+https://huggingface.co/enerjazzer/BS-ROFO-SW-Fixed/resolve/main/BS-Rofo-SW-Fixed.ckpt?download=true
 
 License status shown by the distribution page:
 Unknown
@@ -13,3 +13,6 @@ File size:
 
 SHA-256:
 24e7d35ee9c64415673d3fd33e06a67cac2c103c5df6267ba1576459c775916e
+
+To use another BS-RoFormer weight, place one weight and its YAML configuration
+file in this directory.

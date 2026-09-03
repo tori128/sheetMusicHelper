@@ -27,7 +27,7 @@ Music-Source-Separation-TrainingリポジトリはMITだが、チェックポイ
 アプリはこの警告とファイル情報を表示し、利用者の確認後にHugging Faceから取得する。
 
 - モデルページ:
-  <https://huggingface.co/jarredou/BS-ROFO-SW-Fixed/tree/ad54168acf271482ad51702953e162a385b8fdcb>
+  <https://huggingface.co/enerjazzer/BS-ROFO-SW-Fixed/tree/main>
 - ファイルサイズ: `699412152` bytes
 - SHA-256:
   `24e7d35ee9c64415673d3fd33e06a67cac2c103c5df6267ba1576459c775916e`
@@ -88,7 +88,7 @@ Python-SoXR 1.1.0も含まれる。
 
 MuScriptor small、medium、largeのモデル重みを改変せずモデルアーカイブとして配布する。
 利用者はWindows本体を展開した親フォルダーへ各モデルアーカイブを展開し、
-`resources/models/muscriptor/<variant>/model.safetensors`へ配置する。公開文書と起動時の
+`models/muscriptor/<variant>/model.safetensors`へ配置する。公開文書と起動時の
 確認画面には次の情報を記載する。
 
 - モデルは非商用用途に制限される。

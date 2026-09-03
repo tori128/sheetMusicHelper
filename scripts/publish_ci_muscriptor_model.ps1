@@ -132,7 +132,7 @@ $assetBaseName = "EarCopyAssist-$($package.version)-muscriptor-$Variant"
 $stageRoot = Join-Path $stageParent $portableName
 $stageVariantRoot = Join-Path `
     $stageRoot `
-    "resources\models\muscriptor\$Variant"
+    "models\muscriptor\$Variant"
 $archive = Join-Path $assetRoot "$assetBaseName.zip"
 $archivePartPattern = "^$([regex]::Escape($assetBaseName))\.z\d{2,}$"
 

@@ -1,9 +1,9 @@
 MuScriptor model weights
 
 Included files:
-  resources/models/muscriptor/small/model.safetensors
-  resources/models/muscriptor/medium/model.safetensors
-  resources/models/muscriptor/large/model.safetensors
+  models/muscriptor/small/model.safetensors
+  models/muscriptor/medium/model.safetensors
+  models/muscriptor/large/model.safetensors
 
 Creators: Kyutai and Mirelo
 License: Creative Commons Attribution-NonCommercial 4.0 International

@@ -85,7 +85,7 @@ const availableStemSeparation: StemSeparationCapability = {
     "24e7d35ee9c64415673d3fd33e06a67cac2c103c5df6267ba1576459c775916e",
   licenseStatus: "Unknown",
   sourcePageUrl:
-    "https://huggingface.co/jarredou/BS-ROFO-SW-Fixed/tree/ad54168acf271482ad51702953e162a385b8fdcb",
+    "https://huggingface.co/enerjazzer/BS-ROFO-SW-Fixed/tree/main",
   reason: "",
 };
 

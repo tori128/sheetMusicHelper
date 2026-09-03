@@ -59,9 +59,9 @@ in Section 5 of CC BY-NC 4.0. The bundled attribution notice is
 - Code license: MIT
 - Model weight: `BS-Rofo-SW-Fixed.ckpt`
 - Trainer: not identified on the distribution page
-- Distribution-page uploader: jarredou
+- Distribution-page uploader: enerjazzer
 - Distribution page used by the application:
-  <https://huggingface.co/jarredou/BS-ROFO-SW-Fixed/tree/ad54168acf271482ad51702953e162a385b8fdcb>
+  <https://huggingface.co/enerjazzer/BS-ROFO-SW-Fixed/tree/main>
 - Weight license shown by the distributor: `Unknown`
 - Weight file size: `699412152` bytes
 - Weight SHA-256:

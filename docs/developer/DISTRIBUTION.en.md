@@ -20,7 +20,7 @@ Confirm that every published artifact meets the following requirements.
 The recommended model is BS-RoFormer SW Fixed. The Music-Source-Separation-Training implementation is MIT-licensed, but the checkpoint distribution page does not state weight-specific license terms and displays `Unknown`. When the model is absent, the application displays this warning and the file information, then downloads the model from Hugging Face after user acknowledgement.
 
 - Model page:
-  <https://huggingface.co/jarredou/BS-ROFO-SW-Fixed/tree/ad54168acf271482ad51702953e162a385b8fdcb>
+  <https://huggingface.co/enerjazzer/BS-ROFO-SW-Fixed/tree/main>
 - File size: `699412152` bytes
 - SHA-256:
   `24e7d35ee9c64415673d3fd33e06a67cac2c103c5df6267ba1576459c775916e`
@@ -66,7 +66,7 @@ This method publishes complete source for the LGPL components beside the binarie
 
 ### MuScriptor Models
 
-Distribute the unmodified MuScriptor small, medium, and large weights as model archives. Users extract each archive into the parent folder containing the Windows package to place the files under `resources/models/muscriptor/<variant>/model.safetensors`. Public documents and the startup confirmation screen state the following facts.
+Distribute the unmodified MuScriptor small, medium, and large weights as model archives. Users extract each archive into the parent folder containing the Windows package to place the files under `models/muscriptor/<variant>/model.safetensors`. Public documents and the startup confirmation screen state the following facts.
 
 - The models are restricted to non-commercial use.
 - EarCopy Assist terms and model terms are separate.

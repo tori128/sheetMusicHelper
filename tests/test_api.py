@@ -18,7 +18,7 @@ from earcopy_service.models import Note, SourceAudio, Stem
 from earcopy_service.musicxml_export import MUSICXML_PREVIEW_MEASURE_LIMIT
 from earcopy_service.presets import PRESET_BY_KEY, create_project
 from earcopy_service.project_io import save_project
-from earcopy_service.stem_separation import STEM_CACHE_VERSION, stem_model_status
+from earcopy_service.stem_separation import configured_stem_cache_version, stem_model_status
 from tests.test_model_profiles import _write_model
 from earcopy_service.user_presets import UserPresetStore, UserPresetTrack
 
@@ -652,7 +652,13 @@ def test_app_startup_keeps_latest_ten_cache_entries_per_kind(
     obsolete = user_data / "cache" / "stems" / "components-v1" / "source"
     obsolete.mkdir(parents=True)
     (obsolete / "drums.wav").write_bytes(b"obsolete")
-    current = user_data / "cache" / "stems" / STEM_CACHE_VERSION / "source"
+    current = (
+        user_data
+        / "cache"
+        / "stems"
+        / configured_stem_cache_version()
+        / "source"
+    )
     current.mkdir(parents=True)
     (current / "drums.wav").write_bytes(b"current")
     monkeypatch.setenv("EARCOPY_USER_DATA", str(user_data))

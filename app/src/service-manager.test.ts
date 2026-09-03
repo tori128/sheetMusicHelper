@@ -95,7 +95,7 @@ describe("ServiceManager", () => {
         env: expect.objectContaining({
           EARCOPY_USER_DATA: "D:\\EarCopyAssist\\UserData",
           EARCOPY_MODELS_DIRS:
-            "D:\\EarCopyAssist\\resources\\models\\muscriptor;D:\\EarCopyAssist\\models\\muscriptor",
+            "D:\\EarCopyAssist\\models\\muscriptor",
           EARCOPY_STEM_MODEL_DIR:
             "D:\\EarCopyAssist\\models",
         }),
@@ -117,7 +117,7 @@ describe("ServiceManager", () => {
         env: expect.objectContaining({
           EARCOPY_USER_DATA: "D:\\Portable\\EarCopyAssist\\UserData",
           EARCOPY_MODELS_DIRS:
-            "D:\\EarCopyAssist\\resources\\models\\muscriptor;D:\\Portable\\EarCopyAssist\\models\\muscriptor",
+            "D:\\Portable\\EarCopyAssist\\models\\muscriptor",
           EARCOPY_STEM_MODEL_DIR:
             "D:\\Portable\\EarCopyAssist\\models",
         }),

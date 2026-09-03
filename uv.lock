@@ -240,7 +240,7 @@ wheels = [
 
 [[package]]
 name = "earcopy-assist"
-version = "0.1.0"
+version = "0.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "einops" },
@@ -252,6 +252,7 @@ dependencies = [
     { name = "numpy" },
     { name = "packaging" },
     { name = "pydantic" },
+    { name = "pyyaml" },
     { name = "rotary-embedding-torch" },
     { name = "scipy" },
     { name = "soundfile" },
@@ -282,6 +283,7 @@ requires-dist = [
     { name = "numpy", specifier = ">=1.26,<2" },
     { name = "packaging", specifier = ">=24,<27" },
     { name = "pydantic", specifier = ">=2.10,<3" },
+    { name = "pyyaml", specifier = ">=6,<7" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3,<9" },
     { name = "rotary-embedding-torch", specifier = ">=0.8.9,<0.10" },
     { name = "scipy", specifier = ">=1.13,<2" },

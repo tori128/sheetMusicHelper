@@ -17,6 +17,16 @@ Its transcription workflow can use source separation to improve accuracy.
 
 Transcription can run on the CPU when an NVIDIA GPU is unavailable.
 
+## Windows setup
+
+1. Download every split Windows ZIP volume and the final `.zip` from [GitHub Releases](https://github.com/tori128/sheetMusicHelper/releases), then extract the final `.zip`.
+2. Extract the MuScriptor small, medium, and large model archives from the same Release into the parent folder of the extracted Windows package. This creates `EarCopyAssist-<version>-win-x64\\models\\muscriptor\\small`, `medium`, and `large`.
+3. Launch `EarCopyAssist.exe` in the extracted Windows-package folder.
+
+Open the final `.zip` with [7-Zip](https://www.7-zip.org/) or another split-ZIP-compatible extraction tool.
+
+To use another BS-RoFormer weight for source separation, place one weight and its YAML configuration file in `models\\bs-roformer\\sw-fixed`.
+
 
 
 ## Features

@@ -206,7 +206,7 @@ try {
 
     $requiredWindowsEntries = @(
         "$portableName/EarCopyAssist.exe",
-        "$portableName/README.txt",
+        "$portableName/README.md",
         "$portableName/BUILD_INFO.txt",
         "$portableName/LICENSE.txt",
         "$portableName/THIRD_PARTY_NOTICES.md",
@@ -285,8 +285,9 @@ try {
         "$portableName.z01",
         $windowsArchiveName,
         $sourceArchiveName,
-        "FFmpeg",
-        "GNU LGPL version 2.1 or later"
+        "7-Zip",
+        "README.md",
+        "docs/USER_GUIDE.md"
     )) {
         if (-not $releaseNotes.Contains($requiredText)) {
             throw "Release notes are missing required text: $requiredText"
@@ -295,8 +296,8 @@ try {
 
     $publicDocuments = [ordered]@{
         "RELEASE_NOTES.md" = $releaseNotes
-        "README.txt" = (
-            & tar.exe -xOf $temporaryWindowsArchive "$portableName/README.txt"
+        "README.md" = (
+            & tar.exe -xOf $temporaryWindowsArchive "$portableName/README.md"
         ) -join "`n"
         "BUILD_INFO.txt" = $buildInfo
         "THIRD_PARTY_NOTICES.md" = (

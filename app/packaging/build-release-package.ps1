@@ -228,9 +228,9 @@ Remove-DirectoryInside `
     -Path (Join-Path $portableStage "UserData") `
     -Parent $portableStage
 
-Set-TemplateContent `
-    -Source (Join-Path $templateRoot "README.txt") `
-    -Destination (Join-Path $portableStage "README.txt")
+Copy-Item `
+    -LiteralPath (Join-Path $repositoryRoot "README.md") `
+    -Destination (Join-Path $portableStage "README.md")
 Set-TemplateContent `
     -Source (Join-Path $templateRoot "BUILD_INFO.txt") `
     -Destination (Join-Path $portableStage "BUILD_INFO.txt")
@@ -281,7 +281,7 @@ if (Test-Path -LiteralPath (Join-Path $portableStage "UserData")) {
 
 $requiredPortableFiles = @(
     "EarCopyAssist.exe",
-    "README.txt",
+    "README.md",
     "BUILD_INFO.txt",
     "LICENSE.txt",
     "THIRD_PARTY_NOTICES.md",

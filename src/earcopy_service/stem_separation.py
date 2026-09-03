@@ -10,9 +10,9 @@ import traceback
 import wave
 from collections.abc import Callable
 from contextlib import ExitStack
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Final
+from typing import Any, Final, Mapping
 
 import httpx
 
@@ -28,7 +28,7 @@ STEM_NAMES: Final = (
     "piano",
     "guitar",
 )
-TRANSCRIPTION_ROUTING_VERSION: Final = "direct-six-v1"
+TRANSCRIPTION_ROUTING_VERSION: Final = "bs-roformer-config-v1"
 BS_ROFORMER_SW_MODEL_FILE: Final = "BS-Rofo-SW-Fixed.ckpt"
 BS_ROFORMER_SW_MODEL_SHA256: Final = (
     "24e7d35ee9c64415673d3fd33e06a67cac2c103c5df6267ba1576459c775916e"
@@ -42,6 +42,7 @@ BS_ROFORMER_SW_SOURCE_ORDER: Final = (
     "guitar",
     "piano",
 )
+BS_ROFORMER_MODEL_ROOT: Final = Path("models") / "bs-roformer"
 STEM_SAMPLE_RATE: Final = 44_100
 BASS_DRUM_GUIDE_HIGHPASS_HZ: Final = 350.0
 BASS_DRUM_GUIDE_FILTER_ORDER: Final = 4
@@ -61,10 +62,20 @@ class StemModelProfile:
     batch_size: int
     attention_dropout: float
     feed_forward_dropout: float
+    model_options: Mapping[str, Any] = field(default_factory=dict)
+    model_size_bytes: int | None = None
+    configuration_path: Path | None = None
+    cache_token: str = ""
 
     @property
     def cache_version(self) -> str:
-        return f"{self.key}-{self.model_sha256[:12]}"
+        if self.model_sha256:
+            return f"{self.key}-{self.model_sha256[:12]}"
+        if self.cache_token:
+            return f"{self.key}-{self.cache_token}"
+        if self.model_size_bytes is None:
+            return self.key
+        return f"{self.key}-{self.model_size_bytes}"
 
 
 @dataclass(frozen=True, slots=True)
@@ -89,7 +100,7 @@ class StemInferenceSettings:
 BS_ROFORMER_SW_PROFILE: Final = StemModelProfile(
     key="bs-roformer-sw-fixed",
     display_name="BS-RoFormer SW Fixed",
-    relative_directory=Path("models") / "bs-roformer" / "sw-fixed",
+    relative_directory=BS_ROFORMER_MODEL_ROOT / "sw-fixed",
     model_file=BS_ROFORMER_SW_MODEL_FILE,
     model_sha256=BS_ROFORMER_SW_MODEL_SHA256,
     source_order=BS_ROFORMER_SW_SOURCE_ORDER,
@@ -99,15 +110,35 @@ BS_ROFORMER_SW_PROFILE: Final = StemModelProfile(
     batch_size=1,
     attention_dropout=0.1,
     feed_forward_dropout=0.1,
+    model_options={
+        "dimension": 256,
+        "depth": 12,
+        "stereo": True,
+        "num_stems": 6,
+        "time_transformer_depth": 1,
+        "frequency_transformer_depth": 1,
+        "linear_transformer_depth": 0,
+        "head_dimension": 64,
+        "heads": 8,
+        "attention_dropout": 0.1,
+        "feed_forward_dropout": 0.1,
+        "flash_attention": True,
+        "stft_n_fft": 2048,
+        "stft_hop_length": 512,
+        "stft_win_length": 2048,
+        "stft_normalized": False,
+        "mask_estimator_depth": 2,
+        "mlp_expansion_factor": 4,
+        "skip_connection": False,
+    },
+    model_size_bytes=BS_ROFORMER_SW_MODEL_SIZE_BYTES,
 )
 BS_ROFORMER_SW_DISTRIBUTION: Final = StemModelDistribution(
     source_page_url=(
-        "https://huggingface.co/jarredou/BS-ROFO-SW-Fixed/tree/"
-        "ad54168acf271482ad51702953e162a385b8fdcb"
+        "https://huggingface.co/enerjazzer/BS-ROFO-SW-Fixed/tree/main"
     ),
     download_url=(
-        "https://huggingface.co/jarredou/BS-ROFO-SW-Fixed/resolve/"
-        "ad54168acf271482ad51702953e162a385b8fdcb/"
+        "https://huggingface.co/enerjazzer/BS-ROFO-SW-Fixed/resolve/main/"
         "BS-Rofo-SW-Fixed.ckpt?download=true"
     ),
     license_status="Unknown",
@@ -136,36 +167,220 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _stem_model_candidates() -> list[Path]:
+    configured = os.getenv("EARCOPY_STEM_MODEL_DIR")
+    if configured:
+        configured_path = Path(configured)
+        if configured_path.name.casefold() == "bs-roformer":
+            root = configured_path
+        elif configured_path.parent.name.casefold() == "bs-roformer":
+            return [configured_path]
+        else:
+            root = configured_path / "bs-roformer"
+    else:
+        root = BS_ROFORMER_MODEL_ROOT
+
+    if not root.is_dir():
+        return [root / "sw-fixed"]
+    candidates = sorted(
+        (path for path in root.iterdir() if path.is_dir()),
+        key=lambda path: (path.name.casefold() != "sw-fixed", path.name.casefold()),
+    )
+    return candidates or [root / "sw-fixed"]
+
+
+def _configuration_paths(model_directory: Path, model_path: Path) -> list[Path]:
+    matching = [
+        model_directory / f"{model_path.stem}.yaml",
+        model_directory / f"{model_path.stem}.yml",
+    ]
+    return [path for path in matching if path.is_file()] or sorted(
+        [
+            *model_directory.glob("*.yaml"),
+            *model_directory.glob("*.yml"),
+        ]
+    )
+
+
+def _configuration_value(
+    values: Mapping[str, Any],
+    key: str,
+    expected_type: type,
+    default: Any = None,
+) -> Any:
+    value = values.get(key, default)
+    if not isinstance(value, expected_type):
+        raise ValueError(f"BS-RoFormer構成の{key}が不正です")
+    return value
+
+
+def _external_stem_profile(model_directory: Path) -> StemModelProfile | None:
+    model_paths = sorted(
+        [
+            *model_directory.glob("*.ckpt"),
+            *model_directory.glob("*.pt"),
+            *model_directory.glob("*.pth"),
+        ]
+    )
+    if not model_paths:
+        return None
+    if len(model_paths) != 1:
+        raise ValueError(
+            "BS-RoFormerモデルフォルダーには重みファイルを1件だけ配置してください: "
+            f"{model_directory}"
+        )
+    model_path = model_paths[0]
+    configuration_paths = _configuration_paths(model_directory, model_path)
+    if len(configuration_paths) != 1:
+        raise ValueError(
+            "別のBS-RoFormer重みには同じフォルダー内のYAML構成ファイルが必要です: "
+            f"{model_directory}"
+        )
+
+    import yaml
+
+    class ConfigurationLoader(yaml.SafeLoader):
+        pass
+
+    ConfigurationLoader.add_constructor(
+        "tag:yaml.org,2002:python/tuple",
+        lambda loader, node: tuple(loader.construct_sequence(node)),
+    )
+    configuration_path = configuration_paths[0]
+    try:
+        with configuration_path.open(encoding="utf-8") as source:
+            configuration = yaml.load(source, Loader=ConfigurationLoader)
+    except yaml.YAMLError as exc:
+        raise ValueError(
+            f"BS-RoFormer構成ファイルを読み取れません: {configuration_path}"
+        ) from exc
+    if not isinstance(configuration, Mapping):
+        raise ValueError(f"BS-RoFormer構成が辞書形式ではありません: {configuration_path}")
+    model = configuration.get("model")
+    audio = configuration.get("audio")
+    training = configuration.get("training")
+    inference = configuration.get("inference")
+    if not all(
+        isinstance(section, Mapping)
+        for section in (model, audio, training, inference)
+    ):
+        raise ValueError(
+            "BS-RoFormer構成にはmodel、audio、training、inferenceが必要です"
+        )
+    if _configuration_value(audio, "sample_rate", int) != STEM_SAMPLE_RATE:
+        raise ValueError("44.1 kHz以外のBS-RoFormer構成には対応していません")
+    if _configuration_value(audio, "num_channels", int) != 2:
+        raise ValueError("モノラルのBS-RoFormer構成には対応していません")
+    if _configuration_value(model, "stereo", bool) is not True:
+        raise ValueError("ステレオのBS-RoFormer構成が必要です")
+    if _configuration_value(model, "linear_transformer_depth", int, 0) != 0:
+        raise ValueError("linear_transformer_depthが1以上の構成には対応していません")
+
+    source_order = tuple(
+        item.casefold()
+        for item in _configuration_value(training, "instruments", (list, tuple))
+        if isinstance(item, str)
+    )
+    if (
+        not source_order
+        or len(source_order) != len(set(source_order))
+        or any(source not in STEM_NAMES for source in source_order)
+    ):
+        raise ValueError(
+            "BS-RoFormer構成のtraining.instrumentsには重複しない標準成分名が必要です"
+        )
+    num_stems = _configuration_value(model, "num_stems", int)
+    if num_stems != len(source_order):
+        raise ValueError(
+            "BS-RoFormer構成のnum_stemsとtraining.instrumentsの件数が一致しません"
+        )
+
+    freqs_per_bands = _configuration_value(model, "freqs_per_bands", (list, tuple))
+    if not all(isinstance(value, int) and value > 0 for value in freqs_per_bands):
+        raise ValueError("BS-RoFormer構成のfreqs_per_bandsが不正です")
+    model_options = {
+        "dimension": _configuration_value(model, "dim", int),
+        "depth": _configuration_value(model, "depth", int),
+        "stereo": True,
+        "num_stems": num_stems,
+        "time_transformer_depth": _configuration_value(
+            model, "time_transformer_depth", int
+        ),
+        "frequency_transformer_depth": _configuration_value(
+            model, "freq_transformer_depth", int
+        ),
+        "linear_transformer_depth": 0,
+        "freqs_per_bands": tuple(freqs_per_bands),
+        "head_dimension": _configuration_value(model, "dim_head", int),
+        "heads": _configuration_value(model, "heads", int),
+        "attention_dropout": _configuration_value(model, "attn_dropout", (int, float)),
+        "feed_forward_dropout": _configuration_value(model, "ff_dropout", (int, float)),
+        "flash_attention": _configuration_value(model, "flash_attn", bool),
+        "stft_n_fft": _configuration_value(model, "stft_n_fft", int),
+        "stft_hop_length": _configuration_value(model, "stft_hop_length", int),
+        "stft_win_length": _configuration_value(model, "stft_win_length", int),
+        "stft_normalized": _configuration_value(model, "stft_normalized", bool),
+        "mask_estimator_depth": _configuration_value(model, "mask_estimator_depth", int),
+        "mlp_expansion_factor": _configuration_value(model, "mlp_expansion_factor", int),
+        "skip_connection": _configuration_value(model, "skip_connection", bool, False),
+    }
+    model_stat = model_path.stat()
+    configuration_stat = configuration_path.stat()
+    cache_token = hashlib.sha256(
+        (
+            f"{model_stat.st_size}:"
+            f"{model_stat.st_mtime_ns}:"
+            f"{configuration_stat.st_mtime_ns}"
+        ).encode()
+    ).hexdigest()[:12]
+    return StemModelProfile(
+        key=f"bs-roformer-{model_directory.name.casefold()}",
+        display_name=f"BS-RoFormer {model_path.stem}",
+        relative_directory=model_directory,
+        model_file=model_path.name,
+        model_sha256="",
+        source_order=source_order,
+        num_stems=num_stems,
+        segment_samples=_configuration_value(audio, "chunk_size", int),
+        num_overlap=_configuration_value(inference, "num_overlap", int),
+        batch_size=_configuration_value(inference, "batch_size", int),
+        attention_dropout=float(model_options["attention_dropout"]),
+        feed_forward_dropout=float(model_options["feed_forward_dropout"]),
+        model_options=model_options,
+        model_size_bytes=model_stat.st_size,
+        configuration_path=configuration_path,
+        cache_token=cache_token,
+    )
+
+
 def _stem_profile_for_directory(
     model_directory: Path,
 ) -> StemModelProfile | None:
-    if (model_directory / BS_ROFORMER_SW_MODEL_FILE).is_file():
+    default_path = model_directory / BS_ROFORMER_SW_MODEL_FILE
+    if default_path.is_file() and not _configuration_paths(
+        model_directory, default_path
+    ):
         return BS_ROFORMER_SW_PROFILE
-    return None
+    return _external_stem_profile(model_directory)
 
 
 def configured_stem_model() -> tuple[Path, StemModelProfile]:
-    configured = os.getenv("EARCOPY_STEM_MODEL_DIR")
-    candidates = (
-        [
-            Path(configured),
-            Path(configured) / "bs-roformer" / "sw-fixed",
-            Path(configured) / "sw-fixed",
-        ]
-        if configured
-        else [BS_ROFORMER_SW_PROFILE.relative_directory]
-    )
+    candidates = _stem_model_candidates()
+    configuration_errors: list[str] = []
     for candidate in candidates:
-        profile = _stem_profile_for_directory(candidate)
+        try:
+            profile = _stem_profile_for_directory(candidate)
+        except ValueError as exc:
+            configuration_errors.append(str(exc))
+            continue
         if profile is not None:
             return candidate.resolve(), profile
-    expectations = [
-        f"{candidate.resolve(strict=False)} ({BS_ROFORMER_SW_MODEL_FILE})"
-        for candidate in candidates
-    ]
+    expectations = [str(candidate.resolve(strict=False)) for candidate in candidates]
+    detail = " / ".join(configuration_errors)
     raise FileNotFoundError(
         "音源分離モデルが見つかりません。配置先: "
         + " / ".join(expectations)
+        + (f"。{detail}" if detail else "")
     )
 
 
@@ -217,11 +432,15 @@ def stem_model_status() -> dict[str, bool | str | int]:
             "reason": str(exc),
         }
     else:
+        model_path = model_directory / profile.model_file
         status = {
             **common,
             "available": True,
             "modelDirectory": str(model_directory),
             "modelName": profile.display_name,
+            "modelFileName": profile.model_file,
+            "modelSizeBytes": model_path.stat().st_size,
+            "modelSha256": profile.model_sha256,
             "reason": "",
         }
     return status
@@ -329,6 +548,8 @@ def _validate_model(
         raise FileNotFoundError(
             f"{profile.display_name}モデルが見つかりません: {model_path}"
         )
+    if not profile.model_sha256:
+        return model_path
     actual_model = _sha256(model_path)
     if actual_model != profile.model_sha256:
         raise ValueError(
@@ -351,27 +572,7 @@ def _load_stem_model(
 
     from ._vendor.bs_roformer import BSRoformer
 
-    model = BSRoformer(
-        dimension=256,
-        depth=12,
-        stereo=True,
-        num_stems=profile.num_stems,
-        time_transformer_depth=1,
-        frequency_transformer_depth=1,
-        linear_transformer_depth=0,
-        head_dimension=64,
-        heads=8,
-        attention_dropout=profile.attention_dropout,
-        feed_forward_dropout=profile.feed_forward_dropout,
-        flash_attention=True,
-        stft_n_fft=2048,
-        stft_hop_length=512,
-        stft_win_length=2048,
-        stft_normalized=False,
-        mask_estimator_depth=2,
-        mlp_expansion_factor=4,
-        skip_connection=False,
-    )
+    model = BSRoformer(**profile.model_options)
 
     checkpoint = torch.load(
         model_path,
@@ -717,25 +918,25 @@ def _separated_stems_by_name(
             f"shape={tuple(separated.shape)}, sources={source_order}"
         )
     by_name = dict(zip(source_order, separated, strict=True))
-    missing = set(STEM_NAMES) - set(by_name)
-    if missing:
-        raise ValueError(f"分離結果に必要な成分がありません: {sorted(missing)}")
-    return {name: by_name[name] for name in STEM_NAMES}
+    unexpected = set(by_name) - set(STEM_NAMES)
+    if unexpected:
+        raise ValueError(
+            f"分離結果に未対応の成分があります: {sorted(unexpected)}"
+        )
+    return {name: by_name[name] for name in STEM_NAMES if name in by_name}
 
 
 def separation_output_stems(stems: list[Stem]) -> list[Stem]:
     by_type = {stem.type: stem for stem in stems}
-    missing = set(STEM_NAMES) - set(by_type)
-    if missing:
-        raise ValueError(
-            f"分離WAVを出力できないため、分離成分を確認してください: {sorted(missing)}"
-        )
-    return [by_type[name] for name in STEM_NAMES]
+    return [by_type[name] for name in STEM_NAMES if name in by_type]
 
 
-def _read_cached_stems(output_directory: Path) -> list[Stem] | None:
+def _read_cached_stems(
+    output_directory: Path,
+    source_order: tuple[str, ...] = STEM_NAMES,
+) -> list[Stem] | None:
     stems: list[Stem] = []
-    for stem_name in STEM_NAMES:
+    for stem_name in source_order:
         output_path = output_directory / f"{stem_name}.wav"
         if not output_path.is_file():
             return None
@@ -779,7 +980,11 @@ def separate_sources(
     progress_callback: Callable[[int, int], None] | None = None,
 ) -> list[Stem]:
     _check_cancelled(cancel_check)
-    cached = _read_cached_stems(output_directory)
+    repository = model_directory or configured_stem_model_directory()
+    profile = _stem_profile_for_directory(repository)
+    if profile is None:
+        raise ValueError(f"未対応の分離モデル構成です: {repository}")
+    cached = _read_cached_stems(output_directory, profile.source_order)
     if cached is not None:
         mark_cache_entry_used(output_directory)
         _maintain_stem_cache(output_directory)
@@ -789,10 +994,6 @@ def separate_sources(
     import torchaudio
     import soundfile
 
-    repository = model_directory or configured_stem_model_directory()
-    profile = _stem_profile_for_directory(repository)
-    if profile is None:
-        raise ValueError(f"未対応の分離モデル構成です: {repository}")
     _check_cancelled(cancel_check)
     log_backend_event(
         "stem-separation",
@@ -831,7 +1032,7 @@ def separate_sources(
 
     output_directory.mkdir(parents=True, exist_ok=True)
     stems: list[Stem] = []
-    for stem_name in STEM_NAMES:
+    for stem_name in profile.source_order:
         _check_cancelled(cancel_check)
         output_path = output_directory / f"{stem_name}.wav"
         audio = (

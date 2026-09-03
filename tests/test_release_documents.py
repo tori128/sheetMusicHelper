@@ -108,7 +108,7 @@ def test_stem_model_download_requires_acknowledgement_and_verifies_weight() -> N
     ).read_text(encoding="utf-8")
 
     for value in (
-        "ad54168acf271482ad51702953e162a385b8fdcb",
+        "enerjazzer/BS-ROFO-SW-Fixed/tree/main",
         "699_412_152",
         "24e7d35ee9c64415673d3fd33e06a67cac2c103c5df6267ba1576459c775916e",
         'license_status="Unknown"',
@@ -407,32 +407,17 @@ def test_user_guides_describe_current_input_editing_and_export_behavior() -> Non
         assert "saifu_solo.png" not in document
 
 
-def test_release_readme_describes_selectable_interface_languages() -> None:
-    release_readme = (
-        REPOSITORY_ROOT / "app/packaging/release/README.txt"
-    ).read_text(encoding="utf-8")
-    assert "日本語、英語、中国語" in release_readme
-    assert "Japanese, English, or Chinese" in release_readme
-    assert "The current application interface is Japanese" not in (
-        release_readme
+def test_release_package_uses_project_readme() -> None:
+    template_readme = (
+        REPOSITORY_ROOT / "app" / "packaging" / "release" / "README.txt"
     )
+    assert not template_readme.exists()
 
-    release_notes = (
-        REPOSITORY_ROOT / "app/packaging/release/RELEASE_NOTES.md"
+    release_script = (
+        REPOSITORY_ROOT / "app" / "packaging" / "build-release-package.ps1"
     ).read_text(encoding="utf-8")
-    for text in (
-        "日本語、英語、中国語",
-        "Japanese, English, and Chinese display languages",
-    ):
-        assert text in release_notes
-    for obsolete_text in (
-        "外れ拍に影響されにくい",
-        "半音経過音に影響されにくい",
-        "High-quality",
-        "less sensitive",
-        "linked Mute and Solo",
-    ):
-        assert obsolete_text not in release_notes
+    assert 'Join-Path $repositoryRoot "README.md"' in release_script
+    assert 'Join-Path $portableStage "README.md"' in release_script
 
 
 def test_release_instructions_use_action_oriented_wording() -> None:
@@ -443,7 +428,6 @@ def test_release_instructions_use_action_oriented_wording() -> None:
             "README.en.md",
             "docs/USER_GUIDE.md",
             "docs/USER_GUIDE.en.md",
-            "app/packaging/release/README.txt",
             "app/packaging/release/RELEASE_NOTES.md",
         )
     }
@@ -475,7 +459,7 @@ def test_notices_identify_bundled_assets_and_redistribution_constraints() -> Non
         "初期版で参照した範囲：音符イベント表示、ピアノロール、原音・SoundFont同期再生の設計",
         "モデル重みのライセンス表示：`Unknown`",
         "699412152",
-        "ad54168acf271482ad51702953e162a385b8fdcb",
+        "enerjazzer/BS-ROFO-SW-Fixed/tree/main",
         "24e7d35ee9c64415673d3fd33e06a67cac2c103c5df6267ba1576459c775916e",
         "5b85b6c2c61d10b2b91cddd41efcce7b25cd31c8271d511c73afafbef20b6fa3",
         "GNU Lesser General Public License version 2.1 or later",
@@ -802,6 +786,7 @@ def test_portable_build_includes_release_documents() -> None:
         "THIRD_PARTY_NOTICES.en.md",
         "docs\\USER_GUIDE.md",
         "docs\\USER_GUIDE.en.md",
+        'Join-Path $repositoryRoot "README.md"',
         "Unexpected model weights found in the release package",
         "GitHub Release asset must be smaller than 2 GiB",
         "status --porcelain --untracked-files=no",
@@ -855,18 +840,26 @@ def test_portable_build_includes_release_documents() -> None:
     ).read_text(encoding="utf-8")
     for required_text in (
         "${SOURCE_COMMIT}",
-        "win-x64.z01",
+        "win-x64.zxx",
         "win-x64.zip",
         "muscriptor-small.zip",
         "muscriptor-medium.zip",
         "muscriptor-large.z01",
         "muscriptor-large.zip",
         "7-Zip",
-        "FFmpeg",
-        "GNU LGPL version 2.1 or later",
-        "copyleft-sources.zip",
+        "README.md",
+        "docs/USER_GUIDE.md",
+        "docs/USER_GUIDE.en.md",
     ):
         assert required_text in release_notes
+    for unwanted_text in (
+        "SHA-256",
+        "FFmpeg",
+        "copyleft-sources.zip",
+        "最小ビルド",
+        "Unknown",
+    ):
+        assert unwanted_text not in release_notes
 
     assert not (
         REPOSITORY_ROOT / "app" / "packaging" / "release" / "EXTRACT.cmd"
@@ -881,7 +874,7 @@ def test_portable_build_includes_release_documents() -> None:
     assert not (release_template / "setup-models.ps1").exists()
     direct_download_files = {
         "models/bs-roformer/sw-fixed/PLACE_MODEL_FILES_HERE.txt": (
-            "BS-ROFO-SW-Fixed/resolve/ad54168acf271482ad51702953e162a385b8fdcb/BS-Rofo-SW-Fixed.ckpt?download=true",
+            "BS-ROFO-SW-Fixed/resolve/main/BS-Rofo-SW-Fixed.ckpt?download=true",
             "Unknown",
             "699412152 bytes",
             "24e7d35ee9c64415673d3fd33e06a67cac2c103c5df6267ba1576459c775916e",
@@ -957,6 +950,7 @@ def test_ci_and_native_build_configuration() -> None:
         "gh release upload",
         "SHA256SUMS.txt",
         "Refusing to modify a published release",
+        '"models\\muscriptor\\$Variant"',
     ):
         assert required_text in model_publisher
     assert not (
@@ -1173,7 +1167,7 @@ def test_model_destination_guides_include_download_sources() -> None:
     development_guides = {
         "bs-roformer/sw-fixed/PLACE_MODEL_FILES_HERE.txt": (
             "BS-Rofo-SW-Fixed.ckpt",
-            "https://huggingface.co/jarredou/BS-ROFO-SW-Fixed/resolve/ad54168acf271482ad51702953e162a385b8fdcb/BS-Rofo-SW-Fixed.ckpt?download=true",
+            "https://huggingface.co/enerjazzer/BS-ROFO-SW-Fixed/resolve/main/BS-Rofo-SW-Fixed.ckpt?download=true",
             "Unknown",
             "699412152 bytes",
             "24e7d35ee9c64415673d3fd33e06a67cac2c103c5df6267ba1576459c775916e",

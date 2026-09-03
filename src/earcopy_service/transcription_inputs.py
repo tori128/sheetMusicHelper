@@ -213,21 +213,31 @@ class TranscriptionInputBuilder:
     ) -> list[tuple[str, dict[str, UUID], Path]]:
         route_specs: list[tuple[str, dict[str, UUID], Path]] = []
         automatic = settings.automatic_instruments
+        deferred_track_ids: dict[str, UUID] = {}
 
-        drum_track_ids = track_ids_by_stem["drums"]
-        if drum_track_ids:
-            route_specs.append(("drums", drum_track_ids, stem_paths["drums"]))
+        def route_or_defer(
+            name: str,
+            track_ids: dict[str, UUID],
+        ) -> None:
+            if not track_ids:
+                return
+            source_path = stem_paths.get(name)
+            if source_path is None:
+                deferred_track_ids.update(track_ids)
+                return
+            route_specs.append((name, track_ids, source_path))
+
+        route_or_defer("drums", track_ids_by_stem.get("drums", {}))
 
         bass_track_ids = self._family_tracks(
-            track_ids_by_stem["bass"],
+            track_ids_by_stem.get("bass", {}),
             BASS_FAMILY_PREFERENCES,
             automatic,
             settings.expand_fixed_instrument_families,
         )
-        if bass_track_ids:
-            route_specs.append(("bass", bass_track_ids, stem_paths["bass"]))
+        route_or_defer("bass", bass_track_ids)
 
-        other_track_ids = track_ids_by_stem["other"]
+        other_track_ids = track_ids_by_stem.get("other", {})
         selected_piano = {
             instrument_id: track_id
             for instrument_id, track_id in other_track_ids.items()
@@ -239,10 +249,7 @@ class TranscriptionInputBuilder:
             automatic,
             settings.expand_fixed_instrument_families,
         )
-        if piano_track_ids:
-            route_specs.append(
-                ("piano", piano_track_ids, stem_paths["piano"])
-            )
+        route_or_defer("piano", piano_track_ids)
 
         selected_guitar = {
             instrument_id: track_id
@@ -255,15 +262,9 @@ class TranscriptionInputBuilder:
             automatic,
             settings.expand_fixed_instrument_families,
         )
-        if guitar_track_ids:
-            route_specs.append(
-                ("guitar", guitar_track_ids, stem_paths["guitar"])
-            )
+        route_or_defer("guitar", guitar_track_ids)
 
-        if track_ids_by_stem["vocals"]:
-            route_specs.append(
-                ("vocals", track_ids_by_stem["vocals"], stem_paths["vocals"])
-            )
+        route_or_defer("vocals", track_ids_by_stem.get("vocals", {}))
 
         remainder_track_ids = {
             instrument_id: track_id
@@ -271,19 +272,25 @@ class TranscriptionInputBuilder:
             if instrument_id not in PIANO_INSTRUMENT_IDS
             and instrument_id not in GUITAR_INSTRUMENT_IDS
         }
-        sources = [stem_paths["other"]]
+        remainder_track_ids.update(deferred_track_ids)
+        fallback_audio = stem_paths.get("other")
+        if fallback_audio is None:
+            fallback_audio = next(iter(stem_paths.values()), None)
+        if fallback_audio is None:
+            return route_specs
+        sources = [fallback_audio]
         unclaimed: list[str] = []
-        if not piano_track_ids:
+        if not piano_track_ids and "piano" in stem_paths:
             sources.append(stem_paths["piano"])
             unclaimed.append("piano")
-        if not guitar_track_ids:
+        if not guitar_track_ids and "guitar" in stem_paths:
             sources.append(stem_paths["guitar"])
             unclaimed.append("guitar")
         remainder_audio = sources[0]
         if remainder_track_ids and len(sources) > 1:
             remainder_audio = self._stem_mixer(
                 sources,
-                stem_paths["other"].with_name(
+                fallback_audio.with_name(
                     f"other-with-{'-'.join(unclaimed)}.wav"
                 ),
                 self._cancelled,
@@ -319,7 +326,7 @@ class TranscriptionInputBuilder:
     ) -> TranscriptionInput:
         audio_path = source_path
         if enabled:
-            if input_name == "bass":
+            if input_name == "bass" and "drums" in stem_paths:
                 audio_path = self._bass_timing_guide_mixer(
                     source_path,
                     stem_paths["drums"],
@@ -332,7 +339,7 @@ class TranscriptionInputBuilder:
                 )
             else:
                 guide: tuple[Path, float, str] | None
-                if input_name == "drums":
+                if input_name == "drums" and "other" in stem_paths:
                     guide = (
                         stem_paths["other"],
                         DRUM_INPUT_OTHER_GUIDE_GAIN,
@@ -343,7 +350,7 @@ class TranscriptionInputBuilder:
                     "piano",
                     "guitar",
                     "other",
-                }:
+                } and "drums" in stem_paths:
                     guide = (
                         stem_paths["drums"],
                         pitched_guide_gain,

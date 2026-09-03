@@ -25,6 +25,7 @@ from earcopy_service.stem_separation import (
     _read_cached_stems,
     _separate_with_device,
     _separate_with_fallback,
+    configured_stem_model,
     export_stems,
     stem_model_status,
     validate_stem_model,
@@ -143,13 +144,19 @@ def test_export_stems_uses_required_names_and_preserves_bytes(tmp_path) -> None:
         assert output.read_bytes() == (cache / f"{stem_name}.wav").read_bytes()
 
 
-def test_export_stems_rejects_missing_or_modified_cache(tmp_path) -> None:
+def test_export_stems_handles_available_subset_and_rejects_modified_cache(
+    tmp_path,
+) -> None:
     source = tmp_path / "drums.wav"
     digest = _write_wav(source)
     stems = [Stem(type="drums", cachePath=str(source), sha256=digest)]
 
-    with pytest.raises(ValueError, match="出力できない"):
-        export_stems(stems, tmp_path / "output", "song")
+    outputs = export_stems(stems, tmp_path / "output", "song")
+    assert [output.name for output in outputs] == ["song_drums.wav"]
+
+    source.write_bytes(b"modified")
+    with pytest.raises(ValueError, match="ステムキャッシュ"):
+        export_stems(stems, tmp_path / "modified", "song")
 
 
 def test_mix_stems_for_transcription_preserves_alignment_and_sum(
@@ -411,6 +418,60 @@ def test_stem_model_status_reports_external_availability(
     assert available["modelDirectory"] == str(model_directory.resolve())
     assert available["modelName"] == "BS-RoFormer SW Fixed"
     assert available["reason"] == ""
+
+
+def test_stem_model_uses_external_bs_roformer_yaml_configuration(
+    monkeypatch,
+    tmp_path,
+) -> None:
+    model_directory = tmp_path / "models" / "bs-roformer" / "four-stem"
+    model_directory.mkdir(parents=True)
+    (model_directory / "four-stem.ckpt").write_bytes(b"external-model")
+    (model_directory / "four-stem.yaml").write_text(
+        """
+audio:
+  chunk_size: 588800
+  num_channels: 2
+  sample_rate: 44100
+model:
+  dim: 256
+  depth: 12
+  stereo: true
+  num_stems: 4
+  time_transformer_depth: 1
+  freq_transformer_depth: 1
+  linear_transformer_depth: 0
+  freqs_per_bands: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 12, 12, 12, 12, 12, 12, 12, 12, 24, 24, 24, 24, 24, 24, 24, 24, 48, 48, 48, 48, 48, 48, 48, 48, 128, 129]
+  dim_head: 64
+  heads: 8
+  attn_dropout: 0.1
+  ff_dropout: 0.1
+  flash_attn: true
+  stft_n_fft: 2048
+  stft_hop_length: 512
+  stft_win_length: 2048
+  stft_normalized: false
+  mask_estimator_depth: 2
+  mlp_expansion_factor: 4
+  skip_connection: false
+training:
+  instruments: [bass, drums, other, vocals]
+inference:
+  batch_size: 1
+  num_overlap: 2
+""".strip(),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("EARCOPY_STEM_MODEL_DIR", str(tmp_path / "models"))
+
+    directory, profile = configured_stem_model()
+    status = stem_model_status()
+
+    assert directory == model_directory.resolve()
+    assert profile.model_file == "four-stem.ckpt"
+    assert profile.source_order == ("bass", "drums", "other", "vocals")
+    assert status["available"] is True
+    assert status["modelSha256"] == ""
 
 
 def test_stem_model_validation_rejects_wrong_hash(tmp_path) -> None:

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "earcopy-assist"
-version = "0.1.0"
+version = "0.1.1"
 description = "耳コピ補助アプリのローカルサービスとプロジェクト基盤"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -19,6 +19,7 @@ dependencies = [
   "numpy>=1.26,<2",
   "packaging>=24,<27",
   "pydantic>=2.10,<3",
+  "pyyaml>=6,<7",
   "rotary-embedding-torch>=0.8.9,<0.10",
   "scipy>=1.13,<2",
   "soundfile>=0.12,<1",

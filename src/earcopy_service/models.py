@@ -224,7 +224,7 @@ class Stem(SchemaModel):
 
 class Project(SchemaModel):
     format_version: Literal[5] = Field(default=5, alias="formatVersion")
-    app_version: str = Field(default="0.1.0", alias="appVersion")
+    app_version: str = Field(default="0.1.1", alias="appVersion")
     project_id: UUID = Field(default_factory=uuid4, alias="projectId")
     name: str = Field(min_length=1, max_length=240)
     source_audio: SourceAudio | None = Field(default=None, alias="sourceAudio")
