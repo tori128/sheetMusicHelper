@@ -117,7 +117,7 @@ jobs:
       - name: Install desktop dependencies
         timeout-minutes: 15
         working-directory: app
-        run: npm ci --omit=optional
+        run: npm ci
 
       - name: Run Python tests
         timeout-minutes: 20
@@ -197,6 +197,18 @@ jobs:
           --distpath backend-dist
           --workpath backend-build
           packaging/earcopy_service.spec
+
+      - name: Remove unused native WebGL module
+        shell: pwsh
+        working-directory: app
+        run: |
+          $glModule = Join-Path $PWD "node_modules\gl"
+          if (Test-Path -LiteralPath $glModule) {
+            Remove-Item -LiteralPath $glModule -Recurse -Force
+          }
+          if (Test-Path -LiteralPath $glModule) {
+            throw "The native WebGL module remains in the package input."
+          }
 
       - name: Package desktop application
         timeout-minutes: 30
