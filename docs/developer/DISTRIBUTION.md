@@ -38,7 +38,7 @@ Music-Source-Separation-TrainingリポジトリはMITだが、チェックポイ
 配布方針は次のとおりである。
 
 - BS-RoFormer SW Fixed：Windows本体パッケージには同梱せず、アプリ内の警告確認後に取得する。
-- MuScriptor small／medium／large：CC BY-NC 4.0が非商用目的の複製と共有を許諾するため、改変せず同梱する。
+- MuScriptor small／medium／large：CC BY-NC 4.0が非商用目的の複製と共有を許諾するため、改変せず同じGitHub Releaseのモデルアーカイブとして配布する。
 
 ### LGPLコンポーネント
 
@@ -86,8 +86,9 @@ Python-SoXR 1.1.0も含まれる。
 
 ### MuScriptorモデル
 
-MuScriptor small、medium、largeのモデル重みを改変せず
-`resources/models/muscriptor/<variant>/model.safetensors`へ同梱する。公開文書と起動時の
+MuScriptor small、medium、largeのモデル重みを改変せずモデルアーカイブとして配布する。
+利用者はWindows本体を展開した親フォルダーへ各モデルアーカイブを展開し、
+`resources/models/muscriptor/<variant>/model.safetensors`へ配置する。公開文書と起動時の
 確認画面には次の情報を記載する。
 
 - モデルは非商用用途に制限される。
@@ -170,10 +171,9 @@ Renderer応答不能時の終了回帰を実行する。
 #### GitHub Actionsによるパッケージ化
 
 `.github/workflows/windows-release.yml`は手動実行だけを受け付け、GitHubの
-`windows-release` environmentを使用する。ジョブはGitHubが管理するWindows x64 larger
-runnerの`earcopy-release`ラベルで実行する。標準のGitHub-hosted Windows runnerはSSDが
-14 GBであり、このパッケージ化には使用できない。GitHub組織で150 GB SSD以上のWindows
-larger runnerを作成し、runner groupの利用リポジトリをこのリポジトリに限定する。
+`windows-release` environmentを使用する。Windows本体は標準GitHub-hosted Windows runnerで
+作成する。MuScriptorの各モデルは別ジョブで1モデルずつ取得、検査、アーカイブ化し、同じ
+draft Releaseへ追加する。標準runnerの作業領域には、Windows本体と全モデルを同時に配置しない。
 
 `windows-release` environmentには、MuScriptor small、medium、largeの利用条件へ同意済みの
 Hugging Faceアカウントのread tokenを、Secret `HF_TOKEN`として設定する。ワークフローは
@@ -192,11 +192,10 @@ models/muscriptor/
    └─ config.json
 ```
 
-モデル6ファイルの合計は7,105,675,208 bytesである。ワークフローはハッシュ検査済みの
-モデルディレクトリをGitHub Actions Cacheへ保存し、利用可能なキャッシュがあれば再利用する。
-キャッシュがない実行ではモデルを再取得する。作業ドライブの空き容量が61.62 GiB未満の
-場合、パッケージ化を開始しない。Windows本体パッケージで許可するモデル重みはMuScriptorの
-3ファイルである。
+モデル6ファイルの合計は7,105,675,208 bytesである。ワークフローはモデルごとにハッシュ検査済みの
+ディレクトリをGitHub Actions Cacheへ保存し、利用可能なキャッシュがあれば再利用する。
+キャッシュがない実行では該当モデルだけを再取得する。モデル資産はGitHub Releaseの1ファイル
+2 GiB制限に合わせて標準の分割ZIPで配布する。Windows本体パッケージにはモデル重みを含めない。
 
 Node.js 24、Python 3.11、uv、MSYS2 MINGW64はワークフローが各GitHub Actionで設定する。
 MSYS2の実際のインストール先は`EARCOPY_MSYS2_ROOT`としてFFmpegとlibsndfileのビルドへ渡す。

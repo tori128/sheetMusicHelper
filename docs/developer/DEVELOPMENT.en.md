@@ -20,7 +20,7 @@ cd app
 npm ci
 ```
 
-Place model files used for local validation under `models/`. The three MuScriptor model weights remain outside Git and are copied to `resources/models/muscriptor/` when building the Windows package. The Windows application package excludes BS-RoFormer SW Fixed. When it is absent, the new-project screen displays its `Unknown` license status, distribution page, 699,412,152-byte size, destination, and SHA-256. After the user acknowledges the warning, the local Python service downloads the file from a URL for a specific commit into a temporary file and moves it to `models/bs-roformer/sw-fixed/` only after the size and SHA-256 match.
+Place model files used for local validation under `models/`. The three MuScriptor model weights remain outside Git and are built as model archives separate from the Windows application package. Users extract the model archives beside the Windows package to place them under `resources/models/muscriptor/`. The Windows application package excludes BS-RoFormer SW Fixed. When it is absent, the new-project screen displays its `Unknown` license status, distribution page, 699,412,152-byte size, destination, and SHA-256. After the user acknowledges the warning, the local Python service downloads the file from a URL for a specific commit into a temporary file and moves it to `models/bs-roformer/sw-fixed/` only after the size and SHA-256 match.
 
 ```text
 models/
@@ -149,4 +149,4 @@ git check-ignore -v models/muscriptor/small/model.safetensors
 git check-ignore -v models/bs-roformer/sw-fixed/BS-Rofo-SW-Fixed.ckpt
 ```
 
-Follow the [Release and Distribution Checklist](DISTRIBUTION.en.md) for Windows builds, corresponding source, licenses, and pre-release validation. To build the Windows package with GitHub Actions, use the GitHub-hosted Windows larger runner and `HF_TOKEN` Secret described under [Packaging with GitHub Actions](DISTRIBUTION.en.md#packaging-with-github-actions).
+Follow the [Release and Distribution Checklist](DISTRIBUTION.en.md) for Windows builds, corresponding source, licenses, and pre-release validation. To build the Windows package with GitHub Actions, use the standard GitHub-hosted Windows runner and `HF_TOKEN` Secret described under [Packaging with GitHub Actions](DISTRIBUTION.en.md#packaging-with-github-actions).

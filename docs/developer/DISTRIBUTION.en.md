@@ -30,7 +30,7 @@ Pre-release validation requires exactly three model-weight files in the Windows 
 The distribution decisions are as follows.
 
 - BS-RoFormer SW Fixed: downloaded after the in-application warning is acknowledged and excluded from the Windows application package.
-- MuScriptor small, medium, and large: included without modification because CC BY-NC 4.0 permits reproduction and sharing for non-commercial purposes.
+- MuScriptor small, medium, and large: distributed without modification as model archives on the same GitHub Release because CC BY-NC 4.0 permits reproduction and sharing for non-commercial purposes.
 
 ### LGPL Components
 
@@ -66,7 +66,7 @@ This method publishes complete source for the LGPL components beside the binarie
 
 ### MuScriptor Models
 
-Include the unmodified MuScriptor small, medium, and large weights under `resources/models/muscriptor/<variant>/model.safetensors`. Public documents and the startup confirmation screen state the following facts.
+Distribute the unmodified MuScriptor small, medium, and large weights as model archives. Users extract each archive into the parent folder containing the Windows package to place the files under `resources/models/muscriptor/<variant>/model.safetensors`. Public documents and the startup confirmation screen state the following facts.
 
 - The models are restricted to non-commercial use.
 - EarCopy Assist terms and model terms are separate.
@@ -131,7 +131,7 @@ The standard `.github/workflows/ci.yml` runs tests that require no model weights
 
 #### Packaging with GitHub Actions
 
-`.github/workflows/windows-release.yml` accepts manual dispatch only and uses the GitHub `windows-release` environment. The job runs on a GitHub-managed Windows x64 larger runner labeled `earcopy-release`. A standard GitHub-hosted Windows runner has 14 GB SSD storage and cannot build this distribution. Create a Windows larger runner with at least 150 GB SSD storage in a GitHub organization and restrict its runner group to this repository.
+`.github/workflows/windows-release.yml` accepts manual dispatch only and uses the GitHub `windows-release` environment. The Windows application package is built on a standard GitHub-hosted Windows runner. A separate job downloads, validates, and archives one MuScriptor model at a time, then adds it to the same draft Release. The standard runner workspace never contains the Windows package and every model at the same time.
 
 Set Secret `HF_TOKEN` in the `windows-release` environment to a read token for a Hugging Face account that has accepted the MuScriptor small, medium, and large terms. The workflow downloads and validates the size and SHA-256 of the following six files from the official MuScriptor repositories.
 
@@ -148,7 +148,7 @@ models/muscriptor/
    └─ config.json
 ```
 
-The six model files total 7,105,675,208 bytes. The workflow saves the validated model directory in GitHub Actions Cache and reuses it when available. A cache miss downloads the models again. The build drive requires at least 61.62 GiB free before packaging starts. The Windows application package permits only the three MuScriptor model-weight files.
+The six model files total 7,105,675,208 bytes. The workflow stores each validated model directory in GitHub Actions Cache and reuses it when available. A cache miss downloads only the affected model. Model assets are standard split ZIP archives to meet GitHub Release's 2 GiB per-file limit. The Windows application package contains no model weights.
 
 GitHub Actions configures Node.js 24, Python 3.11, uv, and MSYS2 MINGW64. The workflow passes the actual MSYS2 installation directory to FFmpeg and libsndfile builds as `EARCOPY_MSYS2_ROOT`.
 

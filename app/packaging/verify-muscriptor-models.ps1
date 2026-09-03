@@ -1,4 +1,8 @@
-param([string]$ModelRoot)
+param(
+    [string]$ModelRoot,
+    [ValidateSet("small", "medium", "large")]
+    [string]$Variant
+)
 
 $ErrorActionPreference = "Stop"
 Import-Module Microsoft.PowerShell.Utility -ErrorAction Stop
@@ -28,6 +32,10 @@ $models = @(
         ConfigSha256 = "16bedd02b18770e43740419b0d5777f231047e96e8987f498e8a1123c39c9852"
     }
 )
+
+if (-not [string]::IsNullOrWhiteSpace($Variant)) {
+    $models = @($models | Where-Object { $_.Variant -eq $Variant })
+}
 
 foreach ($model in $models) {
     $variantRoot = Join-Path $modelRoot $model.Variant
@@ -64,4 +72,8 @@ foreach ($model in $models) {
     }
 }
 
-Write-Output "MuScriptor small, medium, and large models are ready for packaging."
+if ([string]::IsNullOrWhiteSpace($Variant)) {
+    Write-Output "MuScriptor small, medium, and large models are ready for packaging."
+} else {
+    Write-Output "MuScriptor $Variant model is ready for packaging."
+}

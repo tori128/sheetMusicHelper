@@ -27,7 +27,7 @@ Hugging Faceから取得します。`Unknown`は利用許諾を意味しませ�
 
 ### モデル重み
 
-EarCopy Assistは公式の`small`、`medium`、`large`モデル重みを改変せず同梱します。
+EarCopy AssistのGitHub Releaseは、公式の`small`、`medium`、`large`モデル重みを改変せずモデルアーカイブとして配布します。
 モデル重みには[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)が適用され、利用と再配布は非商用目的に制限されます。
 作成者はKyutaiおよびMireloです。各モデルの公式ページには、入力する音楽と生成物、法令遵守、無保証、補償に関する追加条件も掲載されています。
 入力する楽曲について、著作権その他の必要な権利または許諾を保有する必要があります。

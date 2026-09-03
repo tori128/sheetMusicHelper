@@ -96,9 +96,6 @@ $windowsParts = @(
             [int]([regex]::Match($_.Name, $partNamePattern).Groups[1].Value)
         }
 )
-if ($windowsParts.Count -lt 1) {
-    throw "At least one .zNN Windows ZIP volume is required."
-}
 for ($index = 0; $index -lt $windowsParts.Count; $index++) {
     $expectedName = "$portableName.z{0:D2}" -f ($index + 1)
     if ($windowsParts[$index].Name -ne $expectedName) {
@@ -222,13 +219,7 @@ try {
         "$portableName/resources/backend/_internal/torch/lib/torch_cuda.dll",
         "$portableName/resources/backend/_internal/torch/lib/cublasLt64_12.dll",
         "$portableName/resources/soundfonts/MuseScore_General.sf3",
-        "$portableName/resources/licenses/MuScriptor/MODEL_NOTICE.txt",
-        "$portableName/resources/models/muscriptor/small/model.safetensors",
-        "$portableName/resources/models/muscriptor/small/config.json",
-        "$portableName/resources/models/muscriptor/medium/model.safetensors",
-        "$portableName/resources/models/muscriptor/medium/config.json",
-        "$portableName/resources/models/muscriptor/large/model.safetensors",
-        "$portableName/resources/models/muscriptor/large/config.json"
+        "$portableName/resources/licenses/MuScriptor/MODEL_NOTICE.txt"
     )
     foreach ($entry in $requiredWindowsEntries) {
         if ($entry -notin $windowsEntries) {
@@ -236,20 +227,12 @@ try {
         }
     }
 
-    $allowedModelWeights = @(
-        "$portableName/resources/models/muscriptor/small/model.safetensors",
-        "$portableName/resources/models/muscriptor/medium/model.safetensors",
-        "$portableName/resources/models/muscriptor/large/model.safetensors"
-    )
     $forbiddenWindowsEntries = @(
         $windowsEntries |
             Where-Object {
                 $_ -match "(^|/)UserData(/|$)" -or
                 $_ -match "\.(ecaproj|wav|mp3|m4a|flac|ogg|aac|log|dmp)$" -or
-                (
-                    $_ -match "\.(safetensors|ckpt|pt|pth|onnx|th|gguf)$" -and
-                    $_ -notin $allowedModelWeights
-                )
+                $_ -match "\.(safetensors|ckpt|pt|pth|onnx|th|gguf)$"
             }
     )
     if ($forbiddenWindowsEntries.Count -ne 0) {

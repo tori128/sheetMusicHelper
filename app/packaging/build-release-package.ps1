@@ -265,16 +265,10 @@ $forbiddenWeightExtensions = @(
     ".th",
     ".gguf"
 )
-$allowedWeightPaths = @(
-    (Join-Path $portableStage "resources\models\muscriptor\small\model.safetensors"),
-    (Join-Path $portableStage "resources\models\muscriptor\medium\model.safetensors"),
-    (Join-Path $portableStage "resources\models\muscriptor\large\model.safetensors")
-)
 $unexpectedWeights = @(
     Get-ChildItem -LiteralPath $portableStage -Recurse -File |
         Where-Object {
-            $_.Extension.ToLowerInvariant() -in $forbiddenWeightExtensions -and
-            $_.FullName -notin $allowedWeightPaths
+            $_.Extension.ToLowerInvariant() -in $forbiddenWeightExtensions
         }
 )
 if ($unexpectedWeights.Count -ne 0) {
@@ -299,12 +293,6 @@ $requiredPortableFiles = @(
     "resources\licenses\THIRD_PARTY_NOTICES.en.md",
     "resources\licenses\MuseScore_General\LICENSE.md",
     "resources\licenses\MuScriptor\MODEL_NOTICE.txt",
-    "resources\models\muscriptor\small\model.safetensors",
-    "resources\models\muscriptor\small\config.json",
-    "resources\models\muscriptor\medium\model.safetensors",
-    "resources\models\muscriptor\medium\config.json",
-    "resources\models\muscriptor\large\model.safetensors",
-    "resources\models\muscriptor\large\config.json",
     "resources\backend\earcopy_service.exe",
     "resources\backend\_internal\tools\ffmpeg.exe",
     "resources\backend\_internal\tools\ffprobe.exe",
@@ -321,25 +309,6 @@ $requiredPortableFiles = @(
 foreach ($relativePath in $requiredPortableFiles) {
     if (-not (Test-Path -LiteralPath (Join-Path $portableStage $relativePath) -PathType Leaf)) {
         throw "Required release file is missing: $relativePath"
-    }
-}
-
-$expectedMuScriptorHashes = [ordered]@{
-    "resources\models\muscriptor\small\model.safetensors" = "bbd482c786b895cf7d8f44185073d951adae2ebb8a66f82ca84cd1f84569549c"
-    "resources\models\muscriptor\small\config.json" = "3008fc481e4a1cd978e337eb3759260c270892204db5039235ac939e1f42aeb2"
-    "resources\models\muscriptor\medium\model.safetensors" = "ac80adbdf85d87231735fd948af7013441c0afced316c4e9067fd5d8a7fb97ec"
-    "resources\models\muscriptor\medium\config.json" = "43e13a70fc9ae0af36b7447c06f3eac2282daeb69d79c1ff840ede7fdaa26a3b"
-    "resources\models\muscriptor\large\model.safetensors" = "ac4eb6ea87dfc26b6ca6b954c6b967ab87ad4c7d08e078b25214f13ed051f397"
-    "resources\models\muscriptor\large\config.json" = "16bedd02b18770e43740419b0d5777f231047e96e8987f498e8a1123c39c9852"
-}
-foreach ($entry in $expectedMuScriptorHashes.GetEnumerator()) {
-    $actualHash = (
-        Get-FileHash `
-            -LiteralPath (Join-Path $portableStage $entry.Key) `
-            -Algorithm SHA256
-    ).Hash.ToLowerInvariant()
-    if ($actualHash -ne $entry.Value) {
-        throw "Packaged MuScriptor SHA-256 mismatch: $($entry.Key)"
     }
 }
 
@@ -446,8 +415,8 @@ $windowsVolumes = @(
         } |
         Sort-Object @{ Expression = { $_.Name -eq "$portableName.zip" } }, Name
 )
-if ($windowsVolumes.Count -lt 2) {
-    throw "Windows archive was not split into multiple standard ZIP volumes."
+if ($windowsVolumes.Count -lt 1) {
+    throw "Windows ZIP archive was not created."
 }
 foreach ($volume in $windowsVolumes) {
     Assert-GitHubAssetSize -Path $volume.FullName

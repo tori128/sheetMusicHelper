@@ -18,11 +18,9 @@ concurrency:
 jobs:
   build:
     name: Build draft release
-    runs-on: earcopy-release
-    environment: windows-release
+    runs-on: windows-latest
     timeout-minutes: 300
     env:
-      HF_TOKEN: ${{ secrets.HF_TOKEN }}
       NPM_CONFIG_PROGRESS: "false"
       UV_LINK_MODE: copy
       UV_NO_PROGRESS: "1"
@@ -40,13 +38,6 @@ jobs:
       - name: Check repository hygiene
         shell: pwsh
         run: ./scripts/check_repository_hygiene.ps1
-
-      - name: Restore MuScriptor model cache
-        id: muscriptor_model_cache
-        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
-        with:
-          path: models/muscriptor
-          key: muscriptor-${{ runner.os }}-${{ hashFiles('app/packaging/verify-muscriptor-models.ps1') }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -123,21 +114,6 @@ jobs:
         timeout-minutes: 25
         run: uv sync --extra dev --locked
 
-      - name: Download MuScriptor models
-        if: steps.muscriptor_model_cache.outputs.cache-hit != 'true'
-        timeout-minutes: 45
-        run: uv run python scripts/download_ci_muscriptor_models.py
-
-      - name: Verify MuScriptor models
-        run: ./app/packaging/verify-muscriptor-models.ps1
-
-      - name: Save MuScriptor model cache
-        if: steps.muscriptor_model_cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
-        with:
-          path: models/muscriptor
-          key: ${{ steps.muscriptor_model_cache.outputs.cache-primary-key }}
-
       - name: Install desktop dependencies
         timeout-minutes: 15
         working-directory: app
@@ -156,10 +132,6 @@ jobs:
         timeout-minutes: 10
         working-directory: app
         run: npm run typecheck
-
-      - name: Verify models for packaging
-        working-directory: app
-        run: npm run verify:muscriptor-models
 
       - name: Restore LGPL FFmpeg cache
         id: ffmpeg_cache_restore
@@ -274,3 +246,128 @@ jobs:
         run: >-
           ./scripts/publish_draft_release.ps1
           -RequestedTag $env:REQUESTED_TAG
+
+  publish-muscriptor-models:
+    name: Add MuScriptor model assets
+    needs: build
+    runs-on: windows-latest
+    environment: windows-release
+    timeout-minutes: 240
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      REQUESTED_TAG: ${{ inputs.release_tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          clean: true
+          persist-credentials: false
+
+      - name: Remove previous build outputs
+        shell: pwsh
+        run: ./scripts/cleanup_ci_release_build.ps1 -Phase BeforeBuild
+
+      - name: Set up MSYS2 ZIP
+        id: setup_model_msys2
+        uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884 # v2
+        with:
+          msystem: MINGW64
+          release: true
+          update: false
+          install: zip
+
+      - name: Configure model archive command
+        shell: pwsh
+        env:
+          MSYS2_LOCATION: ${{ steps.setup_model_msys2.outputs.msys2-location }}
+        run: |
+          $zipExecutable = Join-Path $env:MSYS2_LOCATION "usr\bin\zip.exe"
+          if (-not (Test-Path -LiteralPath $zipExecutable -PathType Leaf)) {
+            throw "Info-ZIP zip.exe was not found: $zipExecutable"
+          }
+          "EARCOPY_ZIP_EXECUTABLE=$zipExecutable" |
+            Out-File $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Restore MuScriptor small cache
+        id: muscriptor_small_cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: models/muscriptor/small
+          key: muscriptor-small-${{ runner.os }}-${{ hashFiles('app/packaging/verify-muscriptor-models.ps1') }}
+
+      - name: Add MuScriptor small release asset
+        timeout-minutes: 45
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          ./scripts/publish_ci_muscriptor_model.ps1
+          -Variant small
+          -RequestedTag $env:REQUESTED_TAG
+
+      - name: Save MuScriptor small cache
+        if: steps.muscriptor_small_cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: models/muscriptor/small
+          key: ${{ steps.muscriptor_small_cache.outputs.cache-primary-key }}
+
+      - name: Remove MuScriptor small files
+        shell: pwsh
+        run: ./scripts/cleanup_ci_release_build.ps1 -Phase AfterPackaging
+
+      - name: Restore MuScriptor medium cache
+        id: muscriptor_medium_cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: models/muscriptor/medium
+          key: muscriptor-medium-${{ runner.os }}-${{ hashFiles('app/packaging/verify-muscriptor-models.ps1') }}
+
+      - name: Add MuScriptor medium release asset
+        timeout-minutes: 45
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          ./scripts/publish_ci_muscriptor_model.ps1
+          -Variant medium
+          -RequestedTag $env:REQUESTED_TAG
+
+      - name: Save MuScriptor medium cache
+        if: steps.muscriptor_medium_cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: models/muscriptor/medium
+          key: ${{ steps.muscriptor_medium_cache.outputs.cache-primary-key }}
+
+      - name: Remove MuScriptor medium files
+        shell: pwsh
+        run: ./scripts/cleanup_ci_release_build.ps1 -Phase AfterPackaging
+
+      - name: Restore MuScriptor large cache
+        id: muscriptor_large_cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: models/muscriptor/large
+          key: muscriptor-large-${{ runner.os }}-${{ hashFiles('app/packaging/verify-muscriptor-models.ps1') }}
+
+      - name: Add MuScriptor large release asset
+        timeout-minutes: 90
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          ./scripts/publish_ci_muscriptor_model.ps1
+          -Variant large
+          -RequestedTag $env:REQUESTED_TAG
+
+      - name: Save MuScriptor large cache
+        if: steps.muscriptor_large_cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: models/muscriptor/large
+          key: ${{ steps.muscriptor_large_cache.outputs.cache-primary-key }}
+
+      - name: Remove build intermediates
+        shell: pwsh
+        run: ./scripts/cleanup_ci_release_build.ps1 -Phase AfterPackaging

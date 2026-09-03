@@ -7,9 +7,13 @@ EarCopy AssistのWindows x64用ポータブルパッケージです。ZIPを展�
 
 ## ダウンロード
 
-- `EarCopyAssist-${VERSION}-win-x64.z01`: Windows版分割ZIPの先頭ボリューム
+- `EarCopyAssist-${VERSION}-win-x64.z01`: 存在する場合はWindows版分割ZIPの先頭ボリューム
 - `EarCopyAssist-${VERSION}-win-x64.z02`以降: 存在する場合は残りの全ボリューム
 - `EarCopyAssist-${VERSION}-win-x64.zip`: Windows版分割ZIPの最終ボリューム
+- `EarCopyAssist-${VERSION}-muscriptor-small.zip`: MuScriptor smallモデル
+- `EarCopyAssist-${VERSION}-muscriptor-medium.zip`: MuScriptor mediumモデル
+- `EarCopyAssist-${VERSION}-muscriptor-large.z01`以降: MuScriptor largeモデルの先頭から途中までのボリューム
+- `EarCopyAssist-${VERSION}-muscriptor-large.zip`: MuScriptor largeモデルの最終ボリューム
 - `EarCopyAssist-${VERSION}-copyleft-sources.zip`: LGPLコンポーネントの対応ソース
 - `SHA256SUMS.txt`: リリース資産のSHA-256
 
@@ -22,7 +26,7 @@ GitHub Releaseの1ファイル2 GiB制限内に収めています。
 
 ## 使用前の準備
 
-MuScriptor small、medium、largeのモデル重みは改変せず同梱しています。
+MuScriptor small、medium、largeのモデル重みは改変せず同じReleaseのモデルアーカイブで配布します。
 EarCopyAssist.exeの起動時にCC BY-NC 4.0と追加条件を確認してください。
 BS-RoFormer SW Fixedが未配置の場合は、新規プロジェクト画面でライセンス`Unknown`、
 配布ページ、699,412,152 bytes、SHA-256を確認してダウンロードします。
@@ -71,9 +75,13 @@ Source commit: [`${SOURCE_COMMIT}`](https://github.com/tori128/sheetMusicHelper/
 
 ## Download
 
-- `EarCopyAssist-${VERSION}-win-x64.z01`: First volume of the split Windows ZIP
+- `EarCopyAssist-${VERSION}-win-x64.z01`: First volume of the split Windows ZIP, when present
 - `EarCopyAssist-${VERSION}-win-x64.z02` and later: Every remaining volume, when present
 - `EarCopyAssist-${VERSION}-win-x64.zip`: Final volume of the split Windows ZIP
+- `EarCopyAssist-${VERSION}-muscriptor-small.zip`: MuScriptor small model
+- `EarCopyAssist-${VERSION}-muscriptor-medium.zip`: MuScriptor medium model
+- `EarCopyAssist-${VERSION}-muscriptor-large.z01` and later: MuScriptor large model split-ZIP volumes
+- `EarCopyAssist-${VERSION}-muscriptor-large.zip`: Final MuScriptor large model volume
 - `EarCopyAssist-${VERSION}-copyleft-sources.zip`: Corresponding source for LGPL components
 - `SHA256SUMS.txt`: SHA-256 checksums for release assets
 
@@ -85,7 +93,8 @@ Verify downloaded files against `SHA256SUMS.txt`.
 
 ## Setup
 
-MuScriptor small, medium, and large are included without modification. Review
+MuScriptor small, medium, and large are distributed without modification in
+the model archives on this Release. Review
 CC BY-NC 4.0 and the additional conditions when EarCopyAssist.exe starts.
 When BS-RoFormer SW Fixed is absent, review its `Unknown` license status,
 distribution page, 699,412,152-byte size, and SHA-256 on the new-project

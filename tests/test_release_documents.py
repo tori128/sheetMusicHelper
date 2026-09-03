@@ -663,7 +663,7 @@ def test_portable_build_includes_release_documents() -> None:
     scripts = package["scripts"]
     assert "assert:app-stopped" in scripts["dist:win"]
     assert "build:icon" in scripts["dist:win"]
-    assert "verify:muscriptor-models" in scripts["dist:win"]
+    assert "verify:muscriptor-models" not in scripts["dist:win"]
     assert "release-staging" in scripts["dist:win"]
     assert "promote-packaged-build.ps1" in scripts["dist:win"]
     assert "assert:app-stopped" in scripts["package:release"]
@@ -710,20 +710,7 @@ def test_portable_build_includes_release_documents() -> None:
     assert resources["licenses/THIRD_PARTY_NOTICES.en.md"] == (
         "../THIRD_PARTY_NOTICES.en.md"
     )
-    assert resources["models/muscriptor"] == "../models/muscriptor"
-    model_resource = next(
-        entry
-        for entry in package["build"]["extraResources"]
-        if entry["to"] == "models/muscriptor"
-    )
-    assert set(model_resource["filter"]) == {
-        "small/model.safetensors",
-        "small/config.json",
-        "medium/model.safetensors",
-        "medium/config.json",
-        "large/model.safetensors",
-        "large/config.json",
-    }
+    assert "models/muscriptor" not in resources
     model_verifier = (
         REPOSITORY_ROOT
         / "app"
@@ -737,6 +724,7 @@ def test_portable_build_includes_release_documents() -> None:
         'model_type -ne "muscriptor"',
         "model.safetensors",
         "config.json",
+        '[ValidateSet("small", "medium", "large")]',
     ):
         assert required_text in model_verifier
     assert "licenses/DISTRIBUTION.md" not in resources
@@ -803,10 +791,6 @@ def test_portable_build_includes_release_documents() -> None:
         "docs\\USER_GUIDE.md",
         "docs\\USER_GUIDE.en.md",
         "Unexpected model weights found in the release package",
-        "$allowedWeightPaths",
-        "resources\\models\\muscriptor\\small\\model.safetensors",
-        "resources\\models\\muscriptor\\medium\\model.safetensors",
-        "resources\\models\\muscriptor\\large\\model.safetensors",
         "GitHub Release asset must be smaller than 2 GiB",
         "status --porcelain --untracked-files=no",
         "$ApplicationRoot",
@@ -814,6 +798,8 @@ def test_portable_build_includes_release_documents() -> None:
         '${SOURCE_COMMIT}',
     ):
         assert required_text in release_script
+    assert "$allowedWeightPaths" not in release_script
+    assert "resources\\models\\muscriptor\\small\\model.safetensors" not in release_script
     assert 'Write-Output "Downloading corresponding source:' not in release_script
 
     release_verifier = (
@@ -830,17 +816,12 @@ def test_portable_build_includes_release_documents() -> None:
         "UserData",
         "githubAssetLimit",
         "Get-InfoZipExecutable",
-        "At least one .zNN Windows ZIP volume is required.",
         "Unable to reconstruct the standard split Windows ZIP.",
         "ffmpeg-8.1.2.tar.xz",
         "libsndfile-1.2.2.tar.xz",
         "soxr-1.1.0.tar.gz",
         "Local absolute path found in packaged libsndfile build information.",
         "Private data, user files, or unexpected model weights found in Windows archive",
-        "$allowedModelWeights",
-        "resources/models/muscriptor/small/model.safetensors",
-        "resources/models/muscriptor/medium/model.safetensors",
-        "resources/models/muscriptor/large/model.safetensors",
         "Sensitive text",
         "absolute Windows user path",
         "private key",
@@ -850,6 +831,8 @@ def test_portable_build_includes_release_documents() -> None:
         "Non-loopback IPv4 address",
     ):
         assert required_text in release_verifier
+    assert "$allowedModelWeights" not in release_verifier
+    assert "resources/models/muscriptor/small/model.safetensors" not in release_verifier
 
     release_notes = (
         REPOSITORY_ROOT
@@ -862,6 +845,10 @@ def test_portable_build_includes_release_documents() -> None:
         "${SOURCE_COMMIT}",
         "win-x64.z01",
         "win-x64.zip",
+        "muscriptor-small.zip",
+        "muscriptor-medium.zip",
+        "muscriptor-large.z01",
+        "muscriptor-large.zip",
         "7-Zip",
         "FFmpeg",
         "GNU LGPL version 2.1 or later",
@@ -899,13 +886,16 @@ def test_ci_and_native_build_configuration() -> None:
     release_workflow = release_workflow_path.read_text(encoding="utf-8")
     for required_text in (
         "workflow_dispatch:",
-        "runs-on: earcopy-release",
+        "runs-on: windows-latest",
         "environment: windows-release",
         "HF_TOKEN: ${{ secrets.HF_TOKEN }}",
         "actions/cache/restore",
         "actions/cache/save",
-        "download_ci_muscriptor_models.py",
-        "verify:muscriptor-models",
+        "publish-muscriptor-models:",
+        "publish_ci_muscriptor_model.ps1",
+        "muscriptor-small-${{ runner.os }}",
+        "muscriptor-medium-${{ runner.os }}",
+        "muscriptor-large-${{ runner.os }}",
         "steps.setup_msys2.outputs.msys2-location",
         "EARCOPY_MSYS2_ROOT",
         "EARCOPY_ZIP_EXECUTABLE",
@@ -923,23 +913,28 @@ def test_ci_and_native_build_configuration() -> None:
     assert "huggingface.co" not in release_workflow.lower()
     assert "self-hosted" not in release_workflow
     assert "MUSCRIPTOR_MODEL_ROOT" not in release_workflow
+    assert "earcopy-release" not in release_workflow
 
-    model_downloader = (
-        REPOSITORY_ROOT / "scripts" / "download_ci_muscriptor_models.py"
+    model_publisher = (
+        REPOSITORY_ROOT / "scripts" / "publish_ci_muscriptor_model.ps1"
     ).read_text(encoding="utf-8")
     for required_text in (
-        "from huggingface_hub import hf_hub_download",
-        'os.environ.get("HF_TOKEN")',
-        'MODEL_VARIANTS = ("small", "medium", "large")',
-        'MODEL_FILES = ("model.safetensors", "config.json")',
-        "MODEL_TOTAL_BYTES = 7_105_675_208",
-        "MINIMUM_FREE_BYTES = 55 * 1024**3",
-        'repository_id = f"MuScriptor/muscriptor-{variant}"',
-        "force_download=True",
+        '[ValidateSet("small", "medium", "large")]',
+        "HF_TOKEN",
+        "curl.exe",
+        "verify-muscriptor-models.ps1",
+        "HardLink",
+        "-s 1800m",
+        "gh release upload",
+        "SHA256SUMS.txt",
+        "Refusing to modify a published release",
     ):
-        assert required_text in model_downloader
+        assert required_text in model_publisher
     assert not (
         REPOSITORY_ROOT / "scripts" / "stage_ci_muscriptor_models.ps1"
+    ).exists()
+    assert not (
+        REPOSITORY_ROOT / "scripts" / "download_ci_muscriptor_models.py"
     ).exists()
 
     ci_workflow = (
@@ -1062,6 +1057,7 @@ if ($errors.Count -ne 0) {
         REPOSITORY_ROOT / "scripts" / "build_libsndfile_lgpl.ps1",
         REPOSITORY_ROOT / "scripts" / "cleanup_ci_release_build.ps1",
         REPOSITORY_ROOT / "scripts" / "publish_draft_release.ps1",
+        REPOSITORY_ROOT / "scripts" / "publish_ci_muscriptor_model.ps1",
         REPOSITORY_ROOT / "app" / "packaging" / "verify-muscriptor-models.ps1",
     )
     for script_path in script_paths:

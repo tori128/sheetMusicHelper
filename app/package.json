@@ -17,7 +17,7 @@
     "build:backend": "npm run build:libsndfile && uv run --project .. pyinstaller --noconfirm --distpath backend-dist --workpath backend-build packaging/earcopy_service.spec",
     "build:backend:clean": "npm run build:libsndfile && uv run --project .. pyinstaller --noconfirm --clean --distpath backend-dist --workpath backend-build packaging/earcopy_service.spec",
     "verify:muscriptor-models": "powershell -NoProfile -ExecutionPolicy Bypass -File packaging/verify-muscriptor-models.ps1",
-    "dist:win": "npm run assert:app-stopped && npm run verify:muscriptor-models && npm run build:icon && npm run build && npm run build:backend && electron-builder --win --dir --config.directories.output=release-staging && powershell -NoProfile -ExecutionPolicy Bypass -File packaging/promote-packaged-build.ps1",
+    "dist:win": "npm run assert:app-stopped && npm run build:icon && npm run build && npm run build:backend && electron-builder --win --dir --config.directories.output=release-staging && powershell -NoProfile -ExecutionPolicy Bypass -File packaging/promote-packaged-build.ps1",
     "package:release": "npm run assert:app-stopped && powershell -NoProfile -ExecutionPolicy Bypass -File packaging/build-release-package.ps1 && npm run verify:release",
     "release:win": "npm run dist:win && npm run smoke:packaged && npm run package:release",
     "smoke:packaged": "npm run assert:app-stopped && node scripts/smoke-packaged.cjs",
@@ -73,18 +73,6 @@
       {
         "from": "resources/licenses",
         "to": "licenses"
-      },
-      {
-        "from": "../models/muscriptor",
-        "to": "models/muscriptor",
-        "filter": [
-          "small/model.safetensors",
-          "small/config.json",
-          "medium/model.safetensors",
-          "medium/config.json",
-          "large/model.safetensors",
-          "large/config.json"
-        ]
       },
       {
         "from": "../LICENSE",

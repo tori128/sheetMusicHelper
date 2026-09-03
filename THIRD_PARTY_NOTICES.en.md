@@ -31,8 +31,8 @@ user acknowledges that warning. `Unknown` does not constitute a license grant.
 
 ### Model weights
 
-EarCopy Assist includes the official `small`, `medium`, and `large` model
-weights without modification. They are licensed under
+The EarCopy Assist GitHub Release distributes the official `small`, `medium`,
+and `large` model weights without modification as model archives. They are licensed under
 [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/), and use and
 redistribution are restricted to non-commercial purposes. The creators are
 Kyutai and Mirelo. The official model pages also publish additional conditions
