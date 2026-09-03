@@ -900,9 +900,12 @@ def test_ci_and_native_build_configuration() -> None:
         "workflow_dispatch:",
         "runs-on: windows-latest",
         "environment: windows-release",
-        "HF_TOKEN: ${{ secrets.HF_TOKEN }}",
         "actions/cache/restore",
         "actions/cache/save",
+        "prepare-muscriptor-models:",
+        "needs: prepare-muscriptor-models",
+        "restore_ci_muscriptor_model_source.ps1",
+        "remove_ci_muscriptor_model_sources.ps1",
         "publish-muscriptor-models:",
         "publish_ci_muscriptor_model.ps1",
         "muscriptor-small-${{ runner.os }}",
@@ -956,6 +959,37 @@ def test_ci_and_native_build_configuration() -> None:
     assert not (
         REPOSITORY_ROOT / "scripts" / "download_ci_muscriptor_models.py"
     ).exists()
+
+    source_preparer = (
+        REPOSITORY_ROOT / "scripts" / "prepare_muscriptor_release_sources.ps1"
+    ).read_text(encoding="utf-8")
+    for required_text in (
+        "verify-muscriptor-models.ps1",
+        '"small", "medium", "large"',
+        '"-t7z", "-mx=0"',
+        '"-v1800m"',
+        '"model.safetensors", "config.json"',
+        "$SevenZipExecutable t $testArchive",
+    ):
+        assert required_text in source_preparer
+
+    source_restorer = (
+        REPOSITORY_ROOT / "scripts" / "restore_ci_muscriptor_model_source.ps1"
+    ).read_text(encoding="utf-8")
+    for required_text in (
+        "gh release download",
+        "muscriptor-source-$Variant.7z",
+        "$sevenZipPath t $testArchive",
+        "$sevenZipPath x $testArchive",
+        "verify-muscriptor-models.ps1",
+    ):
+        assert required_text in source_restorer
+
+    source_remover = (
+        REPOSITORY_ROOT / "scripts" / "remove_ci_muscriptor_model_sources.ps1"
+    ).read_text(encoding="utf-8")
+    assert "gh release delete-asset" in source_remover
+    assert "muscriptor-source-(small|medium|large)" in source_remover
 
     ci_workflow = (
         REPOSITORY_ROOT / ".github" / "workflows" / "ci.yml"
@@ -1050,6 +1084,7 @@ def test_ci_and_native_build_configuration() -> None:
         "gh release upload",
         "--clobber",
         "SHA256SUMS.txt",
+        "muscriptor-source-(small|medium|large)",
     ):
         assert required_text in release_publisher
 
@@ -1091,6 +1126,9 @@ if ($errors.Count -ne 0) {
         REPOSITORY_ROOT / "scripts" / "cleanup_ci_release_build.ps1",
         REPOSITORY_ROOT / "scripts" / "publish_draft_release.ps1",
         REPOSITORY_ROOT / "scripts" / "publish_ci_muscriptor_model.ps1",
+        REPOSITORY_ROOT / "scripts" / "prepare_muscriptor_release_sources.ps1",
+        REPOSITORY_ROOT / "scripts" / "restore_ci_muscriptor_model_source.ps1",
+        REPOSITORY_ROOT / "scripts" / "remove_ci_muscriptor_model_sources.ps1",
         REPOSITORY_ROOT / "scripts" / "publish_github_release.ps1",
         REPOSITORY_ROOT / "app" / "packaging" / "verify-muscriptor-models.ps1",
     )

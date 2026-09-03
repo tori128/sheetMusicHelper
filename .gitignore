@@ -30,6 +30,8 @@ app/backend-dist/
 app/benchmark/
 app/release/
 app/release-*/
+app/model-source-assets/
+app/model-source-download/
 tools/ffmpeg-lgpl/
 tools/libsndfile-lgpl/
 

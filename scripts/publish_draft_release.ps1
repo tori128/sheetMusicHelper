@@ -66,6 +66,10 @@ $requiredFiles = @(
 $assetFiles = @($partFiles + $requiredFiles | Sort-Object Name)
 $assets = @($assetFiles | ForEach-Object { $_.FullName })
 $desiredAssetNames = @($assetFiles | ForEach-Object { $_.Name })
+$modelSourceAssetPattern = (
+    "^EarCopyAssist-$([regex]::Escape($package.version))-" +
+    "muscriptor-source-(small|medium|large)\.7z(\.\d{3})?$"
+)
 $releaseNotes = Join-Path $assetRoot "RELEASE_NOTES.md"
 
 $releaseJson = & gh release view $tag `
@@ -87,7 +91,10 @@ if ($releaseExists) {
     }
     $existingAssetNames = @($release.assets | ForEach-Object { $_.name })
     foreach ($existingAssetName in $existingAssetNames) {
-        if ($existingAssetName -notin $desiredAssetNames) {
+        if (
+            $existingAssetName -notin $desiredAssetNames -and
+            $existingAssetName -notmatch $modelSourceAssetPattern
+        ) {
             & gh release delete-asset $tag $existingAssetName `
                 --repo $env:GITHUB_REPOSITORY `
                 --yes

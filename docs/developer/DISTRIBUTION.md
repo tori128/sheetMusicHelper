@@ -172,13 +172,12 @@ Renderer応答不能時の終了回帰を実行する。
 
 `.github/workflows/windows-release.yml`は手動実行だけを受け付け、GitHubの
 `windows-release` environmentを使用する。Windows本体は標準GitHub-hosted Windows runnerで
-作成する。MuScriptorの各モデルは別ジョブで1モデルずつ取得、検査、アーカイブ化し、同じ
-非公開Releaseへ追加する。最後のジョブは、Windows本体、3モデル、対応ソース、チェックサムを
-照合してからReleaseを公開する。標準runnerの作業領域には、Windows本体と全モデルを同時に配置しない。
+作成する。公開前に、ローカルの検査済みMuScriptorモデルから
+`scripts/prepare_muscriptor_release_sources.ps1`で一時アーカイブを作成し、対象タグの
+非公開Releaseへ登録する。これらの一時アーカイブは最終公開前に削除される。
 
-`windows-release` environmentには、MuScriptor small、medium、largeの利用条件へ同意済みの
-Hugging Faceアカウントのread tokenを、Secret `HF_TOKEN`として設定する。ワークフローは
-公式MuScriptorリポジトリから次の6ファイルを取得し、サイズとSHA-256を検査する。
+最初のジョブは、一時アーカイブをダウンロードして展開し、次の6ファイルのサイズ、SHA-256、
+設定内容を検査する。検査に失敗した場合、Windows本体ビルドは開始しない。
 
 ```text
 models/muscriptor/
@@ -193,10 +192,10 @@ models/muscriptor/
    └─ config.json
 ```
 
-モデル6ファイルの合計は7,105,675,208 bytesである。ワークフローはモデルごとにハッシュ検査済みの
-ディレクトリをGitHub Actions Cacheへ保存し、利用可能なキャッシュがあれば再利用する。
-キャッシュがない実行では該当モデルだけを再取得する。モデル資産はGitHub Releaseの1ファイル
-2 GiB制限に合わせて標準の分割ZIPで配布する。Windows本体パッケージにはモデル重みを含めない。
+モデル6ファイルの合計は7,105,675,208 bytesである。検査済みディレクトリはモデルごとに
+GitHub Actions Cacheへ保存する。後続ジョブはこのキャッシュから1モデルずつ復元し、
+GitHub Releaseの1ファイル2 GiB制限に対応した標準の分割ZIPを作成する。Windows本体パッケージには
+モデル重みを含めない。
 
 Node.js 24、Python 3.11、uv、MSYS2 MINGW64はワークフローが各GitHub Actionで設定する。
 MSYS2の実際のインストール先は`EARCOPY_MSYS2_ROOT`としてFFmpegとlibsndfileのビルドへ渡す。

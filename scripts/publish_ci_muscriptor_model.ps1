@@ -11,8 +11,7 @@ Set-StrictMode -Version Latest
 foreach ($name in @(
     "GITHUB_ACTIONS",
     "GITHUB_REPOSITORY",
-    "GH_TOKEN",
-    "HF_TOKEN"
+    "GH_TOKEN"
 )) {
     if ([string]::IsNullOrWhiteSpace(
         [Environment]::GetEnvironmentVariable($name)
@@ -64,6 +63,9 @@ if ($workspaceDrive.AvailableFreeSpace -lt $requiredBytes) {
 }
 
 if (-not $modelReady) {
+    if ([string]::IsNullOrWhiteSpace($env:HF_TOKEN)) {
+        throw "HF_TOKEN is required to download the missing MuScriptor $Variant model."
+    }
     Remove-Item -LiteralPath $variantRoot -Recurse -Force -ErrorAction SilentlyContinue
     New-Item -ItemType Directory -Path $variantRoot -Force | Out-Null
     foreach ($fileName in $modelFiles) {

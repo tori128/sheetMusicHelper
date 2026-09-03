@@ -131,9 +131,9 @@ The standard `.github/workflows/ci.yml` runs tests that require no model weights
 
 #### Packaging with GitHub Actions
 
-`.github/workflows/windows-release.yml` accepts manual dispatch only and uses the GitHub `windows-release` environment. The Windows application package is built on a standard GitHub-hosted Windows runner. A separate job downloads, validates, and archives one MuScriptor model at a time, then adds it to the same draft Release. The standard runner workspace never contains the Windows package and every model at the same time.
+`.github/workflows/windows-release.yml` accepts manual dispatch only and uses the GitHub `windows-release` environment. The Windows application package is built on a standard GitHub-hosted Windows runner. Before dispatch, create temporary source archives from the verified local MuScriptor models with `scripts/prepare_muscriptor_release_sources.ps1`, then upload them to the non-public Release for the target tag. The workflow removes those temporary source archives before publishing the Release.
 
-Set Secret `HF_TOKEN` in the `windows-release` environment to a read token for a Hugging Face account that has accepted the MuScriptor small, medium, and large terms. The workflow downloads and validates the size and SHA-256 of the following six files from the official MuScriptor repositories.
+Its first job downloads and extracts the temporary source archives, then validates the size, SHA-256, and configuration of the following six files. A validation failure prevents the Windows application build from starting.
 
 ```text
 models/muscriptor/
@@ -148,7 +148,7 @@ models/muscriptor/
    └─ config.json
 ```
 
-The six model files total 7,105,675,208 bytes. The workflow stores each validated model directory in GitHub Actions Cache and reuses it when available. A cache miss downloads only the affected model. Model assets are standard split ZIP archives to meet GitHub Release's 2 GiB per-file limit. The Windows application package contains no model weights.
+The six model files total 7,105,675,208 bytes. The workflow stores each validated model directory in GitHub Actions Cache. Later jobs restore one model at a time from that cache and create standard split ZIP model assets that meet GitHub Release's 2 GiB per-file limit. The Windows application package contains no model weights.
 
 GitHub Actions configures Node.js 24, Python 3.11, uv, and MSYS2 MINGW64. The workflow passes the actual MSYS2 installation directory to FFmpeg and libsndfile builds as `EARCOPY_MSYS2_ROOT`.
 
