@@ -940,6 +940,7 @@ def test_ci_and_native_build_configuration() -> None:
         "curl.exe",
         "verify-muscriptor-models.ps1",
         "HardLink",
+        "main/${fileName}?download=true",
         "-s 1800m",
         "gh release upload",
         "SHA256SUMS.txt",

@@ -71,7 +71,7 @@ if (-not $modelReady) {
         $partial = "$destination.partial"
         $uri = (
             "https://huggingface.co/MuScriptor/muscriptor-$Variant/resolve/" +
-            "main/$fileName?download=true"
+            "main/${fileName}?download=true"
         )
         Write-Output "Downloading MuScriptor $Variant/$fileName"
         & curl.exe `
