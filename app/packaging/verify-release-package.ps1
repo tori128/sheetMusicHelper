@@ -282,9 +282,8 @@ try {
     foreach ($requiredText in @(
         "EarCopy Assist $version",
         $sourceCommit,
-        "$portableName.z01",
+        "$portableName.zxx",
         $windowsArchiveName,
-        $sourceArchiveName,
         "7-Zip",
         "README.md",
         "docs/USER_GUIDE.md"

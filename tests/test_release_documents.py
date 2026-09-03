@@ -826,10 +826,12 @@ def test_portable_build_includes_release_documents() -> None:
         "Windows SID",
         "phone number",
         "Non-loopback IPv4 address",
+        '$portableName.zxx',
     ):
         assert required_text in release_verifier
     assert "$allowedModelWeights" not in release_verifier
     assert "resources/models/muscriptor/small/model.safetensors" not in release_verifier
+    assert "$sourceArchiveName," not in release_verifier
 
     release_notes = (
         REPOSITORY_ROOT
