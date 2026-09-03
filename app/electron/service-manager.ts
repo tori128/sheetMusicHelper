@@ -137,11 +137,12 @@ export class ServiceManager {
     const projectRoot = join(currentDirectory, "..", "..");
     const portableRoot = resolvePortableRoot();
     const portableUserData = resolvePortableUserDataPath();
-    const modelDirectories = [
-      app.isPackaged
-        ? join(process.resourcesPath, "models", "muscriptor")
-        : join(projectRoot, "models", "muscriptor"),
-    ];
+    const modelDirectories = app.isPackaged
+      ? [
+          join(process.resourcesPath, "models", "muscriptor"),
+          join(portableRoot, "models", "muscriptor"),
+        ]
+      : [join(projectRoot, "models", "muscriptor")];
     const env = {
       ...process.env,
       EARCOPY_SESSION_TOKEN: token,
