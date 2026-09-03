@@ -114,6 +114,92 @@ function renderScreen(
 }
 
 describe("NewProjectScreen stem separation", () => {
+  it("registers a selected model and updates the model list", async () => {
+    Object.defineProperty(window, "desktopApi", {
+      configurable: true,
+      value: {
+        selectModelFile: vi
+          .fn()
+          .mockResolvedValue("D:\\models\\muscriptor\\large\\model.safetensors"),
+      } as unknown as DesktopApi,
+    });
+    const registerModel = vi.fn().mockResolvedValue(registeredModel);
+    const loadModels = vi.fn().mockResolvedValue([registeredModel]);
+
+    function ModelRegistrationScreen() {
+      const [availableModels, setAvailableModels] = useState<ModelProfile[]>([]);
+      return (
+        <NewProjectScreen
+          client={{
+            registerModel,
+            get models() {
+              return loadModels();
+            },
+          } as unknown as LocalApiClient}
+          instruments={instruments}
+          presets={presets}
+          models={availableModels}
+          backends={backends}
+          stemSeparation={availableStemSeparation}
+          onModelsChange={setAvailableModels}
+          onPresetsChange={vi.fn()}
+        />
+      );
+    }
+
+    render(<ModelRegistrationScreen />);
+    fireEvent.click(screen.getByText("モデルを追加"));
+
+    await waitFor(() =>
+      expect(registerModel).toHaveBeenCalledWith(
+        "D:\\models\\muscriptor\\large\\model.safetensors",
+        "MuScriptor large",
+      ),
+    );
+    await waitFor(() =>
+      expect(
+        screen.getByRole("option", { name: "Large · large" }),
+      ).toBeVisible(),
+    );
+    expect(loadModels).toHaveBeenCalledOnce();
+  });
+
+  it("updates the model list after models are placed beside the application", async () => {
+    const loadModels = vi.fn().mockResolvedValue([registeredModel]);
+
+    function ModelRefreshScreen() {
+      const [availableModels, setAvailableModels] = useState<ModelProfile[]>([]);
+      return (
+        <NewProjectScreen
+          client={{
+            get models() {
+              return loadModels();
+            },
+          } as unknown as LocalApiClient}
+          instruments={instruments}
+          presets={presets}
+          models={availableModels}
+          backends={backends}
+          stemSeparation={availableStemSeparation}
+          onModelsChange={setAvailableModels}
+          onPresetsChange={vi.fn()}
+        />
+      );
+    }
+
+    render(<ModelRefreshScreen />);
+    fireEvent.click(
+      screen.getByRole("button", { name: "モデル一覧を更新" }),
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole("option", { name: "Large · large" }),
+      ).toBeVisible(),
+    );
+    expect(loadModels).toHaveBeenCalledOnce();
+  });
+
   it("changes the new-project screen language", () => {
     renderScreen({});
 

@@ -236,42 +236,51 @@ export function NewProjectScreen({
     }
   }
 
+  function applyModels(
+    nextModels: ModelProfile[],
+    preferredModelId: string | null = null,
+  ) {
+    onModelsChange(nextModels);
+    const nextModel =
+      nextModels.find((model) => model.id === preferredModelId) ??
+      nextModels.find((model) => model.id === modelId) ??
+      nextModels[0] ??
+      null;
+    setModelId(nextModel?.id ?? "");
+    if (nextModel !== null) {
+      setBackend(availableBackend(nextModel.defaultBackend, backends));
+    }
+  }
+
+  async function reloadModels() {
+    setBusy(true);
+    setError(null);
+    setMessage(null);
+    try {
+      applyModels(await client.models);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : String(reason));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function addModel() {
     const path = await window.desktopApi.selectModelFile();
     if (path === null) {
       return;
     }
     const suggestedName = path.split(/[\\/]/).slice(-2, -1)[0] ?? fileStem(path);
-    const profileName = window.prompt(
-      t("モデルプロファイル名を入力してください"),
-      suggestedName,
-    );
-    if (profileName === null || !profileName.trim()) {
-      return;
-    }
     setBusy(true);
     setError(null);
     setMessage(null);
     try {
-      const validation = await client.validateModel(path);
-      if (!validation.loadable || validation.variant === null) {
-        throw new Error(
-          [...validation.errors, ...validation.warnings].join("; ") ||
-            "モデルを読み込めません",
-        );
-      }
-      const profile = await client.registerModel(path, profileName.trim());
-      const next = [
-        ...models.filter((candidate) => candidate.sha256 !== profile.sha256),
-        profile,
-      ];
-      onModelsChange(next);
-      setModelId(profile.id);
-      setBackend(availableBackend(profile.defaultBackend, backends));
-      const memoryGiB = validation.estimatedMemoryBytes / 1024 ** 3;
-      setMessage(
-        `登録完了: ${validation.variant} / 推定メモリ ${memoryGiB.toFixed(1)} GiB`,
+      const profile = await client.registerModel(
+        path,
+        `MuScriptor ${suggestedName}`,
       );
+      applyModels(await client.models, profile.id);
+      setMessage(`登録完了: ${profile.variant}`);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : String(reason));
     } finally {
@@ -520,6 +529,14 @@ export function NewProjectScreen({
                 onClick={() => void addModel()}
               >
                 モデルを追加
+              </button>
+              <button
+                type="button"
+                className="inline-action"
+                disabled={busy}
+                onClick={() => void reloadModels()}
+              >
+                モデル一覧を更新
               </button>
             </span>
             <select
