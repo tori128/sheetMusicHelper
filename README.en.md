@@ -2,6 +2,8 @@
 
 [日本語](README.md)
 
+![main](docs\assets\main.png)
+
 EarCopy Assist is a Windows application that transcribes instrument parts from audio and provides tools to review, edit, save, and export the result.
 Its transcription workflow can use source separation to improve accuracy.
 

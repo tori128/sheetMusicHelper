@@ -2,6 +2,8 @@
 
 [English Version](README.en.md)
 
+![main](docs\assets\main.png)
+
 EarCopy Assistは、音源から楽器ごとの演奏情報を採譜し、結果の確認、修正、保存、書き出しを行うWindowsアプリケーションです。  
 音源分離と組み合わせて採譜精度を向上させることを特徴としています。
 
