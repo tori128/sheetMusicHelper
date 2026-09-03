@@ -7,6 +7,11 @@ on:
         description: Optional release tag (blank uses v<package version>)
         required: false
         type: string
+      resume_release:
+        description: Use the existing non-public release assets without rebuilding the Windows archive
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -18,6 +23,7 @@ concurrency:
 jobs:
   prepare-muscriptor-models:
     name: Validate MuScriptor model sources
+    if: ${{ !inputs.resume_release }}
     runs-on: windows-latest
     environment: windows-release
     timeout-minutes: 180
@@ -129,6 +135,7 @@ jobs:
   build:
     name: Build release assets
     needs: prepare-muscriptor-models
+    if: ${{ !inputs.resume_release && needs.prepare-muscriptor-models.result == 'success' }}
     runs-on: windows-latest
     timeout-minutes: 300
     env:
@@ -373,6 +380,7 @@ jobs:
   publish-muscriptor-models:
     name: Add MuScriptor model assets
     needs: build
+    if: ${{ always() && (inputs.resume_release || needs.build.result == 'success') }}
     runs-on: windows-latest
     environment: windows-release
     timeout-minutes: 240

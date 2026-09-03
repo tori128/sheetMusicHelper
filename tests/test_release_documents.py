@@ -898,6 +898,7 @@ def test_ci_and_native_build_configuration() -> None:
     release_workflow = release_workflow_path.read_text(encoding="utf-8")
     for required_text in (
         "workflow_dispatch:",
+        "resume_release:",
         "runs-on: windows-latest",
         "environment: windows-release",
         "actions/cache/restore",
@@ -925,6 +926,7 @@ def test_ci_and_native_build_configuration() -> None:
         "publish-release:",
         "publish_github_release.ps1",
         "cancel-in-progress: false",
+        "always() && (inputs.resume_release || needs.build.result == 'success')",
     ):
         assert required_text in release_workflow
     assert "pull_request:" not in release_workflow
@@ -947,7 +949,9 @@ def test_ci_and_native_build_configuration() -> None:
         "-s 1800m",
         "EARCOPY_UNZIP_EXECUTABLE",
         "unzip.exe",
-        "-t $archive",
+        "-s- $archive -O $verificationArchive",
+        "-t $verificationArchive",
+        '"$assetBaseName-verification.zip"',
         "gh release upload",
         "SHA256SUMS.txt",
         "Refusing to modify a published release",

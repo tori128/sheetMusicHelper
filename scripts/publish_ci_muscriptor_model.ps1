@@ -181,9 +181,21 @@ try {
             throw "Model release asset size is invalid: $($asset.Name)"
         }
     }
-    & $unzipExecutable -t $archive
-    if ($LASTEXITCODE -ne 0) {
-        throw "Model archive integrity check failed: $($archive | Split-Path -Leaf)"
+    $verificationArchive = Join-Path $assetRoot (
+        "$assetBaseName-verification.zip"
+    )
+    Remove-Item -LiteralPath $verificationArchive -Force -ErrorAction SilentlyContinue
+    try {
+        & $zipExecutable -s- $archive -O $verificationArchive
+        if ($LASTEXITCODE -ne 0) {
+            throw "Unable to reconstruct the $Variant model archive for verification."
+        }
+        & $unzipExecutable -t $verificationArchive
+        if ($LASTEXITCODE -ne 0) {
+            throw "Model archive integrity check failed: $($archive | Split-Path -Leaf)"
+        }
+    } finally {
+        Remove-Item -LiteralPath $verificationArchive -Force -ErrorAction SilentlyContinue
     }
 
     $releaseJson = & gh release view $tag `
