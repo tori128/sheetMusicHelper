@@ -905,6 +905,8 @@ def test_ci_and_native_build_configuration() -> None:
         "build-release-package.ps1",
         "verify-release-package.ps1",
         "publish_draft_release.ps1",
+        "publish-release:",
+        "publish_github_release.ps1",
         "cancel-in-progress: false",
     ):
         assert required_text in release_workflow
@@ -1033,6 +1035,19 @@ def test_ci_and_native_build_configuration() -> None:
     ):
         assert required_text in release_publisher
 
+    final_release_publisher = (
+        REPOSITORY_ROOT / "scripts" / "publish_github_release.ps1"
+    ).read_text(encoding="utf-8")
+    for required_text in (
+        "Draft release was not found",
+        "SHA256SUMS does not match draft release assets",
+        "Large model ZIP volume numbering is incomplete",
+        "gh release download",
+        "gh release edit $tag",
+        "--draft=false",
+    ):
+        assert required_text in final_release_publisher
+
 
 def test_ci_powershell_scripts_parse() -> None:
     powershell = shutil.which("pwsh") or shutil.which("powershell")
@@ -1058,6 +1073,7 @@ if ($errors.Count -ne 0) {
         REPOSITORY_ROOT / "scripts" / "cleanup_ci_release_build.ps1",
         REPOSITORY_ROOT / "scripts" / "publish_draft_release.ps1",
         REPOSITORY_ROOT / "scripts" / "publish_ci_muscriptor_model.ps1",
+        REPOSITORY_ROOT / "scripts" / "publish_github_release.ps1",
         REPOSITORY_ROOT / "app" / "packaging" / "verify-muscriptor-models.ps1",
     )
     for script_path in script_paths:

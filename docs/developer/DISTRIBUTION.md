@@ -173,7 +173,8 @@ Renderer応答不能時の終了回帰を実行する。
 `.github/workflows/windows-release.yml`は手動実行だけを受け付け、GitHubの
 `windows-release` environmentを使用する。Windows本体は標準GitHub-hosted Windows runnerで
 作成する。MuScriptorの各モデルは別ジョブで1モデルずつ取得、検査、アーカイブ化し、同じ
-draft Releaseへ追加する。標準runnerの作業領域には、Windows本体と全モデルを同時に配置しない。
+非公開Releaseへ追加する。最後のジョブは、Windows本体、3モデル、対応ソース、チェックサムを
+照合してからReleaseを公開する。標準runnerの作業領域には、Windows本体と全モデルを同時に配置しない。
 
 `windows-release` environmentには、MuScriptor small、medium、largeの利用条件へ同意済みの
 Hugging Faceアカウントのread tokenを、Secret `HF_TOKEN`として設定する。ワークフローは
@@ -241,17 +242,17 @@ gh run list --workflow windows-release.yml
 gh run watch <run-id> --exit-status
 ```
 
-成功時は指定タグのDraft Releaseを作成する。同じタグのDraft Releaseが存在する場合は、
-対象コミット、リリースノート、Release assetを更新する。
+成功時は指定タグの公開Releaseを作成する。作成途中は非公開Releaseを使用し、同じタグの
+非公開Releaseが存在する場合は、対象コミット、リリースノート、Release assetを更新する。
 
 ワークフローはテスト、型検査、MuScriptorモデル検査、FFmpegとlibsndfileのビルド、
 Electronパッケージ化、パッケージ起動試験、分割ZIP作成、Release asset検査を順に実行する。
 成功時はWindows版の全`.zNN`ボリューム、最終`.zip`、対応ソースZIP、
-`RELEASE_NOTES.md`、`SHA256SUMS.txt`を同じDraft Releaseへ登録する。既存の公開済みReleaseは
-変更対象にしない。公開責任者は成果物、ライセンス、受入試験結果を確認してから公開する。
+`RELEASE_NOTES.md`、`SHA256SUMS.txt`を同じ公開Releaseへ登録する。既存の公開済みReleaseは
+変更対象にしない。
 
 ローカルで作成する場合は、MuScriptorの3モデルを`models/muscriptor/`へ配置したWindows
-環境で前項のコマンドを実行し、生成されたRelease assetをDraft Releaseへ登録する。
+環境で前項のコマンドを実行し、生成されたRelease assetをReleaseへ登録する。
 
 公開前に、クリーンなWindows環境へ配布フォルダ一式を配置して`EarCopyAssist.exe`を起動し、
 起動時の利用条件確認、3モデルの登録、採譜、音源分離、MIDI/MusicXML出力、

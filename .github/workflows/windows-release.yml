@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: Optional draft release tag (blank uses v<package version>)
+        description: Optional release tag (blank uses v<package version>)
         required: false
         type: string
 
@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build draft release
+    name: Build release assets
     runs-on: windows-latest
     timeout-minutes: 300
     env:
@@ -237,7 +237,7 @@ jobs:
           powershell -NoProfile -ExecutionPolicy Bypass
           -File app/packaging/verify-release-package.ps1
 
-      - name: Create or update draft GitHub Release
+      - name: Create release staging draft
         timeout-minutes: 60
         shell: pwsh
         env:
@@ -371,3 +371,24 @@ jobs:
       - name: Remove build intermediates
         shell: pwsh
         run: ./scripts/cleanup_ci_release_build.ps1 -Phase AfterPackaging
+
+  publish-release:
+    name: Publish GitHub Release
+    needs: publish-muscriptor-models
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          clean: true
+          persist-credentials: false
+
+      - name: Publish release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_TAG: ${{ inputs.release_tag }}
+        run: >-
+          ./scripts/publish_github_release.ps1
+          -RequestedTag $env:REQUESTED_TAG
