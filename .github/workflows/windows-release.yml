@@ -286,7 +286,7 @@ jobs:
           msystem: MINGW64
           release: true
           update: false
-          install: zip
+          install: zip unzip
 
       - name: Configure model archive command
         shell: pwsh
@@ -297,7 +297,13 @@ jobs:
           if (-not (Test-Path -LiteralPath $zipExecutable -PathType Leaf)) {
             throw "Info-ZIP zip.exe was not found: $zipExecutable"
           }
+          $unzipExecutable = Join-Path $env:MSYS2_LOCATION "usr\bin\unzip.exe"
+          if (-not (Test-Path -LiteralPath $unzipExecutable -PathType Leaf)) {
+            throw "Info-ZIP unzip.exe was not found: $unzipExecutable"
+          }
           "EARCOPY_ZIP_EXECUTABLE=$zipExecutable" |
+            Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          "EARCOPY_UNZIP_EXECUTABLE=$unzipExecutable" |
             Out-File $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Restore MuScriptor small cache

@@ -109,6 +109,19 @@ if (
 ) {
     throw "Info-ZIP zip.exe was not found."
 }
+$unzipExecutable = $env:EARCOPY_UNZIP_EXECUTABLE
+if ([string]::IsNullOrWhiteSpace($unzipExecutable)) {
+    $unzipCommand = Get-Command "unzip.exe" -ErrorAction SilentlyContinue
+    if ($null -ne $unzipCommand) {
+        $unzipExecutable = $unzipCommand.Source
+    }
+}
+if (
+    [string]::IsNullOrWhiteSpace($unzipExecutable) -or
+    -not (Test-Path -LiteralPath $unzipExecutable -PathType Leaf)
+) {
+    throw "Info-ZIP unzip.exe was not found."
+}
 
 $assetRoot = Join-Path $repositoryRoot "app\release-assets"
 $stageParent = Join-Path $repositoryRoot "app\model-release-stage"
@@ -166,7 +179,7 @@ try {
             throw "Model release asset size is invalid: $($asset.Name)"
         }
     }
-    & $zipExecutable -T $archive
+    & $unzipExecutable -t $archive
     if ($LASTEXITCODE -ne 0) {
         throw "Model archive integrity check failed: $($archive | Split-Path -Leaf)"
     }
