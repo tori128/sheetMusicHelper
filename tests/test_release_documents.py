@@ -729,6 +729,17 @@ def test_portable_build_includes_release_documents() -> None:
         assert required_text in model_verifier
     assert "licenses/DISTRIBUTION.md" not in resources
 
+    packaged_smoke_test = (
+        REPOSITORY_ROOT / "app" / "scripts" / "smoke-packaged.cjs"
+    ).read_text(encoding="utf-8")
+    for required_text in (
+        'const bundledMuScriptorVariants = ["small", "medium", "large"]',
+        "MuScriptor ${variant}が本体アーカイブに含まれています",
+        'console.log("packaged-muscriptor-models: absent")',
+    ):
+        assert required_text in packaged_smoke_test
+    assert "statSync(weightPath).size" not in packaged_smoke_test
+
     specification = (
         REPOSITORY_ROOT / "app" / "packaging" / "earcopy_service.spec"
     ).read_text(encoding="utf-8")

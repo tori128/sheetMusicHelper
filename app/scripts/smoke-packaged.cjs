@@ -5,7 +5,6 @@ const {
   openSync,
   readFileSync,
   rmSync,
-  statSync,
   unlinkSync,
   writeSync,
   writeFileSync,
@@ -117,12 +116,8 @@ if (existsSync(bundledStemWeightPath)) {
 }
 console.log("packaged-stem-weight: absent");
 
-const bundledMuScriptorModels = [
-  ["small", 411888600],
-  ["medium", 1228144472],
-  ["large", 5465642136],
-];
-for (const [variant, expectedSize] of bundledMuScriptorModels) {
+const bundledMuScriptorVariants = ["small", "medium", "large"];
+for (const variant of bundledMuScriptorVariants) {
   const variantRoot = join(
     dirname(executable),
     "resources",
@@ -132,16 +127,12 @@ for (const [variant, expectedSize] of bundledMuScriptorModels) {
   );
   const weightPath = join(variantRoot, "model.safetensors");
   const configPath = join(variantRoot, "config.json");
-  if (!existsSync(weightPath) || statSync(weightPath).size !== expectedSize) {
-    console.error(`MuScriptor ${variant}の同梱状態が不正です: ${weightPath}`);
-    process.exit(1);
-  }
-  if (!existsSync(configPath) || statSync(configPath).size === 0) {
-    console.error(`MuScriptor ${variant}の設定がありません: ${configPath}`);
+  if (existsSync(weightPath) || existsSync(configPath)) {
+    console.error(`MuScriptor ${variant}が本体アーカイブに含まれています: ${variantRoot}`);
     process.exit(1);
   }
 }
-console.log("packaged-muscriptor-models: small, medium, large");
+console.log("packaged-muscriptor-models: absent");
 
 const resultPath = join(
   tmpdir(),
