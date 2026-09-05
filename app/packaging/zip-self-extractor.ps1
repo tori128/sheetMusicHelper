@@ -163,6 +163,7 @@ function New-ZipSelfExtractor {
     try {
         & $compiler `
             /nologo `
+            /codepage:65001 `
             /target:winexe `
             /platform:x64 `
             /optimize+ `

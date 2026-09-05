@@ -1,4 +1,4 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 
 . (Join-Path $PSScriptRoot "zip-self-extractor.ps1")
 
@@ -266,7 +266,7 @@ try {
         $sourceCommit,
         "$portableName.zxx",
         $windowsArchiveName,
-        "ZIP自己解凍",
+        "自己解凍ZIP",
         "README.md",
         "docs/USER_GUIDE.md"
     )) {

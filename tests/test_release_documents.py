@@ -801,6 +801,10 @@ def test_portable_build_includes_release_documents() -> None:
         / "packaging"
         / "verify-release-package.ps1"
     ).read_text(encoding="utf-8")
+    assert (
+        REPOSITORY_ROOT / "app" / "packaging" / "verify-release-package.ps1"
+    ).read_bytes().startswith(b"\xef\xbb\xbf")
+    assert '"自己解凍ZIP"' in release_verifier
     for required_text in (
         "SHA256SUMS.txt",
         "BUILD_INFO.txt",
