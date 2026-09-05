@@ -49,7 +49,7 @@ for ($index = 0; $index -lt $partFiles.Count; $index++) {
 }
 
 $requiredNames = @(
-    "$portableName.zip",
+    "$portableName.exe",
     $sourceName,
     "RELEASE_NOTES.md",
     "SHA256SUMS.txt"

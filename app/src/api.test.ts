@@ -562,7 +562,7 @@ describe("LocalApiClient", () => {
       token: "local-secret",
     });
 
-    await expect(client.preparePlaybackAudio("D:\\audio.wav")).resolves.toEqual(
+    await expect(client.preparePlaybackAudio("D:\\音源\\再生.wav")).resolves.toEqual(
       {
         path: "D:\\cache\\analysis.wav",
         sampleRate: 44100,
@@ -570,15 +570,26 @@ describe("LocalApiClient", () => {
         frameCount: 44100,
       },
     );
+    const prepareRequest = fetchMock.mock.calls[0][1] as RequestInit;
+    expect(Object.prototype.toString.call(prepareRequest.body)).toBe(
+      "[object ArrayBuffer]",
+    );
+    expect(
+      JSON.parse(new TextDecoder().decode(prepareRequest.body as ArrayBuffer)),
+    ).toEqual({ path: "D:\\音源\\再生.wav" });
     await expect(
       client.readPlaybackAudioFrames({
-        sourcePaths: ["D:\\cache\\analysis.wav"],
+        sourcePaths: ["D:\\音源\\再生.wav"],
         startFrame: 22050,
         frameCount: 44100,
       }),
     ).resolves.toEqual(frames.buffer);
-    expect(JSON.parse(String(fetchMock.mock.calls[1][1].body))).toEqual({
-      sourcePaths: ["D:\\cache\\analysis.wav"],
+    const request = fetchMock.mock.calls[1][1] as RequestInit;
+    expect(Object.prototype.toString.call(request.body)).toBe("[object ArrayBuffer]");
+    expect(
+      JSON.parse(new TextDecoder().decode(request.body as ArrayBuffer)),
+    ).toEqual({
+      sourcePaths: ["D:\\音源\\再生.wav"],
       startFrame: 22050,
       frameCount: 44100,
     });

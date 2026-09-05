@@ -35,6 +35,7 @@ if (new URLSearchParams(window.location.search).has("smoke")) {
 }
 if (import.meta.env.DEV && developmentWindow.desktopApi === undefined) {
   developmentWindow.desktopApi = {
+    setUnsavedChanges: () => undefined,
     quitApplication: async () => undefined,
     getServiceConnection: async () => ({
       baseUrl: window.location.origin,

@@ -195,7 +195,7 @@ def create_app(
     app.add_middleware(
         CORSMiddleware,
         allow_origin_regex=r"^(null|http://(127\.0\.0\.1|localhost)(:\d+)?)$",
-        allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allow_headers=["Authorization", "Content-Type"],
     )
     configured_user_data = os.getenv("EARCOPY_USER_DATA")

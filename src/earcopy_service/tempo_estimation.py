@@ -16,10 +16,10 @@ class TempoEstimate(BaseModel):
 HOP_LENGTH = 512
 INITIAL_TEMPO_BPM = 100.0
 INITIAL_TEMPO_STD_BPM = 1.0
-OCTAVE_PROMOTION_MIN_RECALL_GAIN = 0.4
-OCTAVE_PROMOTION_MIN_SCORE_RATIO = 1.0
-OCTAVE_PROMOTION_MIN_PERIODICITY_RATIO = 0.9
-OCTAVE_PROMOTION_MAX_BPM = 220.0
+TEMPO_PROMOTION_MIN_RECALL_GAIN = 0.2
+TEMPO_PROMOTION_MIN_SCORE_RATIO = 0.75
+TEMPO_PROMOTION_MIN_PERIODICITY_RATIO = 0.75
+TEMPO_PROMOTION_MAX_BPM = 220.0
 REFINEMENT_WINDOW_BEATS = (8, 16, 32)
 REFINEMENT_MAX_MISSING_BEAT_RATIO = 2.0
 REFINEMENT_MAX_LOG2_DEVIATION = 0.12
@@ -285,22 +285,26 @@ def _estimate_fixed_tempo(
         sample_rate,
         initial_bpm,
     )
-    double_bpm = initial_bpm * 2.0
-    if double_bpm <= OCTAVE_PROMOTION_MAX_BPM:
-        double_score, double_recall, double_beats = _tempo_candidate_score(
+    initial_score = best_score
+    initial_recall = best_recall
+    for multiplier in (1.5, 2.0):
+        candidate_bpm = initial_bpm * multiplier
+        if candidate_bpm > TEMPO_PROMOTION_MAX_BPM:
+            continue
+        candidate_score, candidate_recall, candidate_beats = _tempo_candidate_score(
             librosa,
             np,
             onset_envelope,
             onset_frames,
             onset_strengths,
             sample_rate,
-            double_bpm,
+            candidate_bpm,
         )
         explains_more_onsets = (
-            double_recall >= best_recall + OCTAVE_PROMOTION_MIN_RECALL_GAIN
+            candidate_recall >= initial_recall + TEMPO_PROMOTION_MIN_RECALL_GAIN
         )
         retains_enough_confidence = (
-            double_score >= best_score * OCTAVE_PROMOTION_MIN_SCORE_RATIO
+            candidate_score >= initial_score * TEMPO_PROMOTION_MIN_SCORE_RATIO
         )
         retains_periodicity = (
             _periodicity_ratio(
@@ -308,18 +312,20 @@ def _estimate_fixed_tempo(
                 np,
                 onset_envelope,
                 sample_rate,
-                best_bpm,
-                double_bpm,
+                initial_bpm,
+                candidate_bpm,
             )
-            >= OCTAVE_PROMOTION_MIN_PERIODICITY_RATIO
+            >= TEMPO_PROMOTION_MIN_PERIODICITY_RATIO
         )
         if (
             explains_more_onsets
             and retains_enough_confidence
             and retains_periodicity
+            and (best_bpm == initial_bpm or candidate_score > best_score)
         ):
-            best_bpm = double_bpm
-            best_beats = double_beats
+            best_bpm = candidate_bpm
+            best_score = candidate_score
+            best_beats = candidate_beats
 
     if best_beats.size == 0:
         raise ValueError("拍を追跡できませんでした")

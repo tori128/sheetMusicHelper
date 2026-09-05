@@ -48,6 +48,12 @@ export interface ServiceConnection {
 }
 
 export interface DesktopApi {
+  setUnsavedChanges(state: {
+    hasUnsavedChanges: boolean;
+    message: string;
+    cancelLabel: string;
+    exitLabel: string;
+  }): void;
   quitApplication(): Promise<void>;
   getServiceConnection(): Promise<ServiceConnection>;
   getAboutInfo(): Promise<AppAboutInfo>;

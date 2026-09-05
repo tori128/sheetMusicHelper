@@ -32,13 +32,13 @@ Music-Source-Separation-TrainingリポジトリはMITだが、チェックポイ
 - SHA-256:
   `24e7d35ee9c64415673d3fd33e06a67cac2c103c5df6267ba1576459c775916e`
 
-公開前検査では、Windows本体パッケージ内のモデル重みがMuScriptor small、medium、largeの
-3ファイルだけであることを確認する。
+公開前検査では、モデル自己解凍ZIP内のMuScriptor small、medium、largeの
+重みと設定ファイルのサイズ、SHA-256、設定内容を確認する。
 
 配布方針は次のとおりである。
 
 - BS-RoFormer SW Fixed：Windows本体パッケージには同梱せず、アプリ内の警告確認後に取得する。
-- MuScriptor small／medium／large：CC BY-NC 4.0が非商用目的の複製と共有を許諾するため、改変せず同じGitHub Releaseのモデルアーカイブとして配布する。
+- MuScriptor small／medium／large：CC BY-NC 4.0が非商用目的の複製と共有を許諾するため、改変せず同じGitHub Releaseのモデル自己解凍ZIPとして配布する。
 
 ### LGPLコンポーネント
 
@@ -86,8 +86,8 @@ Python-SoXR 1.1.0も含まれる。
 
 ### MuScriptorモデル
 
-MuScriptor small、medium、largeのモデル重みを改変せずモデルアーカイブとして配布する。
-利用者はWindows本体を展開した親フォルダーへ各モデルアーカイブを展開し、
+MuScriptor small、medium、largeのモデル重みを改変せずモデル自己解凍ZIPとして配布する。
+利用者はWindows本体を展開した親フォルダーを各モデル自己解凍ZIPの展開先として選択し、
 `models/muscriptor/<variant>/model.safetensors`へ配置する。公開文書と起動時の
 確認画面には次の情報を記載する。
 
@@ -148,19 +148,19 @@ npm run verify:release
 
 - `EarCopyAssist-<version>-win-x64.z01`
 - `EarCopyAssist-<version>-win-x64.z02`以降（存在する場合）
-- `EarCopyAssist-<version>-win-x64.zip`
+- `EarCopyAssist-<version>-win-x64.exe`
 - `EarCopyAssist-<version>-copyleft-sources.zip`
 - `RELEASE_NOTES.md`
 - `SHA256SUMS.txt`
 
-各Release assetのサイズは2 GiB未満とする。Windows版の全分割ボリューム、最終ZIP、
-LGPL対応ソースZIPを同じReleaseへ添付する。復元したWindows ZIPにMuScriptorの
-3モデルと各`config.json`が存在し、BS-RoFormerを含む他のモデル重みが存在しないことを確認する。
+各Release assetのサイズは2 GiB未満とする。Windows版の全分割ボリューム、自己解凍ZIP、
+LGPL対応ソースZIPを同じReleaseへ添付する。MuScriptorの3モデルは別の自己解凍ZIPとして
+同じReleaseへ添付し、各モデルの重みと`config.json`を確認する。
 
 `package:release`は追跡対象ファイルに未コミット変更がある場合は失敗する。
-Windows ZIPの`BUILD_INFO.txt`とリリースノートには、ビルド元の40桁Gitコミットを
-記録する。`verify:release`は標準分割ZIPのボリューム番号と再結合、各資産のSHA-256、
-2 GiB制限、パス構造、必須ファイル、MuScriptorの3モデル、他のモデル重みと`UserData`の
+自己解凍ZIPに格納したWindows ZIPの`BUILD_INFO.txt`とリリースノートには、ビルド元の40桁Gitコミットを
+記録する。`verify:release`は分割ZIPのボリューム番号、自己解凍ZIP、再結合、各資産のSHA-256、
+2 GiB制限、パス構造、必須ファイル、モデル重みと`UserData`の
 非混入、対応ソース、ビルド元コミットを再検証する。
 
 ### Release公開
@@ -194,7 +194,7 @@ models/muscriptor/
 
 モデル6ファイルの合計は7,105,675,208 bytesである。検査済みディレクトリはモデルごとに
 GitHub Actions Cacheへ保存する。後続ジョブはこのキャッシュから1モデルずつ復元し、
-GitHub Releaseの1ファイル2 GiB制限に対応した標準の分割ZIPを作成する。Windows本体パッケージには
+GitHub Releaseの1ファイル2 GiB制限に対応した自己解凍ZIPを作成する。Windows本体パッケージには
 モデル重みを含めない。
 
 Node.js 24、Python 3.11、uv、MSYS2 MINGW64はワークフローが各GitHub Actionで設定する。
@@ -245,8 +245,8 @@ gh run watch <run-id> --exit-status
 非公開Releaseが存在する場合は、対象コミット、リリースノート、Release assetを更新する。
 
 ワークフローはテスト、型検査、MuScriptorモデル検査、FFmpegとlibsndfileのビルド、
-Electronパッケージ化、パッケージ起動試験、分割ZIP作成、Release asset検査を順に実行する。
-成功時はWindows版の全`.zNN`ボリューム、最終`.zip`、対応ソースZIP、
+Electronパッケージ化、パッケージ起動試験、自己解凍ZIP作成、Release asset検査を順に実行する。
+成功時はWindows版の全`.zNN`ボリューム、`.exe`、対応ソースZIP、
 `RELEASE_NOTES.md`、`SHA256SUMS.txt`を同じ公開Releaseへ登録する。既存の公開済みReleaseは
 変更対象にしない。
 
@@ -262,10 +262,10 @@ Electronパッケージ化、パッケージ起動試験、分割ZIP作成、Rel
 クリーン環境の作成はホスト設定や費用へ影響する。実行環境、設定変更、費用を提示し、
 公開責任者の承認後に次を実施する。
 
-1. GitHub ReleaseからWindows版の全`.zNN`ボリューム、最終`.zip`、対応ソースZIP、
+1. GitHub ReleaseからWindows版の全`.zNN`ボリューム、`.exe`、対応ソースZIP、
    `SHA256SUMS.txt`を取得し、
    すべてのSHA-256を照合する。
-2. 全ボリュームを同じフォルダーに置き、7-Zipで最終`.zip`を開いて、1つの
+2. 全ボリュームと`.exe`を同じフォルダーに置き、`.exe`を実行して1つの
    `EarCopyAssist-<version>-win-x64`フォルダーへ展開できることを確認する。
 3. 起動し、MuScriptorの利用条件へ同意する前に内蔵サービスが起動しないこと、同意後に
    small、medium、largeの3モデルが表示されることを確認する。

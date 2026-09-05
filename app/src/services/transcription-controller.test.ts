@@ -498,3 +498,23 @@ describe("transcription controller", () => {
   });
 
 });
+
+
+it("cancels the backend when cancelled before the start response", async () => {
+  const store = createStore();
+  let resolveStart!: (id: string) => void;
+  const cancelTranscription = vi.fn().mockResolvedValue({ status: "cancelled" });
+  const streamJobEvents = vi.fn().mockResolvedValue(undefined);
+  const client = {
+    startTranscription: () => new Promise<string>(resolve => { resolveStart = resolve; }),
+    streamJobEvents,
+    cancelTranscription,
+  } as unknown as LocalApiClient;
+  const run = startProjectTranscription(client, store);
+  await cancelProjectTranscription(client, store);
+  resolveStart("delayed-job");
+  await run;
+  expect(cancelTranscription).toHaveBeenCalledExactlyOnceWith("delayed-job");
+  expect(streamJobEvents).not.toHaveBeenCalled();
+  expect(store.getSnapshot().job?.status).toBe("cancelled");
+});

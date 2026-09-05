@@ -191,7 +191,6 @@ jobs:
             mingw-w64-x86_64-gcc
             mingw-w64-x86_64-make
             diffutils
-            zip
 
       - name: Configure native build paths
         shell: pwsh
@@ -205,7 +204,6 @@ jobs:
           $required = @(
             (Join-Path $msys2Root "usr\bin\bash.exe"),
             (Join-Path $msys2Root "usr\bin\cmp.exe"),
-            (Join-Path $msys2Root "usr\bin\zip.exe"),
             (Join-Path $msys2Root "msys2_shell.cmd"),
             (Join-Path $msys2Root "mingw64\bin\gcc.exe"),
             (Join-Path $msys2Root "mingw64\bin\g++.exe"),
@@ -229,8 +227,6 @@ jobs:
             }
           }
           "EARCOPY_MSYS2_ROOT=$msys2Root" |
-            Out-File $env:GITHUB_ENV -Append -Encoding utf8
-          "EARCOPY_ZIP_EXECUTABLE=$(Join-Path $msys2Root 'usr\bin\zip.exe')" |
             Out-File $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Install Python dependencies
@@ -401,33 +397,6 @@ jobs:
       - name: Remove previous build outputs
         shell: pwsh
         run: ./scripts/cleanup_ci_release_build.ps1 -Phase BeforeBuild
-
-      - name: Set up MSYS2 ZIP
-        id: setup_model_msys2
-        uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884 # v2
-        with:
-          msystem: MINGW64
-          release: true
-          update: false
-          install: zip unzip
-
-      - name: Configure model archive command
-        shell: pwsh
-        env:
-          MSYS2_LOCATION: ${{ steps.setup_model_msys2.outputs.msys2-location }}
-        run: |
-          $zipExecutable = Join-Path $env:MSYS2_LOCATION "usr\bin\zip.exe"
-          if (-not (Test-Path -LiteralPath $zipExecutable -PathType Leaf)) {
-            throw "Info-ZIP zip.exe was not found: $zipExecutable"
-          }
-          $unzipExecutable = Join-Path $env:MSYS2_LOCATION "usr\bin\unzip.exe"
-          if (-not (Test-Path -LiteralPath $unzipExecutable -PathType Leaf)) {
-            throw "Info-ZIP unzip.exe was not found: $unzipExecutable"
-          }
-          "EARCOPY_ZIP_EXECUTABLE=$zipExecutable" |
-            Out-File $env:GITHUB_ENV -Append -Encoding utf8
-          "EARCOPY_UNZIP_EXECUTABLE=$unzipExecutable" |
-            Out-File $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Restore MuScriptor small cache
         id: muscriptor_small_cache

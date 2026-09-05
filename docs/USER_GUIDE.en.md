@@ -2,34 +2,13 @@
 
 [日本語](USER_GUIDE.md)
 
-## Download
-
-Download the Windows version from [GitHub Releases](https://github.com/tori128/sheetMusicHelper/releases).
-Download all of the following files from the release:
-
-- `EarCopyAssist-<version>-win-x64.zip`
-- `EarCopyAssist-<version>-win-x64.z01, .z02, ...`
-- `EarCopyAssist-<version>-muscriptor-small.zip`
-- `EarCopyAssist-<version>-muscriptor-medium.zip`
-- `EarCopyAssist-<version>-muscriptor-large.zip` and `.z01, .z02, ...`
-
-Use an extraction tool that supports split ZIP archives, such as [7-Zip](https://www.7-zip.org/).
-
-
-
-## Installation
-
-1. Put every Windows `.z01` and later volume with the final `.zip` in one folder, then open the final `.zip`.
-2. Extract the MuScriptor small, medium, and large archives into the parent folder of the extracted Windows package. This creates `EarCopyAssist-<version>-win-x64\\models\\muscriptor\\small`, `medium`, and `large`.
-3. Launch `EarCopyAssist.exe` in the extracted Windows-package folder and review the MuScriptor model terms. MuScriptor small, medium, and large model weights are restricted to non-commercial use.
+## Usage
 
 Select Japanese, English, or Chinese from the language control at the top of the new-project screen or in **設定 (Settings)**.
 
-
-
-## Usage
-
 ### Transcribe audio
+
+![Project](assets/project.png)
 
 1. Select a WAV, MP3, FLAC, Ogg, M4A, or AAC file with **音源ファイルを選択 (Select audio file)**.
 2. Choose the project name, instrument-selection method, MuScriptor model, processing mode, transcription mode, inference backend, and time signature.

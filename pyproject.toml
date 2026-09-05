@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "earcopy-assist"
-version = "0.1.1"
+version = "0.1.2"
 description = "耳コピ補助アプリのローカルサービスとプロジェクト基盤"
 readme = "README.md"
 license = { file = "LICENSE" }

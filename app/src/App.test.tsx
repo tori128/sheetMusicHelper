@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom/vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { DesktopApi } from "./types";
 
@@ -60,6 +60,7 @@ describe("App startup terms", () => {
     getServiceConnection.mockClear();
     quitApplication.mockClear();
     window.desktopApi = {
+      setUnsavedChanges: vi.fn(),
       getServiceConnection,
       quitApplication,
     } as unknown as DesktopApi;
@@ -95,5 +96,44 @@ describe("App startup terms", () => {
 
     expect(quitApplication).toHaveBeenCalledOnce();
     expect(getServiceConnection).not.toHaveBeenCalled();
+  });
+
+  it("publishes project changes and saves to the desktop close confirmation", () => {
+    render(<App />);
+    const publish = window.desktopApi.setUnsavedChanges;
+    expect(publish).toHaveBeenLastCalledWith(expect.objectContaining({
+      hasUnsavedChanges: false,
+    }));
+    act(() => projectStore.createProject({
+      name: "Close confirmation",
+      audio: {
+        absolutePath: "D:\\audio.wav",
+        sha256: "a".repeat(64),
+        durationSec: 10,
+        sampleRate: 48000,
+        channels: 2,
+        codecName: "pcm",
+      },
+      bpm: 120,
+      numerator: 4,
+      denominator: 4,
+      instrumentSelectionMode: "automatic",
+      instruments: [],
+    }));
+    expect(publish).toHaveBeenLastCalledWith(expect.objectContaining({
+      hasUnsavedChanges: true,
+    }));
+    act(() => projectStore.markSaved(projectStore.getSnapshot().project!));
+    expect(publish).toHaveBeenLastCalledWith(expect.objectContaining({
+      hasUnsavedChanges: false,
+    }));
+    act(() => projectStore.setBpm(125));
+    expect(publish).toHaveBeenLastCalledWith(expect.objectContaining({
+      hasUnsavedChanges: true,
+    }));
+    act(() => projectStore.closeProject());
+    expect(publish).toHaveBeenLastCalledWith(expect.objectContaining({
+      hasUnsavedChanges: false,
+    }));
   });
 });

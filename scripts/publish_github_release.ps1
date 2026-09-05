@@ -41,13 +41,13 @@ if (-not $release.isDraft) {
 
 $portableName = "EarCopyAssist-$($package.version)-win-x64"
 $sourceName = "EarCopyAssist-$($package.version)-copyleft-sources.zip"
-$smallName = "EarCopyAssist-$($package.version)-muscriptor-small.zip"
-$mediumName = "EarCopyAssist-$($package.version)-muscriptor-medium.zip"
+$smallName = "EarCopyAssist-$($package.version)-muscriptor-small.exe"
+$mediumName = "EarCopyAssist-$($package.version)-muscriptor-medium.exe"
 $largeBaseName = "EarCopyAssist-$($package.version)-muscriptor-large"
-$largeName = "$largeBaseName.zip"
+$largeName = "$largeBaseName.exe"
 $assetNames = @($release.assets | ForEach-Object { [string]$_.name })
 $requiredAssetNames = @(
-    "$portableName.zip",
+    "$portableName.exe",
     $sourceName,
     "RELEASE_NOTES.md",
     "SHA256SUMS.txt",

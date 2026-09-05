@@ -1,5 +1,7 @@
 $ErrorActionPreference = "Stop"
 
+. (Join-Path $PSScriptRoot "zip-self-extractor.ps1")
+
 $appRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $repositoryRoot = (Resolve-Path (Join-Path $appRoot "..")).Path
 $releaseAssetsRoot = Join-Path $appRoot "release-assets"
@@ -16,7 +18,7 @@ if ($LASTEXITCODE -ne 0 -or $sourceCommit -notmatch "^[0-9a-f]{40}$") {
 
 $portableName = "EarCopyAssist-$version-win-x64"
 $sourceName = "EarCopyAssist-$version-copyleft-sources"
-$windowsArchiveName = "$portableName.zip"
+$windowsArchiveName = "$portableName.exe"
 $sourceArchiveName = "$sourceName.zip"
 $checksumsPath = Join-Path $releaseAssetsRoot "SHA256SUMS.txt"
 $releaseNotesPath = Join-Path $releaseAssetsRoot "RELEASE_NOTES.md"
@@ -53,33 +55,6 @@ function Get-ArchiveEntries {
         }
     }
     return @($entries | ForEach-Object { $_.Replace("\", "/") })
-}
-
-function Get-InfoZipExecutable {
-    $candidates = [Collections.Generic.List[string]]::new()
-    if (-not [string]::IsNullOrWhiteSpace($env:EARCOPY_ZIP_EXECUTABLE)) {
-        $candidates.Add($env:EARCOPY_ZIP_EXECUTABLE)
-    }
-    $candidates.Add("C:\msys64\usr\bin\zip.exe")
-    $pathCommand = Get-Command "zip.exe" -ErrorAction SilentlyContinue
-    if ($null -ne $pathCommand) {
-        $candidates.Add($pathCommand.Source)
-    }
-
-    foreach ($candidate in $candidates) {
-        if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) {
-            continue
-        }
-        $versionOutput = (& $candidate -v 2>&1) -join "`n"
-        if ($LASTEXITCODE -eq 0 -and $versionOutput -match "Info-ZIP") {
-            return (Resolve-Path -LiteralPath $candidate).Path
-        }
-    }
-
-    throw (
-        "Info-ZIP zip.exe was not found. Install the MSYS2 'zip' package, " +
-        "or set EARCOPY_ZIP_EXECUTABLE to Info-ZIP zip.exe."
-    )
 }
 
 if (-not (Test-Path -LiteralPath $checksumsPath -PathType Leaf)) {
@@ -163,6 +138,7 @@ foreach ($assetName in $checksumAssetNames) {
 }
 
 foreach ($obsoleteName in @(
+    "$portableName.zip",
     "$portableName-core.zip",
     "$portableName-runtime-1.zip",
     "$portableName-runtime-2.zip",
@@ -187,12 +163,11 @@ $temporaryWindowsArchive = Join-Path (
     $releaseAssetsRoot
 ) ".verify-$([guid]::NewGuid().ToString('N')).zip"
 try {
-    $infoZip = Get-InfoZipExecutable
     $windowsArchive = Join-Path $releaseAssetsRoot $windowsArchiveName
-    & $infoZip -q -s 0 $windowsArchive --out $temporaryWindowsArchive
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unable to reconstruct the standard split Windows ZIP."
-    }
+    Test-ZipSelfExtractor -Path $windowsArchive
+    Restore-ZipSelfExtractorArchive `
+        -SelfExtractor $windowsArchive `
+        -Destination $temporaryWindowsArchive
 
     $windowsEntries = @(
         Get-ArchiveEntries `
@@ -207,6 +182,13 @@ try {
     $requiredWindowsEntries = @(
         "$portableName/EarCopyAssist.exe",
         "$portableName/README.md",
+        "$portableName/README.en.md",
+        "$portableName/LICENSE",
+        "$portableName/docs/assets/main.png",
+        "$portableName/docs/TRANSCRIPTION_METHOD_BENCHMARK.md",
+        "$portableName/docs/TRANSCRIPTION_METHOD_BENCHMARK.en.md",
+        "$portableName/docs/developer/TEMPO_DOWNBEAT_EVALUATION.md",
+        "$portableName/docs/developer/TEMPO_DOWNBEAT_EVALUATION.en.md",
         "$portableName/BUILD_INFO.txt",
         "$portableName/LICENSE.txt",
         "$portableName/THIRD_PARTY_NOTICES.md",
@@ -284,7 +266,7 @@ try {
         $sourceCommit,
         "$portableName.zxx",
         $windowsArchiveName,
-        "7-Zip",
+        "ZIP自己解凍",
         "README.md",
         "docs/USER_GUIDE.md"
     )) {

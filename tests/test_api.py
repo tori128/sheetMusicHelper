@@ -268,7 +268,7 @@ def test_playback_audio_endpoints_prepare_and_return_pcm_frames(
     import numpy
     import soundfile
 
-    source_path = tmp_path / "source.wav"
+    source_path = tmp_path / "日本語ファイル名.wav"
     samples = numpy.array(
         [[0.0, 0.25], [0.5, 0.75], [1.0, -1.0]],
         dtype=numpy.float32,
@@ -759,8 +759,9 @@ def test_musicxml_export_endpoint_writes_local_score(tmp_path) -> None:
 def test_midi_export_endpoint_writes_current_project_without_score_validation(
     tmp_path,
 ) -> None:
-    project = create_project("Current MIDI", PRESET_BY_KEY["string-quartet"])
-    output = tmp_path / "current.mid"
+    project = create_project("日本語のMIDI", PRESET_BY_KEY["string-quartet"])
+    project.tracks[0].display_name = "第1バイオリン"
+    output = tmp_path / "日本語の出力.mid"
     client = TestClient(create_app())
 
     response = client.post(
@@ -891,3 +892,18 @@ def test_stem_export_endpoint_copies_all_six_cached_files(tmp_path) -> None:
         "Song_piano.wav",
         "Song_guitar.wav",
     }
+
+
+def test_preset_overwrite_cors_preflight() -> None:
+    client = TestClient(create_app(session_token="test"))
+    for origin in ("null", "http://localhost:5173"):
+        response = client.options(
+            "/api/v1/presets/00000000-0000-0000-0000-000000000001",
+            headers={
+                "Origin": origin,
+                "Access-Control-Request-Method": "PUT",
+                "Access-Control-Request-Headers": "authorization,content-type",
+            },
+        )
+        assert response.status_code == 200
+        assert "PUT" in response.headers["access-control-allow-methods"]

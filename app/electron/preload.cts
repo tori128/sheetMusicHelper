@@ -1,7 +1,10 @@
 import { contextBridge, ipcRenderer, webUtils } from "electron";
 import type { ServiceConnection } from "./service-manager.js";
+import type { UnsavedChangesState } from "./shutdown-controller.js";
 
 contextBridge.exposeInMainWorld("desktopApi", {
+  setUnsavedChanges: (state: UnsavedChangesState): void =>
+    ipcRenderer.send("app:unsaved-changes", state),
   quitApplication: (): Promise<void> => ipcRenderer.invoke("app:quit"),
   getServiceConnection: (): Promise<ServiceConnection> =>
     ipcRenderer.invoke("service:get-connection"),

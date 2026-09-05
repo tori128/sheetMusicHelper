@@ -5,7 +5,7 @@ from pathlib import Path
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
 
 from .models import Project, Track
-from .timebase import note_score_ticks
+from .timebase import seconds_to_ticks
 
 KEY_SIGNATURES = {
     (0, "major"): "C",
@@ -73,7 +73,11 @@ def _create_note_track(project: Project, track: Track) -> MidiTrack:
     for note in project.notes:
         if note.track_id != track.id:
             continue
-        start_tick, end_tick = note_score_ticks(project, note)
+        start_tick = seconds_to_ticks(note.start_sec, project.tempo.bpm, project.tempo.ppq)
+        end_tick = max(
+            start_tick + 1,
+            seconds_to_ticks(note.end_sec, project.tempo.bpm, project.tempo.ppq),
+        )
         events.append(
             (
                 end_tick,
@@ -106,7 +110,7 @@ def _create_note_track(project: Project, track: Track) -> MidiTrack:
 
 
 def build_midi(project: Project) -> MidiFile:
-    midi = MidiFile(type=1, ticks_per_beat=project.tempo.ppq)
+    midi = MidiFile(type=1, ticks_per_beat=project.tempo.ppq, charset="utf-8")
     conductor = MidiTrack()
     conductor.append(MetaMessage("track_name", name=project.name, time=0))
     conductor.append(

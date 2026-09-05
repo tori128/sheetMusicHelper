@@ -25,12 +25,12 @@ The recommended model is BS-RoFormer SW Fixed. The Music-Source-Separation-Train
 - SHA-256:
   `24e7d35ee9c64415673d3fd33e06a67cac2c103c5df6267ba1576459c775916e`
 
-Pre-release validation requires exactly three model-weight files in the Windows application package: MuScriptor small, medium, and large.
+Pre-release validation checks the size, SHA-256, and configuration of the MuScriptor small, medium, and large weight and configuration files in the self-extracting model ZIP files.
 
 The distribution decisions are as follows.
 
 - BS-RoFormer SW Fixed: downloaded after the in-application warning is acknowledged and excluded from the Windows application package.
-- MuScriptor small, medium, and large: distributed without modification as model archives on the same GitHub Release because CC BY-NC 4.0 permits reproduction and sharing for non-commercial purposes.
+- MuScriptor small, medium, and large: distributed without modification as self-extracting ZIP files on the same GitHub Release because CC BY-NC 4.0 permits reproduction and sharing for non-commercial purposes.
 
 ### LGPL Components
 
@@ -66,7 +66,7 @@ This method publishes complete source for the LGPL components beside the binarie
 
 ### MuScriptor Models
 
-Distribute the unmodified MuScriptor small, medium, and large weights as model archives. Users extract each archive into the parent folder containing the Windows package to place the files under `models/muscriptor/<variant>/model.safetensors`. Public documents and the startup confirmation screen state the following facts.
+Distribute the unmodified MuScriptor small, medium, and large weights as self-extracting ZIP files. Users select the parent folder containing the Windows package as the extraction folder to place the files under `models/muscriptor/<variant>/model.safetensors`. Public documents and the startup confirmation screen state the following facts.
 
 - The models are restricted to non-commercial use.
 - EarCopy Assist terms and model terms are separate.
@@ -116,14 +116,14 @@ npm run verify:release
 
 - `EarCopyAssist-<version>-win-x64.z01`
 - `EarCopyAssist-<version>-win-x64.z02` and later, when present
-- `EarCopyAssist-<version>-win-x64.zip`
+- `EarCopyAssist-<version>-win-x64.exe`
 - `EarCopyAssist-<version>-copyleft-sources.zip`
 - `RELEASE_NOTES.md`
 - `SHA256SUMS.txt`
 
-Each Release asset must be below 2 GiB. Attach every split Windows volume, the final ZIP, and the LGPL corresponding-source ZIP to the same Release. Confirm that the reconstructed Windows ZIP contains all three MuScriptor models and their `config.json` files and contains no other model weights, including BS-RoFormer.
+Each Release asset must be below 2 GiB. Attach every split Windows volume, the self-extracting ZIP, and the LGPL corresponding-source ZIP to the same Release. Attach the three MuScriptor models as separate self-extracting ZIP files to the same Release, and verify each model weight and `config.json` file.
 
-`package:release` fails when tracked files contain uncommitted changes. The Windows ZIP `BUILD_INFO.txt` and release notes record the 40-character source commit. `verify:release` revalidates standard split-ZIP numbering and reconstruction, SHA-256 for each asset, the 2 GiB limit, path layout, required files, all three MuScriptor models, absence of other model weights and `UserData`, corresponding source, and the source commit.
+`package:release` fails when tracked files contain uncommitted changes. The `BUILD_INFO.txt` in the Windows ZIP embedded in the self-extracting ZIP and the release notes record the 40-character source commit. `verify:release` revalidates ZIP-volume numbering, the self-extracting ZIP, reconstruction, SHA-256 for each asset, the 2 GiB limit, path layout, required files, absence of model weights and `UserData`, corresponding source, and the source commit.
 
 ### Publishing a Release
 
@@ -148,7 +148,7 @@ models/muscriptor/
    └─ config.json
 ```
 
-The six model files total 7,105,675,208 bytes. The workflow stores each validated model directory in GitHub Actions Cache. Later jobs restore one model at a time from that cache and create standard split ZIP model assets that meet GitHub Release's 2 GiB per-file limit. The Windows application package contains no model weights.
+The six model files total 7,105,675,208 bytes. The workflow stores each validated model directory in GitHub Actions Cache. Later jobs restore one model at a time from that cache and create self-extracting ZIP model assets that meet GitHub Release's 2 GiB per-file limit. The Windows application package contains no model weights.
 
 GitHub Actions configures Node.js 24, Python 3.11, uv, and MSYS2 MINGW64. The workflow passes the actual MSYS2 installation directory to FFmpeg and libsndfile builds as `EARCOPY_MSYS2_ROOT`.
 
@@ -189,7 +189,7 @@ gh run watch <run-id> --exit-status
 
 On success, the workflow creates a Draft Release for the selected tag. If a Draft Release with that tag exists, it updates the target commit, release notes, and Release assets.
 
-The workflow runs tests, type checking, MuScriptor model validation, FFmpeg and libsndfile builds, Electron packaging, packaged-application startup testing, split-ZIP creation, and Release-asset validation in sequence. On success, it registers every Windows `.zNN` volume, the final `.zip`, the corresponding-source ZIP, `RELEASE_NOTES.md`, and `SHA256SUMS.txt` on the same Draft Release. It leaves published Releases unchanged. The publisher reviews artifacts, licenses, and acceptance-test results before publication.
+The workflow runs tests, type checking, MuScriptor model validation, FFmpeg and libsndfile builds, Electron packaging, packaged-application startup testing, self-extracting ZIP creation, and Release-asset validation in sequence. On success, it registers every Windows `.zNN` volume, the `.exe`, the corresponding-source ZIP, `RELEASE_NOTES.md`, and `SHA256SUMS.txt` on the same Draft Release. It leaves published Releases unchanged. The publisher reviews artifacts, licenses, and acceptance-test results before publication.
 
 For a local build, place all three MuScriptor models under `models/muscriptor/` on Windows, run the commands above, and register the generated Release assets on a Draft Release.
 
@@ -199,8 +199,8 @@ Before publication, place the complete distribution directory on a clean Windows
 
 Creating a clean environment can affect host settings and cost. State the environment, configuration changes, and cost, and obtain approval from the publisher before running these steps.
 
-1. Download every Windows `.zNN` volume, the final `.zip`, the corresponding-source ZIP, and `SHA256SUMS.txt` from the GitHub Release, and verify every SHA-256 value.
-2. Place every volume in one directory, open the final `.zip` with 7-Zip, and confirm extraction to one `EarCopyAssist-<version>-win-x64` directory.
+1. Download every Windows `.zNN` volume, the `.exe`, the corresponding-source ZIP, and `SHA256SUMS.txt` from the GitHub Release, and verify every SHA-256 value.
+2. Place every volume and the `.exe` in one directory, run the `.exe`, and confirm extraction to one `EarCopyAssist-<version>-win-x64` directory.
 3. Launch the application and confirm that the embedded service remains stopped before accepting the MuScriptor terms and that small, medium, and large appear after acceptance.
 4. On the new-project screen, confirm the BS-RoFormer SW Fixed `Unknown` license status, distribution page, 699412152-byte size, destination, and SHA-256. Select the acknowledgement, download the model, and confirm that source-separated transcription becomes available.
 5. Using a 30-second audio file with cleared rights, run direct transcription and transcription after source separation. In each process, verify progress, cancellation, editing after cancellation, and chord analysis.

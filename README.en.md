@@ -17,15 +17,11 @@ Its transcription workflow can use source separation to improve accuracy.
 
 Transcription can run on the CPU when an NVIDIA GPU is unavailable.
 
-## Windows setup
+## Installation
 
-1. Download every split Windows ZIP volume and the final `.zip` from [GitHub Releases](https://github.com/tori128/sheetMusicHelper/releases), then extract the final `.zip`.
-2. Extract the MuScriptor small, medium, and large model archives from the same Release into the parent folder of the extracted Windows package. This creates `EarCopyAssist-<version>-win-x64\\models\\muscriptor\\small`, `medium`, and `large`.
+1. Download every Windows `.z01` and later split-ZIP volume and the `.exe` from the Assets section of [GitHub Releases](https://github.com/tori128/sheetMusicHelper/releases). Run the `.exe` and select an extraction folder.
+2. Run the MuScriptor small, medium, and large self-extracting ZIP files from the same Release and select the parent folder of the extracted Windows package. The large model also requires every `.z01` and later split-ZIP volume and its `.exe`. This creates `EarCopyAssist-<version>-win-x64\models\muscriptor\small`, `medium`, and `large`.
 3. Launch `EarCopyAssist.exe` in the extracted Windows-package folder.
-
-Open the final `.zip` with [7-Zip](https://www.7-zip.org/) or another split-ZIP-compatible extraction tool.
-
-To use another BS-RoFormer weight for source separation, place one weight and its YAML configuration file in `models\\bs-roformer\\sw-fixed`.
 
 
 
@@ -54,6 +50,6 @@ To use another BS-RoFormer weight for source separation, place one weight and it
 ## License
 
 EarCopy Assist itself is provided under the [MIT License](LICENSE).
-External software, playback sounds, and AI models remain subject to their respective licenses and terms.
+External software, playback sounds, and ML models remain subject to their respective licenses and terms.
 Official MuScriptor models are restricted to non-commercial use under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) and additional terms on each distribution page.
 See [Terms and sources for external software and models](THIRD_PARTY_NOTICES.en.md) for details.

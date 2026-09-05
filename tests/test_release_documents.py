@@ -73,11 +73,8 @@ def test_public_release_documents_are_present_and_cross_linked() -> None:
         "README.en.md",
         "docs/USER_GUIDE.md",
         "docs/USER_GUIDE.en.md",
+        "docs/TRANSCRIPTION_METHOD_BENCHMARK.md",
         "docs/TRANSCRIPTION_METHOD_BENCHMARK.en.md",
-        "docs/developer/DEVELOPMENT.md",
-        "docs/developer/DEVELOPMENT.en.md",
-        "docs/developer/DISTRIBUTION.md",
-        "docs/developer/DISTRIBUTION.en.md",
         "docs/developer/TEMPO_DOWNBEAT_EVALUATION.md",
         "docs/developer/TEMPO_DOWNBEAT_EVALUATION.en.md",
     ):
@@ -776,12 +773,11 @@ def test_portable_build_includes_release_documents() -> None:
     ).read_text(encoding="utf-8")
     for required_text in (
         "EarCopyAssist-$version-copyleft-sources",
-        "$portableName.zip",
+        "$windowsSelfExtractor",
         "New-SplitZipArchive",
+        "Split-ZipSelfExtractorArchive",
+        "New-ZipSelfExtractor",
         '$splitPartSize = "1800m"',
-        "Get-InfoZipExecutable",
-        "Info-ZIP",
-        "EARCOPY_ZIP_EXECUTABLE",
         "BUILD_INFO.txt",
         "THIRD_PARTY_NOTICES.en.md",
         "docs\\USER_GUIDE.md",
@@ -812,8 +808,8 @@ def test_portable_build_includes_release_documents() -> None:
         "model weights",
         "UserData",
         "githubAssetLimit",
-        "Get-InfoZipExecutable",
-        "Unable to reconstruct the standard split Windows ZIP.",
+        "Test-ZipSelfExtractor",
+        "Restore-ZipSelfExtractorArchive",
         "ffmpeg-8.1.2.tar.xz",
         "libsndfile-1.2.2.tar.xz",
         "soxr-1.1.0.tar.gz",
@@ -843,21 +839,22 @@ def test_portable_build_includes_release_documents() -> None:
     for required_text in (
         "${SOURCE_COMMIT}",
         "win-x64.zxx",
-        "win-x64.zip",
-        "muscriptor-small.zip",
-        "muscriptor-medium.zip",
+        "win-x64.exe",
+        "muscriptor-small.exe",
+        "muscriptor-medium.exe",
         "muscriptor-large.z01",
-        "muscriptor-large.zip",
-        "7-Zip",
+        "muscriptor-large.exe",
+        "自己解凍ZIP",
         "README.md",
         "docs/USER_GUIDE.md",
         "docs/USER_GUIDE.en.md",
+        "SHA-256",
+        "FFmpeg",
+        "GNU LGPL version 2.1 or later",
+        "copyleft-sources.zip",
     ):
         assert required_text in release_notes
     for unwanted_text in (
-        "SHA-256",
-        "FFmpeg",
-        "copyleft-sources.zip",
         "最小ビルド",
         "Unknown",
     ):
@@ -910,7 +907,6 @@ def test_ci_and_native_build_configuration() -> None:
         "muscriptor-large-${{ runner.os }}",
         "steps.setup_msys2.outputs.msys2-location",
         "EARCOPY_MSYS2_ROOT",
-        "EARCOPY_ZIP_EXECUTABLE",
         "cleanup_ci_release_build.ps1 -Phase BeforeBuild",
         "cleanup_ci_release_build.ps1 -Phase AfterPackaging",
         "Remove unused native WebGL module",
@@ -943,12 +939,10 @@ def test_ci_and_native_build_configuration() -> None:
         "verify-muscriptor-models.ps1",
         "HardLink",
         "main/${fileName}?download=true",
-        "-s 1800m",
-        "EARCOPY_UNZIP_EXECUTABLE",
-        "unzip.exe",
-        "-s- $archive -O $verificationArchive",
-        "-t $verificationArchive",
-        '"$assetBaseName-verification.zip"',
+        "tar.exe -a -c -f $completeArchive $portableName",
+        "Split-ZipSelfExtractorArchive",
+        "New-ZipSelfExtractor",
+        "Test-ZipSelfExtractor",
         "gh release upload",
         "SHA256SUMS.txt",
         "Refusing to modify a published release",
@@ -961,6 +955,19 @@ def test_ci_and_native_build_configuration() -> None:
     assert not (
         REPOSITORY_ROOT / "scripts" / "download_ci_muscriptor_models.py"
     ).exists()
+
+    self_extractor = (
+        REPOSITORY_ROOT / "app" / "packaging" / "ZipSelfExtractor.cs"
+    ).read_text(encoding="utf-8")
+    for required_text in (
+        "System.IO.Compression",
+        "ZipArchive",
+        "FooterMagic",
+        "--verify",
+        "--extract",
+        "FolderBrowserDialog",
+    ):
+        assert required_text in self_extractor
 
     source_preparer = (
         REPOSITORY_ROOT / "scripts" / "prepare_muscriptor_release_sources.ps1"
@@ -1133,6 +1140,9 @@ if ($errors.Count -ne 0) {
         REPOSITORY_ROOT / "scripts" / "restore_ci_muscriptor_model_source.ps1",
         REPOSITORY_ROOT / "scripts" / "remove_ci_muscriptor_model_sources.ps1",
         REPOSITORY_ROOT / "scripts" / "publish_github_release.ps1",
+        REPOSITORY_ROOT / "app" / "packaging" / "build-release-package.ps1",
+        REPOSITORY_ROOT / "app" / "packaging" / "verify-release-package.ps1",
+        REPOSITORY_ROOT / "app" / "packaging" / "zip-self-extractor.ps1",
         REPOSITORY_ROOT / "app" / "packaging" / "verify-muscriptor-models.ps1",
     )
     for script_path in script_paths:

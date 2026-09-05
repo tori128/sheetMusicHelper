@@ -41,6 +41,8 @@ export async function startProjectTranscription(
     }
   };
   store.beginJob("");
+  const controller = new AbortController();
+  controllers.set(projectId, controller);
   try {
     const jobId = await client.startTranscription(
       project,
@@ -51,13 +53,14 @@ export async function startProjectTranscription(
       initial.instrumentSelectionMode,
       initial.transcriptionProfile,
     );
-    if (store.getSnapshot().project?.projectId !== projectId) {
+    if (
+      controller.signal.aborted ||
+      store.getSnapshot().project?.projectId !== projectId
+    ) {
       await client.cancelTranscription(jobId);
       return;
     }
     store.beginJob(jobId);
-    const controller = new AbortController();
-    controllers.set(projectId, controller);
     await client.streamJobEvents(
       jobId,
       (event) => {
@@ -117,7 +120,9 @@ export async function startProjectTranscription(
       store.failJob(reason instanceof Error ? reason.message : String(reason));
     }
   } finally {
-    controllers.delete(projectId);
+    if (controllers.get(projectId) === controller) {
+      controllers.delete(projectId);
+    }
   }
 }
 

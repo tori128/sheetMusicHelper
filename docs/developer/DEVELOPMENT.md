@@ -24,8 +24,8 @@ npm ci
 ```
 
 実モデルは作業環境の`models/`へ配置する。MuScriptorの3モデルはGit追跡対象にせず、
-Windows本体パッケージとは別のモデルアーカイブとして作成する。利用者はWindows本体の
-展開先の親フォルダーへモデルアーカイブを展開し、`models/muscriptor/`へ配置する。
+Windows本体パッケージとは別のモデル自己解凍ZIPとして作成する。利用者はWindows本体の
+展開先の親フォルダーを展開先として選択し、`models/muscriptor/`へ配置する。
 BS-RoFormer SW FixedはWindows本体パッケージへ同梱しない。
 未配置の場合は、新規プロジェクト画面でライセンス`Unknown`、配布ページ、
 699,412,152 bytes、保存先、SHA-256を表示する。利用者が警告を確認した後、

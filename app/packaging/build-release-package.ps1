@@ -6,6 +6,8 @@ param(
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
+. (Join-Path $PSScriptRoot "zip-self-extractor.ps1")
+
 $appRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $repositoryRoot = (Resolve-Path (Join-Path $appRoot "..")).Path
 $packageJsonPath = Join-Path $appRoot "package.json"
@@ -46,6 +48,7 @@ $portableStage = Join-Path $stagingRoot $portableName
 $sourceStage = Join-Path $stagingRoot $sourceName
 $completeWindowsArchive = Join-Path $stagingRoot "$portableName-complete.zip"
 $windowsArchive = Join-Path $releaseAssetsRoot "$portableName.zip"
+$windowsSelfExtractor = Join-Path $releaseAssetsRoot "$portableName.exe"
 $sourceArchive = Join-Path $releaseAssetsRoot "$sourceName.zip"
 $releaseNotes = Join-Path $releaseAssetsRoot "RELEASE_NOTES.md"
 $checksums = Join-Path $releaseAssetsRoot "SHA256SUMS.txt"
@@ -122,52 +125,17 @@ function Assert-GitHubAssetSize {
     }
 }
 
-function Get-InfoZipExecutable {
-    $candidates = [Collections.Generic.List[string]]::new()
-    if (-not [string]::IsNullOrWhiteSpace($env:EARCOPY_ZIP_EXECUTABLE)) {
-        $candidates.Add($env:EARCOPY_ZIP_EXECUTABLE)
-    }
-    $candidates.Add("C:\msys64\usr\bin\zip.exe")
-    $pathCommand = Get-Command "zip.exe" -ErrorAction SilentlyContinue
-    if ($null -ne $pathCommand) {
-        $candidates.Add($pathCommand.Source)
-    }
-
-    foreach ($candidate in $candidates) {
-        if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) {
-            continue
-        }
-        $versionOutput = (& $candidate -v 2>&1) -join "`n"
-        if ($LASTEXITCODE -eq 0 -and $versionOutput -match "Info-ZIP") {
-            return (Resolve-Path -LiteralPath $candidate).Path
-        }
-    }
-
-    throw (
-        "Info-ZIP zip.exe was not found. Install the MSYS2 'zip' package, " +
-        "or set EARCOPY_ZIP_EXECUTABLE to Info-ZIP zip.exe."
-    )
-}
-
 function New-SplitZipArchive {
     param(
         [Parameter(Mandatory = $true)][string]$Source,
         [Parameter(Mandatory = $true)][string]$Destination,
-        [Parameter(Mandatory = $true)][string]$ZipExecutable,
         [Parameter(Mandatory = $true)][string]$PartSize
     )
 
-    if (Test-Path -LiteralPath $Destination -PathType Leaf) {
-        Remove-Item -LiteralPath $Destination -Force
-    }
-    & $ZipExecutable -q -s $PartSize $Source --out $Destination
-    if ($LASTEXITCODE -ne 0) {
-        throw "Failed to create standard split ZIP archive: $Destination"
-    }
-
-    if (-not (Test-Path -LiteralPath $Destination -PathType Leaf)) {
-        throw "Final ZIP volume was not created: $Destination"
-    }
+    Split-ZipSelfExtractorArchive `
+        -Source $Source `
+        -Destination $Destination `
+        -PartSize $PartSize
 }
 
 function Get-VerifiedSourceArchive {
@@ -202,6 +170,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $packagedRoot "EarCopyAssist.exe")))
 New-Item -ItemType Directory -Force -Path $releaseAssetsRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $sourceOfferRoot | Out-Null
 foreach ($staleName in @(
+    "$portableName.exe",
     "$portableName.zip",
     "$portableName-core.zip",
     "$portableName-runtime-1.zip",
@@ -216,6 +185,7 @@ foreach ($staleName in @(
 }
 Get-ChildItem -LiteralPath $releaseAssetsRoot -File |
     Where-Object {
+        $_.Name -eq "$portableName.exe" -or
         $_.Name -match "^$([regex]::Escape($portableName))\.zip\.\d{3}$" -or
         $_.Name -match "^$([regex]::Escape($portableName))\.z\d{2,}$"
     } |
@@ -231,6 +201,12 @@ Remove-DirectoryInside `
 Copy-Item `
     -LiteralPath (Join-Path $repositoryRoot "README.md") `
     -Destination (Join-Path $portableStage "README.md")
+Copy-Item `
+    -LiteralPath (Join-Path $repositoryRoot "README.en.md") `
+    -Destination (Join-Path $portableStage "README.en.md")
+Copy-Item `
+    -LiteralPath (Join-Path $repositoryRoot "LICENSE") `
+    -Destination (Join-Path $portableStage "LICENSE")
 Set-TemplateContent `
     -Source (Join-Path $templateRoot "BUILD_INFO.txt") `
     -Destination (Join-Path $portableStage "BUILD_INFO.txt")
@@ -243,14 +219,14 @@ Copy-Item `
 Copy-Item `
     -LiteralPath (Join-Path $repositoryRoot "THIRD_PARTY_NOTICES.en.md") `
     -Destination (Join-Path $portableStage "THIRD_PARTY_NOTICES.en.md")
-New-Item -ItemType Directory -Force -Path (Join-Path $portableStage "docs") |
-    Out-Null
-Copy-Item `
-    -LiteralPath (Join-Path $repositoryRoot "docs\USER_GUIDE.md") `
-    -Destination (Join-Path $portableStage "docs\USER_GUIDE.md")
-Copy-Item `
-    -LiteralPath (Join-Path $repositoryRoot "docs\USER_GUIDE.en.md") `
-    -Destination (Join-Path $portableStage "docs\USER_GUIDE.en.md")
+$documentPaths = & git -C $repositoryRoot ls-files -- docs
+if ($LASTEXITCODE -ne 0) { throw "Failed to list release documents." }
+foreach ($documentPath in $documentPaths) {
+    $destination = Join-Path $portableStage $documentPath
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination) |
+        Out-Null
+    Copy-Item -LiteralPath (Join-Path $repositoryRoot $documentPath) -Destination $destination
+}
 Copy-Item `
     -LiteralPath (Join-Path $templateRoot "models") `
     -Destination (Join-Path $portableStage "models") `
@@ -398,25 +374,27 @@ if (-not $KeepStaging) {
     Remove-DirectoryInside -Path $portableStage -Parent $stagingRoot
 }
 
-Write-Output "Creating standard split Windows ZIP volumes..."
-$infoZip = Get-InfoZipExecutable
+Write-Output "Creating split Windows ZIP volumes..."
 New-SplitZipArchive `
     -Source $completeWindowsArchive `
     -Destination $windowsArchive `
-    -ZipExecutable $infoZip `
     -PartSize $splitPartSize
+New-ZipSelfExtractor `
+    -ZipVolume $windowsArchive `
+    -Destination $windowsSelfExtractor
 Remove-Item -LiteralPath $completeWindowsArchive -Force
+Remove-Item -LiteralPath $windowsArchive -Force
 
 $windowsVolumes = @(
     Get-ChildItem -LiteralPath $releaseAssetsRoot -File |
         Where-Object {
-            $_.Name -eq "$portableName.zip" -or
+            $_.Name -eq "$portableName.exe" -or
             $_.Name -match "^$([regex]::Escape($portableName))\.z\d{2,}$"
         } |
-        Sort-Object @{ Expression = { $_.Name -eq "$portableName.zip" } }, Name
+        Sort-Object @{ Expression = { $_.Name -eq "$portableName.exe" } }, Name
 )
 if ($windowsVolumes.Count -lt 1) {
-    throw "Windows ZIP archive was not created."
+    throw "Windows ZIP self-extractor was not created."
 }
 foreach ($volume in $windowsVolumes) {
     Assert-GitHubAssetSize -Path $volume.FullName

@@ -24,6 +24,7 @@ if ([Environment]::GetEnvironmentVariable("GITHUB_ACTIONS") -ne "true") {
 }
 
 $repositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+. (Join-Path $repositoryRoot "app\packaging\zip-self-extractor.ps1")
 $package = Get-Content `
     -LiteralPath (Join-Path $repositoryRoot "app\package.json") `
     -Raw `
@@ -98,33 +99,6 @@ if (-not $modelReady) {
     -ModelRoot $modelRoot `
     -Variant $Variant
 
-$zipExecutable = $env:EARCOPY_ZIP_EXECUTABLE
-if ([string]::IsNullOrWhiteSpace($zipExecutable)) {
-    $zipCommand = Get-Command "zip.exe" -ErrorAction SilentlyContinue
-    if ($null -ne $zipCommand) {
-        $zipExecutable = $zipCommand.Source
-    }
-}
-if (
-    [string]::IsNullOrWhiteSpace($zipExecutable) -or
-    -not (Test-Path -LiteralPath $zipExecutable -PathType Leaf)
-) {
-    throw "Info-ZIP zip.exe was not found."
-}
-$unzipExecutable = $env:EARCOPY_UNZIP_EXECUTABLE
-if ([string]::IsNullOrWhiteSpace($unzipExecutable)) {
-    $unzipCommand = Get-Command "unzip.exe" -ErrorAction SilentlyContinue
-    if ($null -ne $unzipCommand) {
-        $unzipExecutable = $unzipCommand.Source
-    }
-}
-if (
-    [string]::IsNullOrWhiteSpace($unzipExecutable) -or
-    -not (Test-Path -LiteralPath $unzipExecutable -PathType Leaf)
-) {
-    throw "Info-ZIP unzip.exe was not found."
-}
-
 $assetRoot = Join-Path $repositoryRoot "app\release-assets"
 $stageParent = Join-Path $repositoryRoot "app\model-release-stage"
 $portableName = "EarCopyAssist-$($package.version)-win-x64"
@@ -133,13 +107,16 @@ $stageRoot = Join-Path $stageParent $portableName
 $stageVariantRoot = Join-Path `
     $stageRoot `
     "models\muscriptor\$Variant"
+$completeArchive = Join-Path $stageParent "$assetBaseName-complete.zip"
 $archive = Join-Path $assetRoot "$assetBaseName.zip"
+$selfExtractor = Join-Path $assetRoot "$assetBaseName.exe"
 $archivePartPattern = "^$([regex]::Escape($assetBaseName))\.z\d{2,}$"
 
 New-Item -ItemType Directory -Path $assetRoot -Force | Out-Null
 Remove-Item -LiteralPath $stageParent -Recurse -Force -ErrorAction SilentlyContinue
 Get-ChildItem -LiteralPath $assetRoot -File |
     Where-Object {
+        $_.Name -eq "$assetBaseName.exe" -or
         $_.Name -eq "$assetBaseName.zip" -or
         $_.Name -match $archivePartPattern
     } |
@@ -157,45 +134,42 @@ try {
 
     Push-Location $stageParent
     try {
-        & $zipExecutable `
-            -q `
-            -r `
-            -s 1800m `
-            $archive `
-            $portableName
+        & tar.exe -a -c -f $completeArchive $portableName
         if ($LASTEXITCODE -ne 0) {
             throw "Unable to create the $Variant model archive."
         }
     } finally {
         Pop-Location
     }
+    & tar.exe -tf $completeArchive | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Model archive integrity check failed: $Variant"
+    }
+    Split-ZipSelfExtractorArchive `
+        -Source $completeArchive `
+        -Destination $archive `
+        -PartSize "1800m"
+    Remove-Item -LiteralPath $completeArchive -Force
 
     $archiveParts = @(
         Get-ChildItem -LiteralPath $assetRoot -File |
             Where-Object { $_.Name -match $archivePartPattern } |
             Sort-Object Name
     )
-    $assetFiles = @($archiveParts + @(Get-Item -LiteralPath $archive))
-    foreach ($asset in $assetFiles) {
+    $archiveFiles = @($archiveParts + @(Get-Item -LiteralPath $archive))
+    foreach ($asset in $archiveFiles) {
         if ($asset.Length -le 0 -or $asset.Length -ge 2GB) {
             throw "Model release asset size is invalid: $($asset.Name)"
         }
     }
-    $verificationArchive = Join-Path $assetRoot (
-        "$assetBaseName-verification.zip"
-    )
-    Remove-Item -LiteralPath $verificationArchive -Force -ErrorAction SilentlyContinue
-    try {
-        & $zipExecutable -s- $archive -O $verificationArchive
-        if ($LASTEXITCODE -ne 0) {
-            throw "Unable to reconstruct the $Variant model archive for verification."
+    New-ZipSelfExtractor -ZipVolume $archive -Destination $selfExtractor
+    Test-ZipSelfExtractor -Path $selfExtractor
+    Remove-Item -LiteralPath $archive -Force
+    $assetFiles = @($archiveParts + @(Get-Item -LiteralPath $selfExtractor))
+    foreach ($asset in $assetFiles) {
+        if ($asset.Length -le 0 -or $asset.Length -ge 2GB) {
+            throw "Model release asset size is invalid: $($asset.Name)"
         }
-        & $unzipExecutable -t $verificationArchive
-        if ($LASTEXITCODE -ne 0) {
-            throw "Model archive integrity check failed: $($archive | Split-Path -Leaf)"
-        }
-    } finally {
-        Remove-Item -LiteralPath $verificationArchive -Force -ErrorAction SilentlyContinue
     }
 
     $releaseJson = & gh release view $tag `
@@ -254,6 +228,7 @@ try {
         -ErrorAction SilentlyContinue
     Get-ChildItem -LiteralPath $assetRoot -File -ErrorAction SilentlyContinue |
         Where-Object {
+            $_.Name -eq "$assetBaseName.exe" -or
             $_.Name -eq "$assetBaseName.zip" -or
             $_.Name -match $archivePartPattern
         } |

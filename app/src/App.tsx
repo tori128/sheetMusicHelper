@@ -5,7 +5,7 @@ import { NewProjectScreen } from "./components/NewProjectScreen";
 import { StartupTermsDialog } from "./components/StartupTermsDialog";
 import { projectStore } from "./store/project-store";
 import { useProjectStore } from "./store/use-project-store";
-import { Localized } from "./i18n";
+import { Localized, useAppLanguage } from "./i18n";
 import type {
   BackendCapability,
   InstrumentDefinition,
@@ -25,6 +25,17 @@ interface BootstrapData {
 
 export default function App() {
   const state = useProjectStore();
+  const { t } = useAppLanguage();
+  useEffect(() => {
+    const publish = () => window.desktopApi.setUnsavedChanges({
+      hasUnsavedChanges: projectStore.getSnapshot().hasUnsavedChanges,
+      message: t("未保存の変更があります。保存せずに閉じますか？"),
+      cancelLabel: t("キャンセル"),
+      exitLabel: t("終了"),
+    });
+    publish();
+    return projectStore.subscribe(publish);
+  }, [t]);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [data, setData] = useState<BootstrapData | null>(null);
   const [error, setError] = useState<string | null>(null);

@@ -51,6 +51,9 @@ function createSourceMixer(calls: string[], sourceTimeSec = 7) {
     pause: vi.fn(() => {
       calls.push("source.pause");
     }),
+    seek: vi.fn((sourceTimeSec: number) => {
+      calls.push(`source.seek:${sourceTimeSec}`);
+    }),
   };
 }
 
@@ -72,6 +75,8 @@ describe("PlaybackStartCoordinator", () => {
     expect(started).toBe(true);
     expect(calls).toEqual([
       "engine.pause",
+      "audio.pause",
+      "source.seek:7",
       "source.prepare",
       "engine.prepare",
       "audio.play",
@@ -87,13 +92,13 @@ describe("PlaybackStartCoordinator", () => {
     expect(sourceMixer.activateAt).toHaveBeenCalledWith(sourceMixer.anchor);
   });
 
-  it("uses the current media time after asynchronous preparation", async () => {
+  it("keeps the source position unchanged while PCM is prepared", async () => {
     const calls: string[] = [];
     const audio = createAudio(calls, 5);
     const sourceMixer = createSourceMixer(calls, 5);
     sourceMixer.prepare.mockImplementation(async () => {
       calls.push("source.prepare");
-      audio.currentTime = 5.35;
+      audio.currentTime = 10;
     });
     sourceMixer.primeStart.mockImplementation(async (sourceTimeSec?: number) => {
       calls.push("source.prime");
@@ -115,11 +120,12 @@ describe("PlaybackStartCoordinator", () => {
       }),
     ).resolves.toBe(true);
 
-    expect(sourceMixer.primeStart).toHaveBeenCalledWith(5.35);
+    expect(sourceMixer.seek).toHaveBeenCalledWith(5);
+    expect(sourceMixer.primeStart).toHaveBeenCalledWith(5);
     expect(engine.startAt).toHaveBeenCalledWith(
       expect.objectContaining({
-        sourceTimeSec: 5.35,
-        timelineTimeSec: 5.55,
+        sourceTimeSec: 5,
+        timelineTimeSec: 5.2,
       }),
     );
   });
@@ -243,7 +249,7 @@ describe("PlaybackStartCoordinator", () => {
         timelineOffsetSec: 0,
       }),
     ).rejects.toThrow("activation failed");
-    expect(audio.pause).toHaveBeenCalledOnce();
+    expect(audio.pause).toHaveBeenCalledTimes(2);
     expect(sourceMixer.pause).toHaveBeenCalledOnce();
     expect(engine.pause).toHaveBeenCalledTimes(2);
     expect(sourceMixer.activateAt).not.toHaveBeenCalled();

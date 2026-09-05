@@ -12,6 +12,7 @@ interface PlaybackAudioElement {
 
 interface SourcePlaybackStart {
   prepare(): Promise<void>;
+  seek(sourceTimeSec: number): void;
   primeStart(sourceTimeSec?: number): Promise<PlaybackStartAnchor>;
   activateAt(anchor: PlaybackStartAnchor): void;
   pause(): void;
@@ -74,6 +75,9 @@ export class PlaybackStartCoordinator {
     try {
       if (sourceMixer !== null) {
         engine?.pause();
+        const sourceTimeSec = audio.currentTime;
+        audio.pause();
+        sourceMixer.seek(sourceTimeSec);
         await Promise.all([sourceMixer.prepare(), engine?.prepare()]);
         if (requestId !== this.#requestId) {
           return false;
@@ -83,7 +87,7 @@ export class PlaybackStartCoordinator {
           pausePlaybackPaths(request);
           return false;
         }
-        const anchor = await sourceMixer.primeStart(audio.currentTime);
+        const anchor = await sourceMixer.primeStart(sourceTimeSec);
         if (requestId !== this.#requestId) {
           pausePlaybackPaths(request);
           return false;

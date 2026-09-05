@@ -19,7 +19,9 @@ Within each genre, the 50 tracks at even filename positions were used for parame
 
 ## Estimation Method
 
-Tempo estimation uses Librosa and NumPy. The Librosa tempo prior has a 100 BPM initial value and a standard deviation of 1.0. The double-tempo candidate is selected when the onset-recall increase is at least 0.40, the candidate F1 ratio is at least 1.0, the onset-strength autocorrelation ratio is at least 0.90, and the candidate BPM is at most 220.
+The public evaluation used Librosa and NumPy. The Librosa tempo prior has a 100 BPM initial value and a standard deviation of 1.0. The double-tempo candidate was selected when the onset-recall increase was at least 0.40, the candidate F1 ratio was at least 1.0, the onset-strength autocorrelation ratio was at least 0.90, and the candidate BPM was at most 220.
+
+The September 6, 2026 correction compares 1.5 and 2 times the initial estimate and changes candidate selection to an onset-recall increase of at least 0.20, a candidate F1 ratio of at least 0.75, and an autocorrelation ratio of at least 0.75. The candidate BPM limit remains 220. Local recordings at 164, 172, and 173 BPM improve from 82.0, 86.0, and 86.3 BPM to 164.0, 172.0, and 173.0 BPM respectively. A compressed recording at 150 BPM also improves from 99.5 BPM to 150.0 BPM. These four recordings were used to adjust and validate the conditions. The public evaluation results below describe the earlier conditions; GTZAN mini accuracy after the correction has not been measured.
 
 Downbeat estimation calculates energy below 150 Hz from a 2,048-point STFT. It takes the maximum value within 70 ms before or after each beat and calculates the mean for each beat position within the time signature. Band energy is scaled to 0 through 2 with the median at 0 and the 90th percentile at 1. The beat position with the highest mean is selected as the downbeat.
 
@@ -49,6 +51,8 @@ Measurements are stored in the [evaluation-result JSON](../benchmarks/data/gtzan
 - Downbeat macro F1 is 0.2665. Review the estimate in the piano roll and, when required, select a note and run **小節先頭に設定 (Set as measure start)**.
 
 ## Reproduction
+
+The following procedure evaluates the checked-out implementation. Record the estimation conditions when comparing its results with the recorded evaluation.
 
 1. Obtain the evaluation audio and annotations and select the measured revisions.
 

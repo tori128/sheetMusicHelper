@@ -1,31 +1,9 @@
 # EarCopy Assist 利用ガイド
 [English](USER_GUIDE.en.md)
 
-## ダウンロード
-Windows版は[GitHub Releases](https://github.com/tori128/sheetMusicHelper/releases)から取得します。
-Release内の次のファイルをすべてダウンロードしてください。
-
-- `EarCopyAssist-<version>-win-x64.zip`
-- `EarCopyAssist-<version>-win-x64.z01, .z02, ...`
-- `EarCopyAssist-<version>-muscriptor-small.zip`
-- `EarCopyAssist-<version>-muscriptor-medium.zip`
-- `EarCopyAssist-<version>-muscriptor-large.zip`と`.z01, .z02, ...`
-
-分割ZIPの展開には[7-Zip](https://www.7-zip.org/)などの解凍ツールを使用します。
-
-
-
-## インストール
-1. Windows版の`.z01`以降の全ボリュームと最後の`.zip`を同じフォルダーへ置き、最後の`.zip`を開いて展開します。
-2. MuScriptor small、medium、largeの各アーカイブを、Windows版を展開したフォルダーの親フォルダーへ展開します。`EarCopyAssist-<version>-win-x64\\models\\muscriptor\\small`、`medium`、`large`が作成されます。
-3. 展開したWindows版フォルダー内の`EarCopyAssist.exe`を起動し、MuScriptorモデルの利用条件を確認します。
-   MuScriptor small、medium、largeのモデル重みは非商用用途に限定されます。
-
-表示言語は、新規プロジェクト画面上部または「設定」で日本語、英語、中国語から選択できます。
-
-
-
 ## 使い方
+
+新規プロジェクト画面上部または「設定」の表示言語から、日本語、英語、中国語を選択できます。
 ### 採譜する
 ![Project](assets/project.png)
 
@@ -46,11 +24,12 @@ Release内の次のファイルをすべてダウンロードしてください�
 #### 音源分離してから採譜する
 原音をdrums、bass、vocals、piano、guitar、otherへ分離します。  
 再生画面では各成分を選択でき、「分離WAV」では6成分を個別WAVとして保存できます。  
-BS-RoFormer SW Fixedが未配置の場合は、
+BS-RoFormer SW Fixedが未配置の場合は、「警告を確認してダウンロード」から取得できます。
 
 ##### 音源分離モデルを取得する
 
-BS-RoFormer SW Fixedのモデル重みはアプリに同梱されていません。モデルが未配置の場合は、新規プロジェクト画面に「音源分離モデルがありません」と表示されます。  
+BS-RoFormer SW Fixedのモデル重みはアプリに同梱されていません。\
+モデルが未配置の場合は、新規プロジェクト画面に「音源分離モデルがありません」と表示されます。\
 「警告を確認してダウンロード」を押すと、アプリがモデルを取得します。  
 その際、音源分離モデルのライセンスが`Unknown`であることに注意し、自己責任でご利用ください。  
 配布ページにはモデル重みの利用許諾条件が明示されていません。モデルを利用する権利を確認したうえで取得してください。
@@ -64,7 +43,9 @@ BS-RoFormer SW Fixedのモデル重みはアプリに同梱されていません
 
 ##### 別のBS-RoFormer重みを利用する
 
-別のBS-RoFormer重みは、`models\\bs-roformer\\sw-fixed`へ1件だけ配置できます。重みファイルと、その重みに対応するYAML構成ファイルを同じフォルダーへ置いてください。YAMLの`training.instruments`には`drums`、`bass`、`vocals`、`other`、`piano`、`guitar`のうち、そのモデルが出力する成分名を記載します。
+別のBS-RoFormer重みは、`models\\bs-roformer\\sw-fixed`へ1件だけ配置できます。\
+重みファイルと、その重みに対応するYAML構成ファイルを同じフォルダーへ置いてください。\
+YAMLの`training.instruments`には`drums`、`bass`、`vocals`、`other`、`piano`、`guitar`のうち、そのモデルが出力する成分名を記載します。
 
 ##### 利用可能なオプション
 | 設定 | 推奨既定 | 内容 |
@@ -98,7 +79,7 @@ BS-RoFormer SW Fixedのモデル重みはアプリに同梱されていません
 モードボタンを押すたびに、Mute／Solo状態を表の内容へ初期化します。
 
 左右比較の場合、原音と採譜結果の再生タイミングが一致しないことがあります。  
-「設定」→「再生」で再生位置オフセットが正の場合は原音、負の場合は採譜結果を遅延させて調整してください。
+「設定」→「再生」で音声出力デバイスと再生位置オフセットを選択できます。再生位置オフセットが正の場合は原音、負の場合は採譜結果を遅延させて調整してください。
 
 #### Mute／Solo
 ![mute_solo](assets/mute_solo.png)

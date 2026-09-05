@@ -1971,6 +1971,15 @@ export function EditorScreen({
     setShowScoreExport(false);
   }
 
+  function resolveScoreOverlaps() {
+    try {
+      projectStore.quantizeAll(scoreQuantizeGrid);
+      void refreshScoreOutput();
+    } catch (reason) {
+      setSaveError(reason instanceof Error ? reason.message : String(reason));
+    }
+  }
+
   async function saveProject() {
     setSaving(true);
     setSaveError(null);
@@ -2902,6 +2911,7 @@ export function EditorScreen({
           onChange={(update) => projectStore.updateScoreSettings(update)}
           onQuantizeGridChange={changeScoreQuantizeGrid}
           onRefresh={() => void refreshScoreOutput()}
+          onResolveOverlaps={resolveScoreOverlaps}
           onSelectIssue={selectScoreIssue}
           onExport={() => void exportMusicXml()}
           onClose={() => setShowScoreExport(false)}

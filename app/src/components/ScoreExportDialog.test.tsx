@@ -73,6 +73,7 @@ describe("ScoreExportDialog", () => {
         onChange={vi.fn()}
         onQuantizeGridChange={onQuantizeGridChange}
         onRefresh={vi.fn()}
+        onResolveOverlaps={vi.fn()}
         onSelectIssue={onSelectIssue}
         onExport={onExport}
         onClose={vi.fn()}
@@ -97,5 +98,43 @@ describe("ScoreExportDialog", () => {
     const dialog = screen.getByRole("dialog");
     expect(dialog).toHaveClass("score-export-dialog");
     expect(dialog.parentElement).toHaveClass("score-export-backdrop");
+  });
+
+  it("offers a bulk action for same-pitch overlaps", () => {
+    const onResolveOverlaps = vi.fn();
+    render(
+      <ScoreExportDialog
+        project={project}
+        validation={{
+          issues: [
+            {
+              code: "same_pitch_overlap",
+              severity: "error",
+              message: "PianoのMIDIノート60が同じ時刻範囲で重複しています",
+              trackId: "track-1",
+              noteIds: ["note-1", "note-2"],
+              timeSec: 1,
+              measureNumber: 1,
+              beatNumber: 3,
+            },
+          ],
+          errorCount: 1,
+          warningCount: 0,
+        }}
+        musicXml={null}
+        loading={false}
+        quantizeGrid="1/16"
+        onChange={vi.fn()}
+        onQuantizeGridChange={vi.fn()}
+        onRefresh={vi.fn()}
+        onResolveOverlaps={onResolveOverlaps}
+        onSelectIssue={vi.fn()}
+        onExport={vi.fn()}
+        onClose={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "重複を解除" }));
+    expect(onResolveOverlaps).toHaveBeenCalledOnce();
   });
 });

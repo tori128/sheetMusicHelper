@@ -1967,7 +1967,7 @@ select:focus-visible {
 
 .score-validation-summary {
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: center;
   gap: 6px;
   margin-top: 18px;
@@ -1992,6 +1992,10 @@ select:focus-visible {
 .score-validation-summary button {
   color: #c9cfda;
   cursor: pointer;
+}
+
+.score-validation-summary .score-validation-refresh.is-only-action {
+  grid-column: 1 / -1;
 }
 
 .score-validation-summary .is-error {

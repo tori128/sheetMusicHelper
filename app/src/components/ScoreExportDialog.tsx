@@ -23,6 +23,7 @@ interface ScoreExportDialogProps {
   onChange(update: Partial<ScoreSettings>): void;
   onQuantizeGridChange(grid: QuantizeGrid): void;
   onRefresh(): void;
+  onResolveOverlaps(): void;
   onSelectIssue(issue: ScoreValidationIssue): void;
   onExport(): void;
   onClose(): void;
@@ -64,6 +65,7 @@ export function ScoreExportDialog({
   onChange,
   onQuantizeGridChange,
   onRefresh,
+  onResolveOverlaps,
   onSelectIssue,
   onExport,
   onClose,
@@ -105,6 +107,9 @@ export function ScoreExportDialog({
   const warnings = validation?.warningCount ?? 0;
   const validationReady = validation !== null;
   const exportEnabled = validationReady && errors === 0 && !loading;
+  const hasSamePitchOverlap = validation?.issues.some(
+    (issue) => issue.code === "same_pitch_overlap",
+  ) ?? false;
   const updateTrackSettings = (
     trackId: string,
     update: Partial<ScoreSettings["trackSettings"][string]>,
@@ -320,7 +325,24 @@ export function ScoreExportDialog({
                 <AlertTriangle size={16} aria-hidden="true" />
                 <span>確認 {validationReady ? warnings : "-"}件</span>
               </div>
-              <button type="button" onClick={onRefresh} disabled={loading}>
+              {hasSamePitchOverlap && (
+                <button
+                  type="button"
+                  className="score-validation-resolve"
+                  onClick={onResolveOverlaps}
+                  disabled={loading}
+                >
+                  <span>重複を解除</span>
+                </button>
+              )}
+              <button
+                type="button"
+                className={`score-validation-refresh${
+                  hasSamePitchOverlap ? "" : " is-only-action"
+                }`}
+                onClick={onRefresh}
+                disabled={loading}
+              >
                 <RefreshCw size={14} aria-hidden="true" />
                 <span>{loading ? "検査中…" : "再検査"}</span>
               </button>

@@ -69,6 +69,13 @@ function apiErrorDetail(detail: unknown, fallback: string): string {
   return fallback;
 }
 
+function utf8JsonBody(value: unknown): ArrayBuffer {
+  const encoded = new TextEncoder().encode(JSON.stringify(value));
+  const body = new ArrayBuffer(encoded.byteLength);
+  new Uint8Array(body).set(encoded);
+  return body;
+}
+
 export class LocalApiClient {
   constructor(private readonly connection: ServiceConnection) {
     const url = new URL(connection.baseUrl);
@@ -159,7 +166,7 @@ export class LocalApiClient {
   preparePlaybackAudio(path: string): Promise<PlaybackAudioInfo> {
     return this.request("/api/v1/audio/playback/prepare", {
       method: "POST",
-      body: JSON.stringify({ path }),
+      body: utf8JsonBody({ path }),
     });
   }
 
@@ -173,7 +180,7 @@ export class LocalApiClient {
       {
         method: "POST",
         headers: this.headers(true),
-        body: JSON.stringify(request),
+        body: utf8JsonBody(request),
       },
     );
     if (!response.ok) {

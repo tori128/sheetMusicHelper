@@ -314,3 +314,11 @@ def test_real_tempo_fixture_detects_full_tempo(
 
     assert estimate.bpm == pytest.approx(expected_bpm, abs=tolerance)
     assert 0 <= estimate.beat_offset_sec < 4 * 60 / estimate.bpm
+
+
+def test_fixed_tempo_corrects_three_to_two_rhythm_confusion(monkeypatch) -> None:
+    monkeypatch.setattr(librosa.feature, "tempo", lambda **_kwargs: np.array([100.0]))
+    envelope = _steady_onset_envelope(150) + 0.3 * _steady_onset_envelope(100)
+    bpm, beats = _estimate_fixed_tempo(librosa, np, envelope, 22050)
+    assert bpm == pytest.approx(150, abs=0.2)
+    assert 70 <= len(beats) <= 78

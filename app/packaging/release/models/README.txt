@@ -7,8 +7,8 @@ BS-RoFormer SW Fixedは、新規プロジェクト画面でライセンス`Unkno
 PLACE_MODEL_FILES_HERE.txtを参照してください。導入手順は..\README.md、利用条件は
 ..\THIRD_PARTY_NOTICES.mdを参照してください。
 
-MuScriptor small、medium、largeは同じGitHub Releaseのモデルアーカイブから、
-models\muscriptorへ展開します。
+MuScriptor small、medium、largeは同じGitHub Releaseのモデル自己解凍ZIPを実行し、
+Windows本体を展開した親フォルダーを展開先として選択します。
 
 After the user acknowledges the `Unknown` license warning on the new-project
 screen, the application stores BS-RoFormer SW Fixed at:
@@ -18,8 +18,8 @@ screen, the application stores BS-RoFormer SW Fixed at:
 See PLACE_MODEL_FILES_HERE.txt for the source, file size, and SHA-256. See
 ..\README.md for setup and ..\THIRD_PARTY_NOTICES.en.md for license terms.
 
-Extract the MuScriptor small, medium, and large model archives from the same
-GitHub Release into models\muscriptor.
+Run the MuScriptor small, medium, and large self-extracting ZIP files from the
+same GitHub Release and select the parent folder of the extracted Windows package.
 
 別のBS-RoFormer重みは、models\bs-roformer\sw-fixedへ重みファイルと対応するYAML構成ファイルを1組だけ配置できます。
 

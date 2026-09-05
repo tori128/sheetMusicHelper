@@ -831,7 +831,7 @@ describe("EditorScreen timing controls", () => {
       screen.getByRole("button", { name: "ピアノロールで5秒へシーク" }),
     );
     await waitFor(() => expect(mixer.activateAt).toHaveBeenCalledTimes(2));
-    expect(pause).toHaveBeenCalledTimes(pauseCountBeforePianoRollSeek);
+    expect(pause).toHaveBeenCalledTimes(pauseCountBeforePianoRollSeek + 1);
     expect(screen.getByRole("button", { name: "一時停止" })).toBeVisible();
     expect(mixer.seek).toHaveBeenLastCalledWith(5);
     expect(mixer.primeStart).toHaveBeenLastCalledWith(5);

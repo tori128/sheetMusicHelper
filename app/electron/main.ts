@@ -21,6 +21,7 @@ import {
 } from "electron";
 import { AppLogger } from "./app-logger.js";
 import { RunStateTracker } from "./run-state.js";
+import { ShutdownController, type UnsavedChangesState } from "./shutdown-controller.js";
 import {
   resolvePortableUserDataPath,
   ServiceManager,
@@ -120,6 +121,28 @@ function startShutdown(): void {
   // app.quit()/BrowserWindow.destroy() can wait for an unresponsive renderer.
   // Cleanup above is synchronous; exit without renderer cooperation afterward.
   app.exit(0);
+}
+
+const shutdownController = new ShutdownController(async (state) => {
+  const options = {
+    type: "warning" as const,
+    title: "EarCopy Assist",
+    message: state.message,
+    buttons: [state.cancelLabel, state.exitLabel],
+    defaultId: 0,
+    cancelId: 0,
+    noLink: true,
+  };
+  const result = mainWindow !== null && !mainWindow.isDestroyed()
+    ? await dialog.showMessageBox(mainWindow, options)
+    : await dialog.showMessageBox(options);
+  return result.response === 1;
+}, startShutdown);
+
+function requestShutdown(): void {
+  void shutdownController.request().catch((error) => {
+    appLogger.log("ERROR", "main", `終了確認に失敗しました: ${String(error)}`);
+  });
 }
 
 process.on("uncaughtExceptionMonitor", (error) => {
@@ -614,6 +637,19 @@ async function verifySmokeWindow(window: BrowserWindow): Promise<void> {
 }
 
 function registerIpc(): void {
+  ipcMain.on("app:unsaved-changes", (event, state: UnsavedChangesState) => {
+    if (
+      event.sender !== mainWindow?.webContents ||
+      state === null || typeof state !== "object" ||
+      typeof state.hasUnsavedChanges !== "boolean" ||
+      typeof state.message !== "string" ||
+      typeof state.cancelLabel !== "string" ||
+      typeof state.exitLabel !== "string"
+    ) {
+      return;
+    }
+    shutdownController.update(state);
+  });
   ipcMain.handle("app:quit", () => {
     app.quit();
   });
@@ -832,8 +868,9 @@ async function createWindow(): Promise<void> {
     },
   });
   mainWindow = window;
-  window.on("close", () => {
-    startShutdown();
+  window.on("close", (event) => {
+    event.preventDefault();
+    requestShutdown();
   });
   window.on("closed", () => {
     if (mainWindow === window) {
@@ -937,7 +974,7 @@ async function runShutdownSmokeTest(): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, 250));
   console.log("renderer-hang-smoke-armed");
   console.log("electron-shutdown-smoke-ready");
-  startShutdown();
+  app.quit();
 }
 
 app.whenReady()
@@ -1005,7 +1042,8 @@ app.on("child-process-gone", (_event, details) => {
   }
 });
 
-app.on("before-quit", () => {
-  startShutdown();
+app.on("before-quit", (event) => {
+  event.preventDefault();
+  requestShutdown();
 });
 app.on("will-quit", stopService);

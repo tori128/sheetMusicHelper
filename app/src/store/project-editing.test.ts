@@ -242,6 +242,23 @@ describe("project editing", () => {
     expect(resolveNoteOverlaps([short, long])).toEqual([long]);
   });
 
+  it("removes same-pitch duplicates introduced by score quantization", () => {
+    const first = note("first", "piano", 0.01, 0.02);
+    const second = note("second", "piano", 0.03, 0.04);
+
+    const result = resolveNoteOverlaps(
+      quantizeNotes([first, second], 120, "1/8"),
+    );
+
+    expect(result).toEqual([
+      {
+        ...first,
+        startSec: 0,
+        endSec: 0.25,
+      },
+    ]);
+  });
+
   it("does not trim overlapping notes on different pitches or tracks", () => {
     const first = note("first", "piano", 0, 10);
     const otherPitch = { ...note("pitch", "piano", 2, 3), pitch: 64 };
