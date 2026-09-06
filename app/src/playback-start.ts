@@ -47,6 +47,11 @@ function pausePlaybackPaths(request: PlaybackStartRequest): void {
 export class PlaybackStartCoordinator {
   #requestId = 0;
   #pending: Promise<void> = Promise.resolve();
+  #activeRequestId: number | null = null;
+
+  get isStarting(): boolean {
+    return this.#activeRequestId === this.#requestId;
+  }
 
   cancel(): void {
     this.#requestId += 1;
@@ -72,6 +77,7 @@ export class PlaybackStartCoordinator {
       return false;
     }
     const { audio, sourceMixer, engine, timelineOffsetSec } = request;
+    this.#activeRequestId = requestId;
     try {
       if (sourceMixer !== null) {
         engine?.pause();
@@ -117,6 +123,8 @@ export class PlaybackStartCoordinator {
     } catch (reason) {
       pausePlaybackPaths(request);
       throw reason;
+    } finally {
+      this.#activeRequestId = null;
     }
   }
 }

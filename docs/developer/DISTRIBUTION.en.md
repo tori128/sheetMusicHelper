@@ -95,6 +95,11 @@ This checklist and the third-party notices state the versions used by EarCopy As
 
 ## Release Validation
 
+Use UC-01–36 and the combination table in the [System Test Design](TESTING.en.md) as candidate acceptance criteria.
+Record candidate SHA-256, environment, case results, and evidence for the release owner to check.
+Required unexecuted/failed cases or unresolved expectations mean acceptance is incomplete.
+The build, smoke, and asset checks below provide part of that evidence. Automated case-level acceptance remains additional implementation work.
+
 ```powershell
 uv sync --extra dev
 uv run pytest

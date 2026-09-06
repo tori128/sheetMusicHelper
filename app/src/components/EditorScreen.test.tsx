@@ -797,6 +797,13 @@ describe("EditorScreen timing controls", () => {
     );
 
     const sourceAudio = container.querySelector("audio")!;
+    mixer.prepare.mockImplementation(async () => {
+      const pauseCount = mixer.pause.mock.calls.length;
+      // HTMLMediaElement.pause queues its event after PCM preparation starts.
+      await Promise.resolve();
+      fireEvent.pause(sourceAudio);
+      expect(mixer.pause).toHaveBeenCalledTimes(pauseCount);
+    });
     await waitFor(() =>
       expect(screen.getByRole("button", { name: "左右比較" })).toBeEnabled(),
     );
@@ -941,6 +948,18 @@ describe("EditorScreen timing controls", () => {
     await waitFor(() => expect(mixer.activateAt).toHaveBeenCalledTimes(5));
     expect(mixer.seek).toHaveBeenLastCalledWith(0);
     expect(screen.getByRole("button", { name: "一時停止" })).toBeVisible();
+
+    const stemSolo = screen.getByRole("button", { name: "Piano分離音源をソロ" });
+    for (const solo of [true, false, true, false]) {
+      const starts = mixer.activateAt.mock.calls.length;
+      fireEvent.click(stemSolo);
+      await waitFor(() => expect(mixer.activateAt).toHaveBeenCalledTimes(starts + 1));
+      expect(stemSolo).toHaveAttribute("aria-pressed", String(solo));
+      expect(screen.getByRole("button", { name: "一時停止" })).toBeVisible();
+      expect(mixer.setStemStates.mock.calls.at(-1)?.[0]).toEqual(
+        expect.arrayContaining([expect.objectContaining({ type: "piano", solo })]),
+      );
+    }
   });
 
   it("updates and displays beat-level differences on request", async () => {

@@ -116,7 +116,9 @@ def _overlap_issues(
     for (track_id, pitch), notes in grouped.items():
         ordered = sorted(notes, key=lambda item: (item.start_sec, item.end_sec))
         for previous, current in zip(ordered, ordered[1:]):
-            if current.start_sec >= previous.end_sec:
+            _, previous_end_tick = note_score_ticks(project, previous)
+            current_start_tick, _ = note_score_ticks(project, current)
+            if current_start_tick >= previous_end_tick:
                 continue
             track = tracks_by_id[track_id]
             issues.append(

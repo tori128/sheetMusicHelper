@@ -2305,6 +2305,7 @@ export function EditorScreen({
           }}
           onPause={(event) => {
             if (
+              playbackStartCoordinatorRef.current.isStarting ||
               playbackRepeatRestartPendingRef.current ||
               (event.currentTarget.ended &&
                 resolvePlaybackRepeatRange(

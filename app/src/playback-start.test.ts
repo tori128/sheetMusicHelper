@@ -222,12 +222,15 @@ describe("PlaybackStartCoordinator", () => {
     });
     await vi.waitFor(() => expect(finishPreparation).toBeTypeOf("function"));
 
+    expect(coordinator.isStarting).toBe(true);
     coordinator.cancel();
+    expect(coordinator.isStarting).toBe(false);
     finishPreparation?.();
 
     await expect(request).resolves.toBe(false);
     expect(sourceMixer.primeStart).not.toHaveBeenCalled();
     expect(calls).not.toContain("audio.play");
+    expect(coordinator.isStarting).toBe(false);
   });
 
   it("pauses every path when SoundFont activation fails", async () => {

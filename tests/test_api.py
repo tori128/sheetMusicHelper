@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
+import pytest
 from fastapi.testclient import TestClient
 
 from earcopy_service.api import create_app
@@ -754,6 +755,50 @@ def test_musicxml_export_endpoint_writes_local_score(tmp_path) -> None:
     assert response.status_code == 200
     assert response.json()["path"] == str(output)
     assert output.read_text(encoding="utf-8").startswith("<?xml")
+
+
+@pytest.mark.parametrize("grid", ["1/4", "1/8", "1/16", "1/32", "1/8T", "1/16T"])
+@pytest.mark.parametrize("drums", [False, True])
+def test_adjacent_notes_survive_revalidation_preview_and_export(tmp_path, grid, drums):
+    from earcopy_service.timebase import GRID_TICKS, quantize_project
+
+    project = create_project("Adjacent notes", PRESET_BY_KEY["general-band"])
+    track = project.tracks[-1] if drums else project.tracks[0]
+    project.tempo.bpm = 123.4
+    project.tempo.beat_offset_sec = 0.2
+    project.tempo.quantize_grid = grid
+    step = GRID_TICKS[grid] * 60 / (123.4 * 480)
+    boundaries = [0.2 + index * step for index in range(33)]
+    project.notes = [
+        Note(
+            sourceInstrumentId=track.instrument_id, trackId=track.id,
+            pitch=42 if drums else 78,
+            rawStartSec=start, rawEndSec=end, startSec=start, endSec=end,
+        )
+        for start, end in zip(boundaries, boundaries[1:])
+    ]
+    client = TestClient(create_app())
+    for _ in range(3):
+        project = quantize_project(project, grid)
+        payload = project.model_dump(by_alias=True, mode="json")
+        validation = client.post("/api/v1/export/validate", json={"project": payload})
+        assert validation.status_code == 200
+        assert validation.json()["errorCount"] == 0, validation.json()
+    preview = client.post("/api/v1/export/musicxml/preview", json={"project": payload})
+    assert preview.status_code == 200
+    assert ET.fromstring(preview.json()["xml"]).tag == "score-partwise"
+    output = tmp_path / "adjacent.musicxml"
+    exported = client.post(
+        "/api/v1/export/musicxml",
+        json={"project": payload, "outputPath": str(output)},
+    )
+    assert exported.status_code == 200, exported.text
+    root = ET.parse(output).getroot()
+    attacks = [
+        note for note in root.findall(".//note")
+        if note.find("rest") is None and note.find("tie[@type='stop']") is None
+    ]
+    assert len(attacks) == 32
 
 
 def test_midi_export_endpoint_writes_current_project_without_score_validation(

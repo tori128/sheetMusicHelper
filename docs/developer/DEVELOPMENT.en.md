@@ -76,6 +76,9 @@ See the [User Guide](../USER_GUIDE.en.md#transcribe-after-source-separation) for
 
 ## Validation
 
+Follow the [System Test Design](TESTING.en.md) for scope, feature integration, required use cases, expected results, and release decisions.
+The commands below run existing automated tests. Record feature-spanning tests, real-model acceptance, and distribution acceptance separately by layer and case ID.
+
 After changing Python:
 
 ```powershell

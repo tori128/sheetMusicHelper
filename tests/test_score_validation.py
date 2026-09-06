@@ -56,6 +56,22 @@ def test_score_validation_groups_off_grid_notes_by_track_and_measure() -> None:
     assert "2音" in off_grid[0].message
 
 
+def test_score_validation_rejects_one_tick_overlap() -> None:
+    project = create_project("one tick overlap", PRESET_BY_KEY["general-band"])
+    track = project.tracks[0]
+    tick_sec = 60 / (project.tempo.bpm * project.tempo.ppq)
+    project.notes = [
+        _note(track, 78, 0, 481 * tick_sec),
+        _note(track, 78, 480 * tick_sec, 960 * tick_sec),
+    ]
+    overlaps = [
+        issue for issue in validate_score(project).issues
+        if issue.code == "same_pitch_overlap"
+    ]
+    assert len(overlaps) == 1
+    assert overlaps[0].note_ids == [str(note.id) for note in project.notes]
+
+
 def test_drum_pitch_omitted_by_musicxml_export_does_not_block_export() -> None:
     project = create_project("drum export", PRESET_BY_KEY["general-band"])
     drums = project.tracks[-1]
