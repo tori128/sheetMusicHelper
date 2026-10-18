@@ -35,6 +35,19 @@ app/model-source-download/
 tools/ffmpeg-lgpl/
 tools/libsndfile-lgpl/
 
+# Packaged application installed at the repository root.
+/locales/
+/resources/
+/chrome_100_percent.pak
+/chrome_200_percent.pak
+/icudtl.dat
+/LICENSE.electron.txt
+/LICENSES.chromium.html
+/resources.pak
+/snapshot_blob.bin
+/v8_context_snapshot.bin
+/vk_swiftshader_icd.json
+
 # Local machine-learning model files; keep only placement guides.
 /models/**
 !/models/README.txt

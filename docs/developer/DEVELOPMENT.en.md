@@ -58,6 +58,19 @@ cd app
 npm start
 ```
 
+To update `EarCopyAssist.exe` at the repository root, run the following in `app`:
+
+```powershell
+npm run dist:local
+```
+
+`dist:local` builds the Windows application and installs its executable and runtime
+files at the repository root. Model registrations, instrumentation presets, and
+analysis caches use the existing `UserData/`; models use the existing `models/`.
+Run `npm run install:local` to install an existing `app/release/win-unpacked/`
+build. Installation moves the runtime files out of this build output. Start the installed application
+using `EarCopyAssist.exe` at the repository root.
+
 ## Runtime Architecture
 
 ```mermaid

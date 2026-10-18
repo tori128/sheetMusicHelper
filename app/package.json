@@ -19,6 +19,8 @@
     "build:backend:clean": "npm run build:libsndfile && npm run build:beat-model && uv run --project .. pyinstaller --noconfirm --clean --distpath backend-dist --workpath backend-build packaging/earcopy_service.spec",
     "verify:muscriptor-models": "powershell -NoProfile -ExecutionPolicy Bypass -File packaging/verify-muscriptor-models.ps1",
     "dist:win": "npm run assert:app-stopped && npm run build:icon && npm run build && npm run build:backend && electron-builder --win --dir --config.directories.output=release-staging && powershell -NoProfile -ExecutionPolicy Bypass -File packaging/promote-packaged-build.ps1",
+    "install:local": "powershell -NoProfile -ExecutionPolicy Bypass -File packaging/install-local.ps1",
+    "dist:local": "npm run dist:win && npm run install:local",
     "package:release": "npm run assert:app-stopped && powershell -NoProfile -ExecutionPolicy Bypass -File packaging/build-release-package.ps1 && npm run verify:release",
     "release:win": "npm run dist:win && npm run smoke:packaged && npm run package:release",
     "smoke:packaged": "npm run assert:app-stopped && node scripts/smoke-packaged.cjs",

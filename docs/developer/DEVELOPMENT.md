@@ -69,6 +69,18 @@ cd app
 npm start
 ```
 
+リポジトリ直下の`EarCopyAssist.exe`を更新する場合は、`app`で次を実行する。
+
+```powershell
+npm run dist:local
+```
+
+`dist:local`はWindows版をビルドし、EXEと実行に必要なファイルをリポジトリ直下へ
+配置する。モデル登録、編成プリセット、解析キャッシュは既存の`UserData/`を使用し、
+モデルは既存の`models/`を使用する。ビルド済みの`app/release/win-unpacked/`を
+配置する場合は`npm run install:local`を実行する。実行に必要なファイルはビルド出力
+フォルダーから移動される。配置後はリポジトリ直下の`EarCopyAssist.exe`から起動する。
+
 ## 実行構成
 
 ```mermaid
