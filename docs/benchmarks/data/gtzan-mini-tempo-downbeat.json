@@ -1,56 +1,2753 @@
 {
-  "generatedAt": "2026-08-24",
-  "sourceRevision": "345fe2f653225dde3af826ef765bc355bd31bb7e",
-  "sourceWorkingTreeModified": true,
-  "dataset": {
-    "audioRepository": "https://github.com/TempoBeatDownbeat/gtzan_mini",
-    "audioRevision": "a61439e86c13037011fde8e0f0743ec55c50bce3",
-    "annotationRepository": "https://github.com/CPJKU/beat_this_annotations",
-    "annotationRevision": "890407d158078527ab396b49fea3c8a83e5734ee",
-    "annotationVersion": "v1.1",
-    "trackCount": 100,
-    "durationSecPerTrack": 30,
-    "referenceBeatCount": 5719,
-    "meterTrackCounts": {
-      "2": 1,
-      "3": 4,
-      "4": 95
-    }
+  "baselineCommit": "9d248cd7bd2cc06ecd270ca5b2faa91febae4d60",
+  "environment": {
+    "python": "3.11.15",
+    "muscriptor": "0.3.0",
+    "beatThis": "1.1.0",
+    "torch": "2.2.2+cu121",
+    "beatDevice": "CPU",
+    "transcriptionDevice": "CUDA",
+    "transcriptionDtype": "float16"
   },
-  "evaluation": {
-    "matchToleranceSec": 0.07,
-    "tempoAccuracyTolerancePercent": 4.0,
-    "developmentTrackCount": 50,
-    "evaluationTrackCount": 50,
-    "splitRule": "Within each genre, even sorted indices are development tracks and odd sorted indices are evaluation tracks."
+  "beatModel": {
+    "name": "Beat This! final0",
+    "sha256": "8c328b45f59d8dd3dff219253ff6a8d6482be57d0133a29140e2febbf8eb8331"
   },
-  "current": {
-    "all": {
-      "trackCount": 100,
-      "tempoAccuracyWithin4Percent": 0.75,
-      "tempoMeanAbsolutePercentError": 14.841071666666604,
-      "tempoMedianAbsolutePercentError": 0.4261666666664575,
-      "beatMicroF1": 0.7510710053778142,
-      "beatMacroF1": 0.7472575004760277,
-      "downbeatMicroF1": 0.3655837200999643,
-      "downbeatMacroF1": 0.3846288358021251,
-      "estimateElapsedSec": 24.90463640028611
+  "datasets": {
+    "gtzanMiniCommit": "a61439e86c13037011fde8e0f0743ec55c50bce3",
+    "beatAnnotationsCommit": "890407d158078527ab396b49fea3c8a83e5734ee",
+    "split": "evaluation",
+    "selection": "Odd-indexed file names within each genre; 50 tracks"
+  },
+  "tempo": {
+    "legacy": {
+      "toleranceSec": 0.07,
+      "summary": {
+        "trackCount": 50,
+        "tempo": {
+          "meanAbsolutePercentError": 43.55654333333329,
+          "medianAbsolutePercentError": 1.3304999999998917,
+          "accuracyWithin4Percent": 0.54
+        },
+        "beat": {
+          "microPrecision": 0.6768958394806728,
+          "microRecall": 0.8415260454878943,
+          "microF1": 0.7502861815208504,
+          "macroF1": 0.7347088452223273
+        },
+        "downbeat": {
+          "microPrecision": 0.30369515011547343,
+          "microRecall": 0.3714689265536723,
+          "microF1": 0.3341804320203303,
+          "macroF1": 0.3203233573019918
+        },
+        "elapsedSec": 7.9136102999991635,
+        "genreDownbeatMacroF1": {
+          "blues": 0.2,
+          "classical": 0.08695652173913043,
+          "country": 0.46306306306306305,
+          "disco": 0.46636363636363637,
+          "hiphop": 0.396078431372549,
+          "jazz": 0.13999999999999999,
+          "metal": 0.4,
+          "pop": 0.5186967418546365,
+          "reggae": 0.2,
+          "rock": 0.3320751786269028
+        }
+      },
+      "tracks": [
+        {
+          "track": "blues.00001",
+          "genre": "blues",
+          "numerator": 4,
+          "reference_bpm": 67.56756756756758,
+          "estimated_bpm": 68.4,
+          "estimated_measure_offset_sec": 0.0904,
+          "tempo_absolute_percent_error": 1.231999999999991,
+          "beat": {
+            "reference_count": 34,
+            "predicted_count": 35,
+            "matched_count": 21,
+            "precision": 0.6,
+            "recall": 0.6176470588235294,
+            "f1": 0.608695652173913
+          },
+          "downbeat": {
+            "reference_count": 8,
+            "predicted_count": 9,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 4.669608199999857
+        },
+        {
+          "track": "blues.00003",
+          "genre": "blues",
+          "numerator": 4,
+          "reference_bpm": 62.27296315516354,
+          "estimated_bpm": 62.4,
+          "estimated_measure_offset_sec": 2.6144,
+          "tempo_absolute_percent_error": 0.20399999999988291,
+          "beat": {
+            "reference_count": 31,
+            "predicted_count": 31,
+            "matched_count": 28,
+            "precision": 0.9032258064516129,
+            "recall": 0.9032258064516129,
+            "f1": 0.9032258064516129
+          },
+          "downbeat": {
+            "reference_count": 8,
+            "predicted_count": 8,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06696409999949537
+        },
+        {
+          "track": "blues.00005",
+          "genre": "blues",
+          "numerator": 4,
+          "reference_bpm": 68.49315068493152,
+          "estimated_bpm": 68.7,
+          "estimated_measure_offset_sec": 2.9985,
+          "tempo_absolute_percent_error": 0.30199999999998306,
+          "beat": {
+            "reference_count": 35,
+            "predicted_count": 34,
+            "matched_count": 21,
+            "precision": 0.6176470588235294,
+            "recall": 0.6,
+            "f1": 0.608695652173913
+          },
+          "downbeat": {
+            "reference_count": 9,
+            "predicted_count": 8,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06307850000030157
+        },
+        {
+          "track": "blues.00007",
+          "genre": "blues",
+          "numerator": 4,
+          "reference_bpm": 92.66409266409248,
+          "estimated_bpm": 93.4,
+          "estimated_measure_offset_sec": 2.3686,
+          "tempo_absolute_percent_error": 0.7941666666668743,
+          "beat": {
+            "reference_count": 47,
+            "predicted_count": 47,
+            "matched_count": 7,
+            "precision": 0.14893617021276595,
+            "recall": 0.14893617021276595,
+            "f1": 0.14893617021276595
+          },
+          "downbeat": {
+            "reference_count": 12,
+            "predicted_count": 11,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06871900000078313
+        },
+        {
+          "track": "blues.00009",
+          "genre": "blues",
+          "numerator": 4,
+          "reference_bpm": 81.96721311475417,
+          "estimated_bpm": 81.7,
+          "estimated_measure_offset_sec": 2.2114,
+          "tempo_absolute_percent_error": 0.3260000000000878,
+          "beat": {
+            "reference_count": 40,
+            "predicted_count": 41,
+            "matched_count": 40,
+            "precision": 0.975609756097561,
+            "recall": 1.0,
+            "f1": 0.9876543209876543
+          },
+          "downbeat": {
+            "reference_count": 10,
+            "predicted_count": 10,
+            "matched_count": 10,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 0.06797280000046158
+        },
+        {
+          "track": "classical.00001",
+          "genre": "classical",
+          "numerator": 3,
+          "reference_bpm": 114.94252873563194,
+          "estimated_bpm": 113.3,
+          "estimated_measure_offset_sec": 1.5643,
+          "tempo_absolute_percent_error": 1.4289999999997922,
+          "beat": {
+            "reference_count": 57,
+            "predicted_count": 56,
+            "matched_count": 34,
+            "precision": 0.6071428571428571,
+            "recall": 0.5964912280701754,
+            "f1": 0.6017699115044247
+          },
+          "downbeat": {
+            "reference_count": 19,
+            "predicted_count": 18,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06644219999998313
+        },
+        {
+          "track": "classical.00003",
+          "genre": "classical",
+          "numerator": 4,
+          "reference_bpm": 66.81514476614701,
+          "estimated_bpm": 70.6,
+          "estimated_measure_offset_sec": 0.2622,
+          "tempo_absolute_percent_error": 5.6646666666666246,
+          "beat": {
+            "reference_count": 32,
+            "predicted_count": 36,
+            "matched_count": 6,
+            "precision": 0.16666666666666666,
+            "recall": 0.1875,
+            "f1": 0.17647058823529413
+          },
+          "downbeat": {
+            "reference_count": 8,
+            "predicted_count": 9,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.0655745999993087
+        },
+        {
+          "track": "classical.00005",
+          "genre": "classical",
+          "numerator": 3,
+          "reference_bpm": 141.50943396226418,
+          "estimated_bpm": 141.4,
+          "estimated_measure_offset_sec": 0.9304,
+          "tempo_absolute_percent_error": 0.07733333333335166,
+          "beat": {
+            "reference_count": 70,
+            "predicted_count": 71,
+            "matched_count": 50,
+            "precision": 0.704225352112676,
+            "recall": 0.7142857142857143,
+            "f1": 0.7092198581560283
+          },
+          "downbeat": {
+            "reference_count": 23,
+            "predicted_count": 23,
+            "matched_count": 10,
+            "precision": 0.43478260869565216,
+            "recall": 0.43478260869565216,
+            "f1": 0.43478260869565216
+          },
+          "elapsed_sec": 0.06453400000009424
+        },
+        {
+          "track": "classical.00007",
+          "genre": "classical",
+          "numerator": 2,
+          "reference_bpm": 108.69565217391295,
+          "estimated_bpm": 71.9,
+          "estimated_measure_offset_sec": 1.6557,
+          "tempo_absolute_percent_error": 33.85199999999994,
+          "beat": {
+            "reference_count": 54,
+            "predicted_count": 35,
+            "matched_count": 8,
+            "precision": 0.22857142857142856,
+            "recall": 0.14814814814814814,
+            "f1": 0.1797752808988764
+          },
+          "downbeat": {
+            "reference_count": 27,
+            "predicted_count": 17,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06802049999987503
+        },
+        {
+          "track": "classical.00009",
+          "genre": "classical",
+          "numerator": 4,
+          "reference_bpm": 60.42296072507551,
+          "estimated_bpm": 107.4,
+          "estimated_measure_offset_sec": 1.0032,
+          "tempo_absolute_percent_error": 77.74700000000006,
+          "beat": {
+            "reference_count": 30,
+            "predicted_count": 53,
+            "matched_count": 7,
+            "precision": 0.1320754716981132,
+            "recall": 0.23333333333333334,
+            "f1": 0.1686746987951807
+          },
+          "downbeat": {
+            "reference_count": 8,
+            "predicted_count": 13,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06542429999990418
+        },
+        {
+          "track": "country.00001",
+          "genre": "country",
+          "numerator": 4,
+          "reference_bpm": 129.03225806451616,
+          "estimated_bpm": 128.9,
+          "estimated_measure_offset_sec": 0.4705,
+          "tempo_absolute_percent_error": 0.10250000000001688,
+          "beat": {
+            "reference_count": 64,
+            "predicted_count": 65,
+            "matched_count": 64,
+            "precision": 0.9846153846153847,
+            "recall": 1.0,
+            "f1": 0.9922480620155039
+          },
+          "downbeat": {
+            "reference_count": 16,
+            "predicted_count": 16,
+            "matched_count": 16,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 0.06661729999996169
+        },
+        {
+          "track": "country.00003",
+          "genre": "country",
+          "numerator": 4,
+          "reference_bpm": 80.10680907877163,
+          "estimated_bpm": 160.0,
+          "estimated_measure_offset_sec": 1.4443,
+          "tempo_absolute_percent_error": 99.73333333333349,
+          "beat": {
+            "reference_count": 39,
+            "predicted_count": 80,
+            "matched_count": 39,
+            "precision": 0.4875,
+            "recall": 1.0,
+            "f1": 0.6554621848739496
+          },
+          "downbeat": {
+            "reference_count": 10,
+            "predicted_count": 20,
+            "matched_count": 10,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666
+          },
+          "elapsed_sec": 0.06199870000000374
+        },
+        {
+          "track": "country.00005",
+          "genre": "country",
+          "numerator": 4,
+          "reference_bpm": 130.71895424836612,
+          "estimated_bpm": 130.3,
+          "estimated_measure_offset_sec": 0.6444,
+          "tempo_absolute_percent_error": 0.3205000000000706,
+          "beat": {
+            "reference_count": 66,
+            "predicted_count": 66,
+            "matched_count": 66,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 16,
+            "predicted_count": 17,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06738880000011704
+        },
+        {
+          "track": "country.00007",
+          "genre": "country",
+          "numerator": 4,
+          "reference_bpm": 50.54759898904797,
+          "estimated_bpm": 202.1,
+          "estimated_measure_offset_sec": 1.1329,
+          "tempo_absolute_percent_error": 299.82116666666707,
+          "beat": {
+            "reference_count": 26,
+            "predicted_count": 101,
+            "matched_count": 24,
+            "precision": 0.2376237623762376,
+            "recall": 0.9230769230769231,
+            "f1": 0.3779527559055118
+          },
+          "downbeat": {
+            "reference_count": 7,
+            "predicted_count": 25,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06407639999997627
+        },
+        {
+          "track": "country.00009",
+          "genre": "country",
+          "numerator": 4,
+          "reference_bpm": 96.61835748792267,
+          "estimated_bpm": 193.2,
+          "estimated_measure_offset_sec": 0.1051,
+          "tempo_absolute_percent_error": 99.96200000000007,
+          "beat": {
+            "reference_count": 49,
+            "predicted_count": 97,
+            "matched_count": 49,
+            "precision": 0.5051546391752577,
+            "recall": 1.0,
+            "f1": 0.6712328767123288
+          },
+          "downbeat": {
+            "reference_count": 12,
+            "predicted_count": 25,
+            "matched_count": 12,
+            "precision": 0.48,
+            "recall": 1.0,
+            "f1": 0.6486486486486487
+          },
+          "elapsed_sec": 0.06808530000034807
+        },
+        {
+          "track": "disco.00001",
+          "genre": "disco",
+          "numerator": 4,
+          "reference_bpm": 234.3749999999998,
+          "estimated_bpm": 117.0,
+          "estimated_measure_offset_sec": 0.5593,
+          "tempo_absolute_percent_error": 50.079999999999956,
+          "beat": {
+            "reference_count": 115,
+            "predicted_count": 59,
+            "matched_count": 58,
+            "precision": 0.9830508474576272,
+            "recall": 0.5043478260869565,
+            "f1": 0.6666666666666667
+          },
+          "downbeat": {
+            "reference_count": 29,
+            "predicted_count": 15,
+            "matched_count": 15,
+            "precision": 1.0,
+            "recall": 0.5172413793103449,
+            "f1": 0.6818181818181819
+          },
+          "elapsed_sec": 0.06487939999988157
+        },
+        {
+          "track": "disco.00003",
+          "genre": "disco",
+          "numerator": 4,
+          "reference_bpm": 126.05042016806746,
+          "estimated_bpm": 126.5,
+          "estimated_measure_offset_sec": 1.0415,
+          "tempo_absolute_percent_error": 0.3566666666664801,
+          "beat": {
+            "reference_count": 64,
+            "predicted_count": 64,
+            "matched_count": 64,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 16,
+            "predicted_count": 16,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06793130000005476
+        },
+        {
+          "track": "disco.00005",
+          "genre": "disco",
+          "numerator": 4,
+          "reference_bpm": 108.69565217391312,
+          "estimated_bpm": 216.7,
+          "estimated_measure_offset_sec": 0.5979,
+          "tempo_absolute_percent_error": 99.36399999999985,
+          "beat": {
+            "reference_count": 53,
+            "predicted_count": 110,
+            "matched_count": 53,
+            "precision": 0.4818181818181818,
+            "recall": 1.0,
+            "f1": 0.6503067484662576
+          },
+          "downbeat": {
+            "reference_count": 13,
+            "predicted_count": 27,
+            "matched_count": 13,
+            "precision": 0.48148148148148145,
+            "recall": 1.0,
+            "f1": 0.65
+          },
+          "elapsed_sec": 0.0656301999997595
+        },
+        {
+          "track": "disco.00007",
+          "genre": "disco",
+          "numerator": 4,
+          "reference_bpm": 129.31034482758608,
+          "estimated_bpm": 129.3,
+          "estimated_measure_offset_sec": 0.864,
+          "tempo_absolute_percent_error": 0.00799999999989193,
+          "beat": {
+            "reference_count": 64,
+            "predicted_count": 64,
+            "matched_count": 64,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 16,
+            "predicted_count": 16,
+            "matched_count": 16,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 0.06432189999941329
+        },
+        {
+          "track": "disco.00009",
+          "genre": "disco",
+          "numerator": 4,
+          "reference_bpm": 129.3103448275856,
+          "estimated_bpm": 129.2,
+          "estimated_measure_offset_sec": 0.0233,
+          "tempo_absolute_percent_error": 0.08533333333286959,
+          "beat": {
+            "reference_count": 65,
+            "predicted_count": 65,
+            "matched_count": 65,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 16,
+            "predicted_count": 17,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06535439999970549
+        },
+        {
+          "track": "hiphop.00001",
+          "genre": "hiphop",
+          "numerator": 4,
+          "reference_bpm": 90.63444108761342,
+          "estimated_bpm": 182.1,
+          "estimated_measure_offset_sec": 1.1521,
+          "tempo_absolute_percent_error": 100.9169999999997,
+          "beat": {
+            "reference_count": 46,
+            "predicted_count": 91,
+            "matched_count": 44,
+            "precision": 0.4835164835164835,
+            "recall": 0.9565217391304348,
+            "f1": 0.6423357664233577
+          },
+          "downbeat": {
+            "reference_count": 11,
+            "predicted_count": 22,
+            "matched_count": 11,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666
+          },
+          "elapsed_sec": 0.06726760000037757
+        },
+        {
+          "track": "hiphop.00003",
+          "genre": "hiphop",
+          "numerator": 4,
+          "reference_bpm": 93.16770186335403,
+          "estimated_bpm": 186.2,
+          "estimated_measure_offset_sec": 1.1687,
+          "tempo_absolute_percent_error": 99.85466666666667,
+          "beat": {
+            "reference_count": 47,
+            "predicted_count": 93,
+            "matched_count": 47,
+            "precision": 0.5053763440860215,
+            "recall": 1.0,
+            "f1": 0.6714285714285714
+          },
+          "downbeat": {
+            "reference_count": 11,
+            "predicted_count": 23,
+            "matched_count": 11,
+            "precision": 0.4782608695652174,
+            "recall": 1.0,
+            "f1": 0.6470588235294118
+          },
+          "elapsed_sec": 0.0674207000001843
+        },
+        {
+          "track": "hiphop.00005",
+          "genre": "hiphop",
+          "numerator": 4,
+          "reference_bpm": 141.50943396226432,
+          "estimated_bpm": 70.7,
+          "estimated_measure_offset_sec": 2.9477,
+          "tempo_absolute_percent_error": 50.03866666666673,
+          "beat": {
+            "reference_count": 71,
+            "predicted_count": 35,
+            "matched_count": 35,
+            "precision": 1.0,
+            "recall": 0.49295774647887325,
+            "f1": 0.660377358490566
+          },
+          "downbeat": {
+            "reference_count": 18,
+            "predicted_count": 8,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.07017360000008921
+        },
+        {
+          "track": "hiphop.00007",
+          "genre": "hiphop",
+          "numerator": 4,
+          "reference_bpm": 121.45748987854213,
+          "estimated_bpm": 120.9,
+          "estimated_measure_offset_sec": 0.8581,
+          "tempo_absolute_percent_error": 0.458999999999687,
+          "beat": {
+            "reference_count": 60,
+            "predicted_count": 60,
+            "matched_count": 57,
+            "precision": 0.95,
+            "recall": 0.95,
+            "f1": 0.9500000000000001
+          },
+          "downbeat": {
+            "reference_count": 15,
+            "predicted_count": 15,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06939299999976356
+        },
+        {
+          "track": "hiphop.00009",
+          "genre": "hiphop",
+          "numerator": 4,
+          "reference_bpm": 103.27022375215155,
+          "estimated_bpm": 206.5,
+          "estimated_measure_offset_sec": 0.3995,
+          "tempo_absolute_percent_error": 99.96083333333317,
+          "beat": {
+            "reference_count": 52,
+            "predicted_count": 103,
+            "matched_count": 51,
+            "precision": 0.49514563106796117,
+            "recall": 0.9807692307692307,
+            "f1": 0.6580645161290323
+          },
+          "downbeat": {
+            "reference_count": 13,
+            "predicted_count": 26,
+            "matched_count": 13,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666
+          },
+          "elapsed_sec": 0.0685390999997253
+        },
+        {
+          "track": "jazz.00001",
+          "genre": "jazz",
+          "numerator": 4,
+          "reference_bpm": 68.88633754305393,
+          "estimated_bpm": 137.9,
+          "estimated_measure_offset_sec": 0.7425,
+          "tempo_absolute_percent_error": 100.18483333333343,
+          "beat": {
+            "reference_count": 35,
+            "predicted_count": 69,
+            "matched_count": 33,
+            "precision": 0.4782608695652174,
+            "recall": 0.9428571428571428,
+            "f1": 0.6346153846153846
+          },
+          "downbeat": {
+            "reference_count": 9,
+            "predicted_count": 17,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06543510000028618
+        },
+        {
+          "track": "jazz.00004",
+          "genre": "jazz",
+          "numerator": 3,
+          "reference_bpm": 62.89308176100625,
+          "estimated_bpm": 62.8,
+          "estimated_measure_offset_sec": 1.6716,
+          "tempo_absolute_percent_error": 0.14799999999994287,
+          "beat": {
+            "reference_count": 31,
+            "predicted_count": 31,
+            "matched_count": 22,
+            "precision": 0.7096774193548387,
+            "recall": 0.7096774193548387,
+            "f1": 0.7096774193548389
+          },
+          "downbeat": {
+            "reference_count": 10,
+            "predicted_count": 10,
+            "matched_count": 7,
+            "precision": 0.7,
+            "recall": 0.7,
+            "f1": 0.7
+          },
+          "elapsed_sec": 0.0671916000001147
+        },
+        {
+          "track": "jazz.00006",
+          "genre": "jazz",
+          "numerator": 4,
+          "reference_bpm": 132.7433628318584,
+          "estimated_bpm": 133.3,
+          "estimated_measure_offset_sec": 0.9529,
+          "tempo_absolute_percent_error": 0.4193333333333431,
+          "beat": {
+            "reference_count": 67,
+            "predicted_count": 67,
+            "matched_count": 67,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 17,
+            "predicted_count": 17,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06435810000039055
+        },
+        {
+          "track": "jazz.00008",
+          "genre": "jazz",
+          "numerator": 4,
+          "reference_bpm": 108.89292196007239,
+          "estimated_bpm": 109.6,
+          "estimated_measure_offset_sec": 0.6343,
+          "tempo_absolute_percent_error": 0.6493333333335221,
+          "beat": {
+            "reference_count": 55,
+            "predicted_count": 55,
+            "matched_count": 55,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 14,
+            "predicted_count": 14,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06946479999987787
+        },
+        {
+          "track": "jazz.00012",
+          "genre": "jazz",
+          "numerator": 4,
+          "reference_bpm": 112.35955056179779,
+          "estimated_bpm": 113.3,
+          "estimated_measure_offset_sec": 1.7414,
+          "tempo_absolute_percent_error": 0.8369999999999649,
+          "beat": {
+            "reference_count": 57,
+            "predicted_count": 57,
+            "matched_count": 47,
+            "precision": 0.8245614035087719,
+            "recall": 0.8245614035087719,
+            "f1": 0.8245614035087719
+          },
+          "downbeat": {
+            "reference_count": 14,
+            "predicted_count": 14,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06265090000033524
+        },
+        {
+          "track": "metal.00001",
+          "genre": "metal",
+          "numerator": 4,
+          "reference_bpm": 156.65796344647484,
+          "estimated_bpm": 156.0,
+          "estimated_measure_offset_sec": 1.2087,
+          "tempo_absolute_percent_error": 0.41999999999977256,
+          "beat": {
+            "reference_count": 78,
+            "predicted_count": 78,
+            "matched_count": 78,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 20,
+            "predicted_count": 19,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06644090000008873
+        },
+        {
+          "track": "metal.00003",
+          "genre": "metal",
+          "numerator": 4,
+          "reference_bpm": 196.72131147541003,
+          "estimated_bpm": 98.1,
+          "estimated_measure_offset_sec": 0.1779,
+          "tempo_absolute_percent_error": 50.13250000000006,
+          "beat": {
+            "reference_count": 97,
+            "predicted_count": 49,
+            "matched_count": 33,
+            "precision": 0.673469387755102,
+            "recall": 0.3402061855670103,
+            "f1": 0.452054794520548
+          },
+          "downbeat": {
+            "reference_count": 24,
+            "predicted_count": 13,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06381009999950038
+        },
+        {
+          "track": "metal.00005",
+          "genre": "metal",
+          "numerator": 4,
+          "reference_bpm": 154.2416452442162,
+          "estimated_bpm": 154.3,
+          "estimated_measure_offset_sec": 0.0505,
+          "tempo_absolute_percent_error": 0.037833333333179446,
+          "beat": {
+            "reference_count": 77,
+            "predicted_count": 78,
+            "matched_count": 77,
+            "precision": 0.9871794871794872,
+            "recall": 1.0,
+            "f1": 0.9935483870967742
+          },
+          "downbeat": {
+            "reference_count": 20,
+            "predicted_count": 20,
+            "matched_count": 20,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 0.06311899999946036
+        },
+        {
+          "track": "metal.00007",
+          "genre": "metal",
+          "numerator": 4,
+          "reference_bpm": 150.00000000000054,
+          "estimated_bpm": 152.3,
+          "estimated_measure_offset_sec": 1.2937,
+          "tempo_absolute_percent_error": 1.5333333333329753,
+          "beat": {
+            "reference_count": 76,
+            "predicted_count": 76,
+            "matched_count": 54,
+            "precision": 0.7105263157894737,
+            "recall": 0.7105263157894737,
+            "f1": 0.7105263157894737
+          },
+          "downbeat": {
+            "reference_count": 19,
+            "predicted_count": 19,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.060728000000381144
+        },
+        {
+          "track": "metal.00009",
+          "genre": "metal",
+          "numerator": 4,
+          "reference_bpm": 113.63636363636354,
+          "estimated_bpm": 113.5,
+          "estimated_measure_offset_sec": 1.9173,
+          "tempo_absolute_percent_error": 0.11999999999991597,
+          "beat": {
+            "reference_count": 57,
+            "predicted_count": 57,
+            "matched_count": 57,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 14,
+            "predicted_count": 14,
+            "matched_count": 14,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 0.06930080000074668
+        },
+        {
+          "track": "pop.00001",
+          "genre": "pop",
+          "numerator": 4,
+          "reference_bpm": 105.6338028169018,
+          "estimated_bpm": 211.9,
+          "estimated_measure_offset_sec": 0.5624,
+          "tempo_absolute_percent_error": 100.59866666666592,
+          "beat": {
+            "reference_count": 52,
+            "predicted_count": 105,
+            "matched_count": 52,
+            "precision": 0.49523809523809526,
+            "recall": 1.0,
+            "f1": 0.6624203821656051
+          },
+          "downbeat": {
+            "reference_count": 13,
+            "predicted_count": 26,
+            "matched_count": 13,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666
+          },
+          "elapsed_sec": 0.06384869999965304
+        },
+        {
+          "track": "pop.00003",
+          "genre": "pop",
+          "numerator": 4,
+          "reference_bpm": 92.30769230769226,
+          "estimated_bpm": 184.5,
+          "estimated_measure_offset_sec": 0.1987,
+          "tempo_absolute_percent_error": 99.87500000000009,
+          "beat": {
+            "reference_count": 47,
+            "predicted_count": 92,
+            "matched_count": 46,
+            "precision": 0.5,
+            "recall": 0.9787234042553191,
+            "f1": 0.6618705035971223
+          },
+          "downbeat": {
+            "reference_count": 12,
+            "predicted_count": 23,
+            "matched_count": 11,
+            "precision": 0.4782608695652174,
+            "recall": 0.9166666666666666,
+            "f1": 0.6285714285714286
+          },
+          "elapsed_sec": 0.06490020000001095
+        },
+        {
+          "track": "pop.00005",
+          "genre": "pop",
+          "numerator": 4,
+          "reference_bpm": 85.34850640113805,
+          "estimated_bpm": 170.8,
+          "estimated_measure_offset_sec": 0.6506,
+          "tempo_absolute_percent_error": 100.12066666666651,
+          "beat": {
+            "reference_count": 42,
+            "predicted_count": 85,
+            "matched_count": 37,
+            "precision": 0.43529411764705883,
+            "recall": 0.8809523809523809,
+            "f1": 0.5826771653543308
+          },
+          "downbeat": {
+            "reference_count": 11,
+            "predicted_count": 21,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06910570000036387
+        },
+        {
+          "track": "pop.00007",
+          "genre": "pop",
+          "numerator": 4,
+          "reference_bpm": 63.42494714587738,
+          "estimated_bpm": 126.9,
+          "estimated_measure_offset_sec": 0.581,
+          "tempo_absolute_percent_error": 100.07900000000001,
+          "beat": {
+            "reference_count": 32,
+            "predicted_count": 64,
+            "matched_count": 32,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666
+          },
+          "downbeat": {
+            "reference_count": 8,
+            "predicted_count": 16,
+            "matched_count": 8,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666
+          },
+          "elapsed_sec": 0.0744181000000026
+        },
+        {
+          "track": "pop.00009",
+          "genre": "pop",
+          "numerator": 4,
+          "reference_bpm": 105.4481546572935,
+          "estimated_bpm": 210.7,
+          "estimated_measure_offset_sec": 1.1023,
+          "tempo_absolute_percent_error": 99.8138333333333,
+          "beat": {
+            "reference_count": 51,
+            "predicted_count": 105,
+            "matched_count": 51,
+            "precision": 0.4857142857142857,
+            "recall": 1.0,
+            "f1": 0.6538461538461539
+          },
+          "downbeat": {
+            "reference_count": 12,
+            "predicted_count": 26,
+            "matched_count": 12,
+            "precision": 0.46153846153846156,
+            "recall": 1.0,
+            "f1": 0.631578947368421
+          },
+          "elapsed_sec": 0.06677639999998064
+        },
+        {
+          "track": "reggae.00001",
+          "genre": "reggae",
+          "numerator": 4,
+          "reference_bpm": 78.3289817232375,
+          "estimated_bpm": 155.9,
+          "estimated_measure_offset_sec": 0.4159,
+          "tempo_absolute_percent_error": 99.03233333333358,
+          "beat": {
+            "reference_count": 39,
+            "predicted_count": 78,
+            "matched_count": 38,
+            "precision": 0.48717948717948717,
+            "recall": 0.9743589743589743,
+            "f1": 0.6495726495726496
+          },
+          "downbeat": {
+            "reference_count": 9,
+            "predicted_count": 20,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06831229999988864
+        },
+        {
+          "track": "reggae.00003",
+          "genre": "reggae",
+          "numerator": 4,
+          "reference_bpm": 147.7832512315272,
+          "estimated_bpm": 148.2,
+          "estimated_measure_offset_sec": 0.0025,
+          "tempo_absolute_percent_error": 0.2819999999999183,
+          "beat": {
+            "reference_count": 73,
+            "predicted_count": 75,
+            "matched_count": 73,
+            "precision": 0.9733333333333334,
+            "recall": 1.0,
+            "f1": 0.9864864864864865
+          },
+          "downbeat": {
+            "reference_count": 18,
+            "predicted_count": 19,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06420359999992797
+        },
+        {
+          "track": "reggae.00005",
+          "genre": "reggae",
+          "numerator": 4,
+          "reference_bpm": 156.24999999999986,
+          "estimated_bpm": 156.2,
+          "estimated_measure_offset_sec": 1.5346,
+          "tempo_absolute_percent_error": 0.03199999999991636,
+          "beat": {
+            "reference_count": 78,
+            "predicted_count": 78,
+            "matched_count": 78,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 19,
+            "predicted_count": 19,
+            "matched_count": 19,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 0.06647609999981796
+        },
+        {
+          "track": "reggae.00007",
+          "genre": "reggae",
+          "numerator": 4,
+          "reference_bpm": 151.89873417721535,
+          "estimated_bpm": 152.2,
+          "estimated_measure_offset_sec": 1.5359,
+          "tempo_absolute_percent_error": 0.19833333333322312,
+          "beat": {
+            "reference_count": 74,
+            "predicted_count": 76,
+            "matched_count": 73,
+            "precision": 0.9605263157894737,
+            "recall": 0.9864864864864865,
+            "f1": 0.9733333333333333
+          },
+          "downbeat": {
+            "reference_count": 19,
+            "predicted_count": 19,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06313539999973727
+        },
+        {
+          "track": "reggae.00009",
+          "genre": "reggae",
+          "numerator": 4,
+          "reference_bpm": 157.89473684210532,
+          "estimated_bpm": 157.8,
+          "estimated_measure_offset_sec": 1.4599,
+          "tempo_absolute_percent_error": 0.060000000000026886,
+          "beat": {
+            "reference_count": 79,
+            "predicted_count": 79,
+            "matched_count": 79,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 20,
+            "predicted_count": 19,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06313529999988532
+        },
+        {
+          "track": "rock.00001",
+          "genre": "rock",
+          "numerator": 4,
+          "reference_bpm": 75.47169811320738,
+          "estimated_bpm": 150.6,
+          "estimated_measure_offset_sec": 1.1585,
+          "tempo_absolute_percent_error": 99.54500000000043,
+          "beat": {
+            "reference_count": 37,
+            "predicted_count": 75,
+            "matched_count": 37,
+            "precision": 0.49333333333333335,
+            "recall": 1.0,
+            "f1": 0.6607142857142857
+          },
+          "downbeat": {
+            "reference_count": 9,
+            "predicted_count": 19,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.06305560000055266
+        },
+        {
+          "track": "rock.00003",
+          "genre": "rock",
+          "numerator": 4,
+          "reference_bpm": 94.7867298578199,
+          "estimated_bpm": 94.7,
+          "estimated_measure_offset_sec": 2.0332,
+          "tempo_absolute_percent_error": 0.09149999999999878,
+          "beat": {
+            "reference_count": 48,
+            "predicted_count": 48,
+            "matched_count": 48,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 12,
+            "predicted_count": 12,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 0.0658553999992364
+        },
+        {
+          "track": "rock.00005",
+          "genre": "rock",
+          "numerator": 4,
+          "reference_bpm": 99.337748344371,
+          "estimated_bpm": 199.5,
+          "estimated_measure_offset_sec": 0.5209,
+          "tempo_absolute_percent_error": 100.82999999999973,
+          "beat": {
+            "reference_count": 50,
+            "predicted_count": 100,
+            "matched_count": 43,
+            "precision": 0.43,
+            "recall": 0.86,
+            "f1": 0.5733333333333333
+          },
+          "downbeat": {
+            "reference_count": 12,
+            "predicted_count": 25,
+            "matched_count": 1,
+            "precision": 0.04,
+            "recall": 0.08333333333333333,
+            "f1": 0.05405405405405406
+          },
+          "elapsed_sec": 0.06493929999942338
+        },
+        {
+          "track": "rock.00007",
+          "genre": "rock",
+          "numerator": 4,
+          "reference_bpm": 89.8203592814371,
+          "estimated_bpm": 89.6,
+          "estimated_measure_offset_sec": 0.277,
+          "tempo_absolute_percent_error": 0.2453333333333181,
+          "beat": {
+            "reference_count": 45,
+            "predicted_count": 45,
+            "matched_count": 44,
+            "precision": 0.9777777777777777,
+            "recall": 0.9777777777777777,
+            "f1": 0.9777777777777777
+          },
+          "downbeat": {
+            "reference_count": 12,
+            "predicted_count": 12,
+            "matched_count": 11,
+            "precision": 0.9166666666666666,
+            "recall": 0.9166666666666666,
+            "f1": 0.9166666666666666
+          },
+          "elapsed_sec": 0.07202219999999215
+        },
+        {
+          "track": "rock.00009",
+          "genre": "rock",
+          "numerator": 4,
+          "reference_bpm": 74.9063670411985,
+          "estimated_bpm": 149.7,
+          "estimated_measure_offset_sec": 0.8221,
+          "tempo_absolute_percent_error": 99.8495,
+          "beat": {
+            "reference_count": 38,
+            "predicted_count": 75,
+            "matched_count": 38,
+            "precision": 0.5066666666666667,
+            "recall": 1.0,
+            "f1": 0.6725663716814159
+          },
+          "downbeat": {
+            "reference_count": 10,
+            "predicted_count": 19,
+            "matched_count": 10,
+            "precision": 0.5263157894736842,
+            "recall": 1.0,
+            "f1": 0.6896551724137931
+          },
+          "elapsed_sec": 0.06551080000008369
+        }
+      ]
     },
-    "development": {
-      "trackCount": 50,
-      "tempoAccuracyWithin4Percent": 0.78,
-      "tempoMeanAbsolutePercentError": 10.986193333333242,
-      "tempoMedianAbsolutePercentError": 0.46283333333338805,
-      "beatMacroF1": 0.7294509373282415,
-      "downbeatMacroF1": 0.50274673616288
+    "muscriptor030": {
+      "toleranceSec": 0.07,
+      "summary": {
+        "trackCount": 50,
+        "detectedTrackCount": 34,
+        "tempo": {
+          "meanAbsolutePercentError": 4.581513207457624,
+          "medianAbsolutePercentError": 0.13682997899846744,
+          "accuracyWithin4Percent": 0.64
+        },
+        "beat": {
+          "microPrecision": 0.9652082235108065,
+          "microRecall": 0.6716801173881145,
+          "microF1": 0.7921263248972529,
+          "macroF1": 0.6515063097380747
+        },
+        "downbeat": {
+          "microPrecision": 0.7265135699373695,
+          "microRecall": 0.4915254237288136,
+          "microF1": 0.586352148272957,
+          "macroF1": 0.49171856316143475
+        },
+        "elapsedSec": 152.0607274000031,
+        "genreDownbeatMacroF1": {
+          "blues": 0.0,
+          "classical": 0.0,
+          "country": 0.92,
+          "disco": 0.9302325581395349,
+          "hiphop": 0.4,
+          "jazz": 0.2,
+          "metal": 0.2,
+          "pop": 0.922358478880218,
+          "reggae": 0.7945945945945946,
+          "rock": 0.55
+        }
+      },
+      "tracks": [
+        {
+          "track": "blues.00001",
+          "genre": "blues",
+          "numerator": 4,
+          "reference_bpm": 67.56756756756758,
+          "estimated_bpm": null,
+          "estimated_measure_offset_sec": null,
+          "tempo_absolute_percent_error": null,
+          "beat": {
+            "reference_count": 34,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "downbeat": {
+            "reference_count": 8,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 3.911316600000646,
+          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+        },
+        {
+          "track": "blues.00003",
+          "genre": "blues",
+          "numerator": 4,
+          "reference_bpm": 62.27296315516354,
+          "estimated_bpm": null,
+          "estimated_measure_offset_sec": null,
+          "tempo_absolute_percent_error": null,
+          "beat": {
+            "reference_count": 31,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "downbeat": {
+            "reference_count": 8,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 3.033823499999926,
+          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+        },
+        {
+          "track": "blues.00005",
+          "genre": "blues",
+          "numerator": 4,
+          "reference_bpm": 68.49315068493152,
+          "estimated_bpm": null,
+          "estimated_measure_offset_sec": null,
+          "tempo_absolute_percent_error": null,
+          "beat": {
+            "reference_count": 35,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "downbeat": {
+            "reference_count": 9,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 2.7503477000000203,
+          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+        },
+        {
+          "track": "blues.00007",
+          "genre": "blues",
+          "numerator": 4,
+          "reference_bpm": 92.66409266409248,
+          "estimated_bpm": null,
+          "estimated_measure_offset_sec": null,
+          "tempo_absolute_percent_error": null,
+          "beat": {
+            "reference_count": 47,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "downbeat": {
+            "reference_count": 12,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 2.7796357000006537,
+          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+        },
+        {
+          "track": "blues.00009",
+          "genre": "blues",
+          "numerator": 4,
+          "reference_bpm": 81.96721311475417,
+          "estimated_bpm": 81.92860507272235,
+          "estimated_measure_offset_sec": 0.04,
+          "tempo_absolute_percent_error": 0.04710181127882659,
+          "beat": {
+            "reference_count": 40,
+            "predicted_count": 41,
+            "matched_count": 40,
+            "precision": 0.975609756097561,
+            "recall": 1.0,
+            "f1": 0.9876543209876543
+          },
+          "downbeat": {
+            "reference_count": 10,
+            "predicted_count": 11,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 2.730406900000162,
+          "failure_reason": null
+        },
+        {
+          "track": "classical.00001",
+          "genre": "classical",
+          "numerator": 3,
+          "reference_bpm": 114.94252873563194,
+          "estimated_bpm": null,
+          "estimated_measure_offset_sec": null,
+          "tempo_absolute_percent_error": null,
+          "beat": {
+            "reference_count": 57,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "downbeat": {
+            "reference_count": 19,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 2.7568136999998387,
+          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+        },
+        {
+          "track": "classical.00003",
+          "genre": "classical",
+          "numerator": 4,
+          "reference_bpm": 66.81514476614701,
+          "estimated_bpm": null,
+          "estimated_measure_offset_sec": null,
+          "tempo_absolute_percent_error": null,
+          "beat": {
+            "reference_count": 32,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "downbeat": {
+            "reference_count": 8,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 2.891332799999873,
+          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+        },
+        {
+          "track": "classical.00005",
+          "genre": "classical",
+          "numerator": 3,
+          "reference_bpm": 141.50943396226418,
+          "estimated_bpm": null,
+          "estimated_measure_offset_sec": null,
+          "tempo_absolute_percent_error": null,
+          "beat": {
+            "reference_count": 70,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "downbeat": {
+            "reference_count": 23,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 2.903781300000446,
+          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+        },
+        {
+          "track": "classical.00007",
+          "genre": "classical",
+          "numerator": 2,
+          "reference_bpm": 108.69565217391295,
+          "estimated_bpm": null,
+          "estimated_measure_offset_sec": null,
+          "tempo_absolute_percent_error": null,
+          "beat": {
+            "reference_count": 54,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "downbeat": {
+            "reference_count": 27,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 2.7816917000000103,
+          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+        },
+        {
+          "track": "classical.00009",
+          "genre": "classical",
+          "numerator": 4,
+          "reference_bpm": 60.42296072507551,
+          "estimated_bpm": null,
+          "estimated_measure_offset_sec": null,
+          "tempo_absolute_percent_error": null,
+          "beat": {
+            "reference_count": 30,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "downbeat": {
+            "reference_count": 8,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 2.8122137999998813,
+          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+        },
+        {
+          "track": "country.00001",
+          "genre": "country",
+          "numerator": 4,
+          "reference_bpm": 129.03225806451616,
+          "estimated_bpm": 128.8849499031109,
+          "estimated_measure_offset_sec": 0.44,
+          "tempo_absolute_percent_error": 0.1141638250890679,
+          "beat": {
+            "reference_count": 64,
+            "predicted_count": 64,
+            "matched_count": 64,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 16,
+            "predicted_count": 16,
+            "matched_count": 16,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 3.0300518999993074,
+          "failure_reason": null
+        },
+        {
+          "track": "country.00003",
+          "genre": "country",
+          "numerator": 4,
+          "reference_bpm": 80.10680907877163,
+          "estimated_bpm": 80.01621341660221,
+          "estimated_measure_offset_sec": 1.38,
+          "tempo_absolute_percent_error": 0.11309358494149292,
+          "beat": {
+            "reference_count": 39,
+            "predicted_count": 40,
+            "matched_count": 39,
+            "precision": 0.975,
+            "recall": 1.0,
+            "f1": 0.9873417721518987
+          },
+          "downbeat": {
+            "reference_count": 10,
+            "predicted_count": 10,
+            "matched_count": 10,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 3.1186572999995406,
+          "failure_reason": null
+        },
+        {
+          "track": "country.00005",
+          "genre": "country",
+          "numerator": 4,
+          "reference_bpm": 130.71895424836612,
+          "estimated_bpm": 130.3536232620197,
+          "estimated_measure_offset_sec": 1.54,
+          "tempo_absolute_percent_error": 0.27947820455500144,
+          "beat": {
+            "reference_count": 66,
+            "predicted_count": 66,
+            "matched_count": 66,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 16,
+            "predicted_count": 16,
+            "matched_count": 16,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 3.5781514999998763,
+          "failure_reason": null
+        },
+        {
+          "track": "country.00007",
+          "genre": "country",
+          "numerator": 4,
+          "reference_bpm": 50.54759898904797,
+          "estimated_bpm": 101.05012878937983,
+          "estimated_measure_offset_sec": 1.38,
+          "tempo_absolute_percent_error": 99.91083812165662,
+          "beat": {
+            "reference_count": 26,
+            "predicted_count": 51,
+            "matched_count": 25,
+            "precision": 0.49019607843137253,
+            "recall": 0.9615384615384616,
+            "f1": 0.6493506493506493
+          },
+          "downbeat": {
+            "reference_count": 7,
+            "predicted_count": 13,
+            "matched_count": 6,
+            "precision": 0.46153846153846156,
+            "recall": 0.8571428571428571,
+            "f1": 0.6
+          },
+          "elapsed_sec": 3.223192200000085,
+          "failure_reason": null
+        },
+        {
+          "track": "country.00009",
+          "genre": "country",
+          "numerator": 4,
+          "reference_bpm": 96.61835748792267,
+          "estimated_bpm": 96.63328326370697,
+          "estimated_measure_offset_sec": 1.32,
+          "tempo_absolute_percent_error": 0.0154481779367567,
+          "beat": {
+            "reference_count": 49,
+            "predicted_count": 49,
+            "matched_count": 49,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 12,
+            "predicted_count": 12,
+            "matched_count": 12,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 2.835866100000203,
+          "failure_reason": null
+        },
+        {
+          "track": "disco.00001",
+          "genre": "disco",
+          "numerator": 4,
+          "reference_bpm": 234.3749999999998,
+          "estimated_bpm": 116.95653263640945,
+          "estimated_measure_offset_sec": 1.54,
+          "tempo_absolute_percent_error": 50.09854607513192,
+          "beat": {
+            "reference_count": 115,
+            "predicted_count": 59,
+            "matched_count": 58,
+            "precision": 0.9830508474576272,
+            "recall": 0.5043478260869565,
+            "f1": 0.6666666666666667
+          },
+          "downbeat": {
+            "reference_count": 29,
+            "predicted_count": 14,
+            "matched_count": 14,
+            "precision": 1.0,
+            "recall": 0.4827586206896552,
+            "f1": 0.6511627906976745
+          },
+          "elapsed_sec": 2.538542000000234,
+          "failure_reason": null
+        },
+        {
+          "track": "disco.00003",
+          "genre": "disco",
+          "numerator": 4,
+          "reference_bpm": 126.05042016806746,
+          "estimated_bpm": 126.41400586922167,
+          "estimated_measure_offset_sec": 0.04,
+          "tempo_absolute_percent_error": 0.28844465624900384,
+          "beat": {
+            "reference_count": 64,
+            "predicted_count": 64,
+            "matched_count": 64,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 16,
+            "predicted_count": 16,
+            "matched_count": 16,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 2.978317699999934,
+          "failure_reason": null
+        },
+        {
+          "track": "disco.00005",
+          "genre": "disco",
+          "numerator": 4,
+          "reference_bpm": 108.69565217391312,
+          "estimated_bpm": 108.34191018408744,
+          "estimated_measure_offset_sec": 1.64,
+          "tempo_absolute_percent_error": 0.32544263063962414,
+          "beat": {
+            "reference_count": 53,
+            "predicted_count": 54,
+            "matched_count": 53,
+            "precision": 0.9814814814814815,
+            "recall": 1.0,
+            "f1": 0.9906542056074767
+          },
+          "downbeat": {
+            "reference_count": 13,
+            "predicted_count": 13,
+            "matched_count": 13,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 3.7221901000002617,
+          "failure_reason": null
+        },
+        {
+          "track": "disco.00007",
+          "genre": "disco",
+          "numerator": 4,
+          "reference_bpm": 129.31034482758608,
+          "estimated_bpm": 129.27941417440286,
+          "estimated_measure_offset_sec": 0.82,
+          "tempo_absolute_percent_error": 0.0239197051283562,
+          "beat": {
+            "reference_count": 64,
+            "predicted_count": 64,
+            "matched_count": 64,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 16,
+            "predicted_count": 16,
+            "matched_count": 16,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 3.507402799999909,
+          "failure_reason": null
+        },
+        {
+          "track": "disco.00009",
+          "genre": "disco",
+          "numerator": 4,
+          "reference_bpm": 129.3103448275856,
+          "estimated_bpm": 129.12595424155427,
+          "estimated_measure_offset_sec": 1.38,
+          "tempo_absolute_percent_error": 0.1425953865308936,
+          "beat": {
+            "reference_count": 65,
+            "predicted_count": 64,
+            "matched_count": 64,
+            "precision": 1.0,
+            "recall": 0.9846153846153847,
+            "f1": 0.9922480620155039
+          },
+          "downbeat": {
+            "reference_count": 16,
+            "predicted_count": 16,
+            "matched_count": 16,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 3.3172817000004216,
+          "failure_reason": null
+        },
+        {
+          "track": "hiphop.00001",
+          "genre": "hiphop",
+          "numerator": 4,
+          "reference_bpm": 90.63444108761342,
+          "estimated_bpm": null,
+          "estimated_measure_offset_sec": null,
+          "tempo_absolute_percent_error": null,
+          "beat": {
+            "reference_count": 46,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "downbeat": {
+            "reference_count": 11,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 3.3034237000001667,
+          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+        },
+        {
+          "track": "hiphop.00003",
+          "genre": "hiphop",
+          "numerator": 4,
+          "reference_bpm": 93.16770186335403,
+          "estimated_bpm": 93.05951447209843,
+          "estimated_measure_offset_sec": 1.14,
+          "tempo_absolute_percent_error": 0.11612113328100826,
+          "beat": {
+            "reference_count": 47,
+            "predicted_count": 46,
+            "matched_count": 46,
+            "precision": 1.0,
+            "recall": 0.9787234042553191,
+            "f1": 0.989247311827957
+          },
+          "downbeat": {
+            "reference_count": 11,
+            "predicted_count": 12,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 3.068771299999753,
+          "failure_reason": null
+        },
+        {
+          "track": "hiphop.00005",
+          "genre": "hiphop",
+          "numerator": 4,
+          "reference_bpm": 141.50943396226432,
+          "estimated_bpm": 141.53070216377756,
+          "estimated_measure_offset_sec": 0.8,
+          "tempo_absolute_percent_error": 0.01502952906935432,
+          "beat": {
+            "reference_count": 71,
+            "predicted_count": 70,
+            "matched_count": 70,
+            "precision": 1.0,
+            "recall": 0.9859154929577465,
+            "f1": 0.9929078014184397
+          },
+          "downbeat": {
+            "reference_count": 18,
+            "predicted_count": 18,
+            "matched_count": 18,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 2.8419745000001058,
+          "failure_reason": null
+        },
+        {
+          "track": "hiphop.00007",
+          "genre": "hiphop",
+          "numerator": 4,
+          "reference_bpm": 121.45748987854213,
+          "estimated_bpm": 120.89622430241408,
+          "estimated_measure_offset_sec": 0.82,
+          "tempo_absolute_percent_error": 0.46210865767876325,
+          "beat": {
+            "reference_count": 60,
+            "predicted_count": 60,
+            "matched_count": 57,
+            "precision": 0.95,
+            "recall": 0.95,
+            "f1": 0.9500000000000001
+          },
+          "downbeat": {
+            "reference_count": 15,
+            "predicted_count": 15,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 2.8237385000002178,
+          "failure_reason": null
+        },
+        {
+          "track": "hiphop.00009",
+          "genre": "hiphop",
+          "numerator": 4,
+          "reference_bpm": 103.27022375215155,
+          "estimated_bpm": 103.10361269026228,
+          "estimated_measure_offset_sec": 0.32,
+          "tempo_absolute_percent_error": 0.1613350449294432,
+          "beat": {
+            "reference_count": 52,
+            "predicted_count": 52,
+            "matched_count": 52,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 13,
+            "predicted_count": 13,
+            "matched_count": 13,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 3.342623200000162,
+          "failure_reason": null
+        },
+        {
+          "track": "jazz.00001",
+          "genre": "jazz",
+          "numerator": 4,
+          "reference_bpm": 68.88633754305393,
+          "estimated_bpm": null,
+          "estimated_measure_offset_sec": null,
+          "tempo_absolute_percent_error": null,
+          "beat": {
+            "reference_count": 35,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "downbeat": {
+            "reference_count": 9,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 3.556556499999715,
+          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+        },
+        {
+          "track": "jazz.00004",
+          "genre": "jazz",
+          "numerator": 3,
+          "reference_bpm": 62.89308176100625,
+          "estimated_bpm": null,
+          "estimated_measure_offset_sec": null,
+          "tempo_absolute_percent_error": null,
+          "beat": {
+            "reference_count": 31,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "downbeat": {
+            "reference_count": 10,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 3.594440300000315,
+          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+        },
+        {
+          "track": "jazz.00006",
+          "genre": "jazz",
+          "numerator": 4,
+          "reference_bpm": 132.7433628318584,
+          "estimated_bpm": 133.10739745237814,
+          "estimated_measure_offset_sec": 0.92,
+          "tempo_absolute_percent_error": 0.2742394141248646,
+          "beat": {
+            "reference_count": 67,
+            "predicted_count": 67,
+            "matched_count": 67,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 17,
+            "predicted_count": 17,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 3.3179183000002013,
+          "failure_reason": null
+        },
+        {
+          "track": "jazz.00008",
+          "genre": "jazz",
+          "numerator": 4,
+          "reference_bpm": 108.89292196007239,
+          "estimated_bpm": 109.47463758576562,
+          "estimated_measure_offset_sec": 1.16,
+          "tempo_absolute_percent_error": 0.5342088495949552,
+          "beat": {
+            "reference_count": 55,
+            "predicted_count": 55,
+            "matched_count": 55,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 14,
+            "predicted_count": 14,
+            "matched_count": 14,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 3.2818050000005314,
+          "failure_reason": null
+        },
+        {
+          "track": "jazz.00012",
+          "genre": "jazz",
+          "numerator": 4,
+          "reference_bpm": 112.35955056179779,
+          "estimated_bpm": 112.8655070583617,
+          "estimated_measure_offset_sec": 0.08,
+          "tempo_absolute_percent_error": 0.4503012819418808,
+          "beat": {
+            "reference_count": 57,
+            "predicted_count": 57,
+            "matched_count": 55,
+            "precision": 0.9649122807017544,
+            "recall": 0.9649122807017544,
+            "f1": 0.9649122807017544
+          },
+          "downbeat": {
+            "reference_count": 14,
+            "predicted_count": 15,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 3.2847552000002906,
+          "failure_reason": null
+        },
+        {
+          "track": "metal.00001",
+          "genre": "metal",
+          "numerator": 4,
+          "reference_bpm": 156.65796344647484,
+          "estimated_bpm": null,
+          "estimated_measure_offset_sec": null,
+          "tempo_absolute_percent_error": null,
+          "beat": {
+            "reference_count": 78,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "downbeat": {
+            "reference_count": 20,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 3.516426300000603,
+          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+        },
+        {
+          "track": "metal.00003",
+          "genre": "metal",
+          "numerator": 4,
+          "reference_bpm": 196.72131147541003,
+          "estimated_bpm": null,
+          "estimated_measure_offset_sec": null,
+          "tempo_absolute_percent_error": null,
+          "beat": {
+            "reference_count": 97,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "downbeat": {
+            "reference_count": 24,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 3.090700600000673,
+          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+        },
+        {
+          "track": "metal.00005",
+          "genre": "metal",
+          "numerator": 4,
+          "reference_bpm": 154.2416452442162,
+          "estimated_bpm": 154.27740890793575,
+          "estimated_measure_offset_sec": 0.0,
+          "tempo_absolute_percent_error": 0.023186775311517267,
+          "beat": {
+            "reference_count": 77,
+            "predicted_count": 78,
+            "matched_count": 77,
+            "precision": 0.9871794871794872,
+            "recall": 1.0,
+            "f1": 0.9935483870967742
+          },
+          "downbeat": {
+            "reference_count": 20,
+            "predicted_count": 20,
+            "matched_count": 20,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 2.6881617999997616,
+          "failure_reason": null
+        },
+        {
+          "track": "metal.00007",
+          "genre": "metal",
+          "numerator": 4,
+          "reference_bpm": 150.00000000000054,
+          "estimated_bpm": null,
+          "estimated_measure_offset_sec": null,
+          "tempo_absolute_percent_error": null,
+          "beat": {
+            "reference_count": 76,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "downbeat": {
+            "reference_count": 19,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 2.591557499999908,
+          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+        },
+        {
+          "track": "metal.00009",
+          "genre": "metal",
+          "numerator": 4,
+          "reference_bpm": 113.63636363636354,
+          "estimated_bpm": 113.4714911581771,
+          "estimated_measure_offset_sec": 0.28,
+          "tempo_absolute_percent_error": 0.14508778080406629,
+          "beat": {
+            "reference_count": 57,
+            "predicted_count": 57,
+            "matched_count": 57,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 14,
+            "predicted_count": 15,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 2.627005699999245,
+          "failure_reason": null
+        },
+        {
+          "track": "pop.00001",
+          "genre": "pop",
+          "numerator": 4,
+          "reference_bpm": 105.6338028169018,
+          "estimated_bpm": 105.97765713211464,
+          "estimated_measure_offset_sec": 0.52,
+          "tempo_absolute_percent_error": 0.32551541840148496,
+          "beat": {
+            "reference_count": 52,
+            "predicted_count": 53,
+            "matched_count": 52,
+            "precision": 0.9811320754716981,
+            "recall": 1.0,
+            "f1": 0.9904761904761905
+          },
+          "downbeat": {
+            "reference_count": 13,
+            "predicted_count": 14,
+            "matched_count": 13,
+            "precision": 0.9285714285714286,
+            "recall": 1.0,
+            "f1": 0.962962962962963
+          },
+          "elapsed_sec": 2.6449357999999847,
+          "failure_reason": null
+        },
+        {
+          "track": "pop.00003",
+          "genre": "pop",
+          "numerator": 4,
+          "reference_bpm": 92.30769230769226,
+          "estimated_bpm": 92.28396408428392,
+          "estimated_measure_offset_sec": 1.46,
+          "tempo_absolute_percent_error": 0.025705575359036,
+          "beat": {
+            "reference_count": 47,
+            "predicted_count": 46,
+            "matched_count": 46,
+            "precision": 1.0,
+            "recall": 0.9787234042553191,
+            "f1": 0.989247311827957
+          },
+          "downbeat": {
+            "reference_count": 12,
+            "predicted_count": 11,
+            "matched_count": 11,
+            "precision": 1.0,
+            "recall": 0.9166666666666666,
+            "f1": 0.9565217391304348
+          },
+          "elapsed_sec": 3.1753920000001017,
+          "failure_reason": null
+        },
+        {
+          "track": "pop.00005",
+          "genre": "pop",
+          "numerator": 4,
+          "reference_bpm": 85.34850640113805,
+          "estimated_bpm": 85.28503210023288,
+          "estimated_measure_offset_sec": 1.28,
+          "tempo_absolute_percent_error": 0.07437072256055788,
+          "beat": {
+            "reference_count": 42,
+            "predicted_count": 42,
+            "matched_count": 42,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 11,
+            "predicted_count": 11,
+            "matched_count": 11,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 3.1428332000004957,
+          "failure_reason": null
+        },
+        {
+          "track": "pop.00007",
+          "genre": "pop",
+          "numerator": 4,
+          "reference_bpm": 63.42494714587738,
+          "estimated_bpm": 63.44284407510195,
+          "estimated_measure_offset_sec": 0.52,
+          "tempo_absolute_percent_error": 0.028217491744071475,
+          "beat": {
+            "reference_count": 32,
+            "predicted_count": 32,
+            "matched_count": 32,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 8,
+            "predicted_count": 8,
+            "matched_count": 8,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 2.9404647999999725,
+          "failure_reason": null
+        },
+        {
+          "track": "pop.00009",
+          "genre": "pop",
+          "numerator": 4,
+          "reference_bpm": 105.4481546572935,
+          "estimated_bpm": 105.3686884563428,
+          "estimated_measure_offset_sec": 0.0,
+          "tempo_absolute_percent_error": 0.07536044723491858,
+          "beat": {
+            "reference_count": 51,
+            "predicted_count": 53,
+            "matched_count": 43,
+            "precision": 0.8113207547169812,
+            "recall": 0.8431372549019608,
+            "f1": 0.826923076923077
+          },
+          "downbeat": {
+            "reference_count": 12,
+            "predicted_count": 14,
+            "matched_count": 9,
+            "precision": 0.6428571428571429,
+            "recall": 0.75,
+            "f1": 0.6923076923076924
+          },
+          "elapsed_sec": 2.860620899999958,
+          "failure_reason": null
+        },
+        {
+          "track": "reggae.00001",
+          "genre": "reggae",
+          "numerator": 4,
+          "reference_bpm": 78.3289817232375,
+          "estimated_bpm": 77.8385873504417,
+          "estimated_measure_offset_sec": 2.68,
+          "tempo_absolute_percent_error": 0.6260701492693119,
+          "beat": {
+            "reference_count": 39,
+            "predicted_count": 39,
+            "matched_count": 37,
+            "precision": 0.9487179487179487,
+            "recall": 0.9487179487179487,
+            "f1": 0.9487179487179487
+          },
+          "downbeat": {
+            "reference_count": 9,
+            "predicted_count": 9,
+            "matched_count": 9,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 2.8913663000003,
+          "failure_reason": null
+        },
+        {
+          "track": "reggae.00003",
+          "genre": "reggae",
+          "numerator": 4,
+          "reference_bpm": 147.7832512315272,
+          "estimated_bpm": 148.24634902068834,
+          "estimated_measure_offset_sec": 0.78,
+          "tempo_absolute_percent_error": 0.31336283733237075,
+          "beat": {
+            "reference_count": 73,
+            "predicted_count": 74,
+            "matched_count": 73,
+            "precision": 0.9864864864864865,
+            "recall": 1.0,
+            "f1": 0.9931972789115647
+          },
+          "downbeat": {
+            "reference_count": 18,
+            "predicted_count": 19,
+            "matched_count": 18,
+            "precision": 0.9473684210526315,
+            "recall": 1.0,
+            "f1": 0.972972972972973
+          },
+          "elapsed_sec": 3.148389199999656,
+          "failure_reason": null
+        },
+        {
+          "track": "reggae.00005",
+          "genre": "reggae",
+          "numerator": 4,
+          "reference_bpm": 156.24999999999986,
+          "estimated_bpm": 156.1817798786028,
+          "estimated_measure_offset_sec": 0.7,
+          "tempo_absolute_percent_error": 0.043660877694110284,
+          "beat": {
+            "reference_count": 78,
+            "predicted_count": 78,
+            "matched_count": 78,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 19,
+            "predicted_count": 20,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 2.8935129999999845,
+          "failure_reason": null
+        },
+        {
+          "track": "reggae.00007",
+          "genre": "reggae",
+          "numerator": 4,
+          "reference_bpm": 151.89873417721535,
+          "estimated_bpm": 152.1538664207615,
+          "estimated_measure_offset_sec": 0.68,
+          "tempo_absolute_percent_error": 0.16796206033454392,
+          "beat": {
+            "reference_count": 74,
+            "predicted_count": 76,
+            "matched_count": 74,
+            "precision": 0.9736842105263158,
+            "recall": 1.0,
+            "f1": 0.9866666666666666
+          },
+          "downbeat": {
+            "reference_count": 19,
+            "predicted_count": 19,
+            "matched_count": 19,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 2.8859659999998257,
+          "failure_reason": null
+        },
+        {
+          "track": "reggae.00009",
+          "genre": "reggae",
+          "numerator": 4,
+          "reference_bpm": 157.89473684210532,
+          "estimated_bpm": 157.8977713147257,
+          "estimated_measure_offset_sec": 0.68,
+          "tempo_absolute_percent_error": 0.0019218326595771859,
+          "beat": {
+            "reference_count": 79,
+            "predicted_count": 79,
+            "matched_count": 79,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 20,
+            "predicted_count": 20,
+            "matched_count": 20,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 2.8832228000001123,
+          "failure_reason": null
+        },
+        {
+          "track": "rock.00001",
+          "genre": "rock",
+          "numerator": 4,
+          "reference_bpm": 75.47169811320738,
+          "estimated_bpm": 75.37278145549716,
+          "estimated_measure_offset_sec": 2.34,
+          "tempo_absolute_percent_error": 0.13106457146604128,
+          "beat": {
+            "reference_count": 37,
+            "predicted_count": 37,
+            "matched_count": 37,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 9,
+            "predicted_count": 9,
+            "matched_count": 9,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 2.983231799999885,
+          "failure_reason": null
+        },
+        {
+          "track": "rock.00003",
+          "genre": "rock",
+          "numerator": 4,
+          "reference_bpm": 94.7867298578199,
+          "estimated_bpm": 94.67528596828402,
+          "estimated_measure_offset_sec": 0.72,
+          "tempo_absolute_percent_error": 0.11757330346036561,
+          "beat": {
+            "reference_count": 48,
+            "predicted_count": 48,
+            "matched_count": 48,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "downbeat": {
+            "reference_count": 12,
+            "predicted_count": 12,
+            "matched_count": 12,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "elapsed_sec": 2.850193500000387,
+          "failure_reason": null
+        },
+        {
+          "track": "rock.00005",
+          "genre": "rock",
+          "numerator": 4,
+          "reference_bpm": 99.337748344371,
+          "estimated_bpm": null,
+          "estimated_measure_offset_sec": null,
+          "tempo_absolute_percent_error": null,
+          "beat": {
+            "reference_count": 50,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "downbeat": {
+            "reference_count": 12,
+            "predicted_count": 0,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 2.8842979000000923,
+          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+        },
+        {
+          "track": "rock.00007",
+          "genre": "rock",
+          "numerator": 4,
+          "reference_bpm": 89.8203592814371,
+          "estimated_bpm": 89.61003695380968,
+          "estimated_measure_offset_sec": 0.2,
+          "tempo_absolute_percent_error": 0.2341588580918649,
+          "beat": {
+            "reference_count": 45,
+            "predicted_count": 45,
+            "matched_count": 31,
+            "precision": 0.6888888888888889,
+            "recall": 0.6888888888888889,
+            "f1": 0.6888888888888889
+          },
+          "downbeat": {
+            "reference_count": 12,
+            "predicted_count": 12,
+            "matched_count": 9,
+            "precision": 0.75,
+            "recall": 0.75,
+            "f1": 0.75
+          },
+          "elapsed_sec": 2.8872707999998966,
+          "failure_reason": null
+        },
+        {
+          "track": "rock.00009",
+          "genre": "rock",
+          "numerator": 4,
+          "reference_bpm": 74.9063670411985,
+          "estimated_bpm": 74.85706796848125,
+          "estimated_measure_offset_sec": 2.4,
+          "tempo_absolute_percent_error": 0.06581426207752458,
+          "beat": {
+            "reference_count": 38,
+            "predicted_count": 37,
+            "matched_count": 37,
+            "precision": 1.0,
+            "recall": 0.9736842105263158,
+            "f1": 0.9866666666666666
+          },
+          "downbeat": {
+            "reference_count": 10,
+            "predicted_count": 9,
+            "matched_count": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "elapsed_sec": 2.8581539999995584,
+          "failure_reason": null
+        }
+      ]
     },
-    "evaluation": {
-      "trackCount": 50,
-      "tempoAccuracyWithin4Percent": 0.72,
-      "tempoMeanAbsolutePercentError": 18.69594999999997,
-      "tempoMedianAbsolutePercentError": 0.3516666666663846,
-      "beatMacroF1": 0.7650640636238137,
-      "downbeatMacroF1": 0.2665109354413702
-    }
-  }
+    "same34TracksLegacyMedianAbsolutePercentError": 0.7431666666667435
+  },
+  "measuredAt": "2026-10-18"
 }

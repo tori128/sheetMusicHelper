@@ -7,24 +7,15 @@ EarCopy AssistのWindows x64用ポータブルパッケージです。自己解�
 
 ## 変更内容
 
-- 分離音源のSolo操作や再生切り替えで、PCM読み込みがキャンセルされて再生エラーになる不具合を修正しました。
-- MusicXML書き出しで、隣接する音符の計算誤差を重複と判定し、「重複を解除」後もエラーが残る不具合を修正しました。
-- 全6分解能について音程ノートとドラムの再検査・プレビュー・MusicXML出力を検証する結合テストを追加しました。
-- 全体テスト設計と開発・公開時の検証条件を更新しました。
+- MuScriptorを0.3.0へ更新しました。
+- 拍解析によるBPM・小節先頭位置・拍子の推定と、直接採譜・音源分離後採譜の発音時刻補正に対応しました。
+- 拍解析が成立しない音源も、BPMと拍子の手入力で採譜できるようにしました。
 
 ## 利用条件と対応ソース
 
 EarCopy Assist本体はMIT Licenseです。MuScriptorモデルはCC BY-NC 4.0と配布元の追加条件に従い、非商用用途に制限されます。BS-RoFormer SW Fixedの利用条件はアプリ内の取得画面で確認できます。
 
-FFmpeg 8.1.2はGNU LGPL version 2.1 or laterです。FFmpeg、libsndfile、Python-SoXRの対応ソースは、同じReleaseの`EarCopyAssist-${VERSION}-copyleft-sources.zip`から取得できます。各配布ファイルのSHA-256は`SHA256SUMS.txt`に記載します。
-
-## 検証と制約
-
-ローカル環境でPythonテスト348件、UIテスト379件、型検査が成功しました。修正ビルドの起動スモークテストでは、Renderer応答不能時の終了が142 msで成功しました。バージョン更新後の配布パッケージは公開処理で起動試験とファイル検査を実行します。
-
-全体テスト設計に記載した36件の機能横断試験は、追加実装・実行が残っています。今回の重複解除の修正は利用者による確認済みです。
-
-テンポ推定の変更後の公開データセット評価は未実施です。推定BPMと小節先頭位置は編集画面で確認・変更できます。
+FFmpeg 8.1.2はGNU LGPL version 2.1 or laterです。FFmpeg、libsndfile、Python-SoXRの対応ソースは、同じReleaseの`EarCopyAssist-${VERSION}-copyleft-sources.zip`から取得できます。
 
 ## ダウンロード
 

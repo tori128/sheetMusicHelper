@@ -308,6 +308,9 @@ jobs:
           npm run build:icon
           npm run build
 
+      - name: Prepare local beat analysis model
+        run: uv run python scripts/download_beat_model.py
+
       - name: Build packaged Python backend
         timeout-minutes: 30
         working-directory: app

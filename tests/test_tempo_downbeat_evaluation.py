@@ -77,13 +77,12 @@ def test_recorded_evaluation_uses_untouched_tracks() -> None:
         ).read_text(encoding="utf-8")
     )
 
-    assert result["dataset"]["trackCount"] == 100
-    assert result["dataset"]["referenceBeatCount"] == 5719
-    assert result["evaluation"]["developmentTrackCount"] == 50
-    assert result["evaluation"]["evaluationTrackCount"] == 50
-    assert result["current"]["evaluation"][
-        "tempoAccuracyWithin4Percent"
-    ] == 0.72
-    assert result["current"]["evaluation"][
-        "downbeatMacroF1"
-    ] == pytest.approx(0.2665109354413702)
+    assert result["datasets"]["split"] == "evaluation"
+    assert "Odd-indexed" in result["datasets"]["selection"]
+    current = result["tempo"]["muscriptor030"]["summary"]
+    baseline = result["tempo"]["legacy"]["summary"]
+    assert current["trackCount"] == baseline["trackCount"] == 50
+    assert current["detectedTrackCount"] == 34
+    assert current["tempo"]["accuracyWithin4Percent"] == 0.64
+    assert baseline["tempo"]["accuracyWithin4Percent"] == 0.54
+    assert current["downbeat"]["macroF1"] == pytest.approx(0.49171856316143475)

@@ -200,26 +200,26 @@ def test_public_language_pairs_preserve_shared_facts() -> None:
             "docs/TRANSCRIPTION_METHOD_BENCHMARK.md",
             "docs/TRANSCRIPTION_METHOD_BENCHMARK.en.md",
         ): (
-            "0.3954",
-            "0.5253",
-            "0.5016",
-            "0.5167",
-            "0.2507",
-            "0.3759",
-            "0.3533",
-            "0.3646",
-            "0.5411",
-            "0.4653",
+            "0.2306",
+            "0.3393",
+            "0.3706",
+            "0.3720",
+            "0.2774",
+            "0.3611",
+            "0.3868",
+            "0.3875",
             "311096dc2bde7d61c97e930edbfc7f78",
         ),
         (
             "docs/developer/TEMPO_DOWNBEAT_EVALUATION.md",
             "docs/developer/TEMPO_DOWNBEAT_EVALUATION.en.md",
         ): (
-            "0.7200",
-            "0.3517%",
-            "0.7651",
-            "0.2665",
+            "54%",
+            "64%",
+            "0.7347",
+            "0.6515",
+            "0.3203",
+            "0.4917",
             "a61439e86c13037011fde8e0f0743ec55c50bce3",
             "890407d158078527ab396b49fea3c8a83e5734ee",
         ),
@@ -233,82 +233,35 @@ def test_public_language_pairs_preserve_shared_facts() -> None:
             assert all(fact in document for document in documents), (paths, fact)
 
 
-def test_public_benchmark_uses_the_four_published_conditions() -> None:
-    result = json.loads(
-        (
-            REPOSITORY_ROOT
-            / "docs/benchmarks/data/babyslakh-medium-fp16.json"
-        ).read_text(encoding="utf-8")
-    )
-    assert tuple(result["aggregate"]) == (
-        "direct",
-        "separatedRouted",
-        "separatedRoutedGuidedNoNoteFilter",
-        "separatedRoutedGuided",
-    )
-    separated = result["configuration"]["sourceSeparation"]
-    assert separated["drumComponentMixing"] == {
-        "drumOnsetGuide": True,
-        "inputs": ["bass", "piano", "guitar", "vocals", "other"],
-        "timingGuideGains": {
-            "bass": 0.2,
-            "piano": 0.2,
-            "guitar": 0.2,
-            "vocals": 0.2,
-            "other": 0.2,
-        },
-        "bassTimingGuideHighpassHz": 350.0,
-        "discardDrumEvents": True,
-        "timingGuideNoteFilter": True,
-    }
-    expected_f1 = (0.3954, 0.5253, 0.5016, 0.5167)
-    measured_f1 = tuple(
-        condition["score50Ms"]["microF1"]
-        for condition in result["aggregate"].values()
-    )
-    assert measured_f1 == expected_f1
-    expected_timing_f1 = (0.2507, 0.3759, 0.3533, 0.3646)
-    measured_timing_f1 = tuple(
-        condition["timingAndMismatchScore"]["score"]
-        for condition in result["aggregate"].values()
-    )
-    assert measured_timing_f1 == expected_timing_f1
-    published_values = tuple(
-        f"{value:.4f}" for value in (*expected_f1, *expected_timing_f1)
-    )
-    for path in (
-        "docs/TRANSCRIPTION_METHOD_BENCHMARK.md",
-        "docs/TRANSCRIPTION_METHOD_BENCHMARK.en.md",
-    ):
-        document = (REPOSITORY_ROOT / path).read_text(encoding="utf-8")
-        assert all(value in document for value in published_values), path
+def test_public_benchmark_uses_latest_application_measurements() -> None:
+    result = json.loads((REPOSITORY_ROOT / "docs/benchmarks/data/muscriptor-030-application-onset-comparison.json").read_text(encoding="utf-8"))
+    assert set(result["summary"]) == {"direct", "separated"}
+    assert len(result["cases"]) == 10
+    for mode in ("direct", "separated"):
+        summary = result["summary"][mode]
+        assert summary["cases"] == 5
+        assert summary["referenceNotes"] == 1427
+        assert sum(case["beforeNotes"] for case in result["cases"] if case["mode"] == mode) == summary["beforeNotes"]
+        for state in ("before", "after"):
+            for tolerance in ("20", "50"):
+                value = f"{summary[state + 'F1'][tolerance]:.4f}"
+                for name in ("docs/TRANSCRIPTION_METHOD_BENCHMARK.md", "docs/TRANSCRIPTION_METHOD_BENCHMARK.en.md"):
+                    assert value in (REPOSITORY_ROOT / name).read_text(encoding="utf-8")
 
 
-def test_current_routing_benchmark_records_product_settings() -> None:
-    data_directory = REPOSITORY_ROOT / "docs/benchmarks/data"
-    product_gains = {
-        "bass": 0.2,
-        "piano": 0.2,
-        "guitar": 0.2,
-        "vocals": 0.2,
-        "other": 0.2,
-    }
-    routing = json.loads(
-        (data_directory / "babyslakh-medium-fp16-routing-policy.json")
-        .read_text(encoding="utf-8")
-    )
-    assert routing["configuration"]["timingGuideGains"] == product_gains
-    assert routing["configuration"]["timingGuideNoteFilterByGuideScope"] == {
-        "none": False,
-        "pitched": True,
-        "all": True,
-    }
-    assert routing["aggregate"]["pitchOnly"]["fixedMetadataPitchedGuide"][
-        "score50Ms"
-    ]["microF1"] == 0.5411
-    assert routing["aggregate"]["instrumentAware"][
-        "fixedMetadataPitchedGuide"
-    ]["score50Ms"]["microF1"] == 0.4653
+def test_latest_benchmark_records_application_settings() -> None:
+    from earcopy_service.transcription_inputs import default_pitched_timing_guide_gains
+
+    result = json.loads((REPOSITORY_ROOT / "docs/benchmarks/data/muscriptor-030-application-onset-comparison.json").read_text(encoding="utf-8"))
+    settings = result["conditions"]
+    assert settings["modelVariant"] == "medium"
+    assert settings["profile"] == "high_accuracy"
+    assert all(settings[key] for key in ("familyExpansion", "familyDuplicateCollapse", "drumOnsetGuide", "timingGuideNoteFilter", "velocityFromStemAmplitude"))
+    assert default_pitched_timing_guide_gains() == {name: 0.2 for name in ("bass", "piano", "guitar", "vocals", "other")}
+    for case in result["cases"]:
+        assert all(case["baselinePrimaryCacheHits"])
+        assert all(hit in (None, True) for hit in case["baselineReferenceCacheHits"])
+        assert case["commonNoteIds"] == case["beforeNotes"] == case["afterNotes"]
 
 
 def test_public_japanese_transcription_docs_use_defined_terms() -> None:
@@ -853,7 +806,6 @@ def test_portable_build_includes_release_documents() -> None:
         "README.md",
         "docs/USER_GUIDE.md",
         "docs/USER_GUIDE.en.md",
-        "SHA-256",
         "FFmpeg",
         "GNU LGPL version 2.1 or later",
         "copyleft-sources.zip",

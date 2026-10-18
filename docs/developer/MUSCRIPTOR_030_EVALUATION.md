@@ -24,24 +24,6 @@ GTZAN miniの30秒音源100曲から、従来の評価設計と同じ各ジャ�
 
 小節先頭とBPMの指標は改善したが、16曲で一定テンポを推定できず、拍macro F1は低下した。アプリでは、その場合も音源の選択を保持し、BPMと拍子の手入力で採譜できる。処理時間はモデルの読み込みを含む、この環境での1回の実測値である。
 
-## 発音時刻補正（楽器候補を限定した直接採譜）
-
-BabySlakh v2の既存評価設定`babyslakh_v2.json`に定義された5曲（Track00001、Track00004、Track00010、Track00015、Track00018）の60～80秒を使用した。合計100秒である。MuScriptor medium、CUDA、float16、高精度、編成指定、直接採譜を各区間1回実行した。共通後処理後の同一音符へ、MuScriptor公式の共通時刻ずれ補正を適用した。
-
-時刻補正だけの効果を測るため、評価スクリプトは設定ファイルの`fixedInstruments`をモデルへ直接指定した。アプリ既定の同族楽器候補の追加とは条件が異なる。
-
-MIDI音高と楽器が一致し、補正前の発音時刻差が120 ms以内となる音符をSciPyの線形割当で一対一対応させた。同じ537組について補正前後の時刻誤差を計算した。F1は許容差ごとに対応を再計算した。
-
-| 指標 | 補正前 | 補正後 |
-|---|---:|---:|
-| 同じ537組の平均絶対誤差 | 18.02 ms | 8.44 ms |
-| 発音時刻誤差の中央値（符号付き） | +17.30 ms | +4.69 ms |
-| 絶対誤差95パーセンタイル | 28.10 ms | 27.00 ms |
-| 発音時刻差20 ms以内のmicro F1 | 0.2547 | 0.3561 |
-| 発音時刻差50 ms以内のmicro F1 | 0.3827 | 0.3827 |
-
-5区間中4区間で補正が適用された。平均絶対誤差は53.13%減少したが、Track00015は16.08 msから16.30 msへ増加し、Track00018は補正量0 msだった。音高、楽器、音符数は補正前後で同一である。この5区間の結果は、他の音源・モデルサイズ・音源分離後採譜の改善率を保証する値ではない。
-
 ## アプリの処理を使った直接採譜・分離後採譜の比較
 
 同じ5曲の60～80秒について、コミット`44a9e9ea643a1a27e3fac3adde42ae658b53e694`の`TranscriptionJobManager`で直接採譜と音源分離後採譜を実行した。MuScriptor medium、CUDA、float16、高精度、編成指定を使用した。編成は同じ`fixedInstruments`であり、アプリ既定の同族楽器候補追加と重複音符削除を有効にした。分離モデルはBS-RoFormer SW Fixedである。
@@ -74,7 +56,7 @@ MIDI音高と推定楽器が一致し、補正前の発音時刻差が120 ms以�
 
 補正ありの全5区間の処理時間は、直接採譜91.65秒、音源分離後採譜239.93秒だった。直接採譜、音源分離後採譜の順に実行し、分離後採譜では解析用WAVと原音の拍解析結果を再利用した。分離音源と採譜イベントは各条件で新規計算した。補正量の計算と音符の時刻変更は合計6.75 msと13.84 msだった。処理時間は、この環境で各条件1回の実測値である。
 
-この比較は、20秒区間・mediumモデル・指定編成における時刻補正の有無の比較である。直接採譜と分離後採譜では対応できた音符の集合が異なるため、平均絶対誤差の数値だけで分離の有無の優劣を判定できない。20秒区間での補正適用率は、曲全体を採譜した場合の適用率とは異なる可能性がある。先の537組の測定とは楽器候補の追加、音声変換、処理全体の実行条件が異なる。
+この比較は、20秒区間・mediumモデル・指定編成における時刻補正の有無の比較である。直接採譜と分離後採譜では対応できた音符の集合が異なるため、平均絶対誤差の数値だけで分離の有無の優劣を判定できない。20秒区間での補正適用率は、曲全体を採譜した場合の適用率とは異なる可能性がある。
 
 各曲・各入力の指標とモデル・音源・分離音源のSHA-256は、[アプリの処理を使った追加比較JSON](../benchmarks/data/muscriptor-030-application-onset-comparison.json)を参照する。
 
@@ -86,26 +68,11 @@ MIDI音高と推定楽器が一致し、補正前の発音時刻差が120 ms以�
 
 ## 記録と再現
 
-各曲の指標、失敗した曲、音源と正解MIDIのSHA-256は[評価結果JSON](../benchmarks/data/muscriptor-030-beat-onset-comparison.json)を参照する。
+拍解析の曲別指標と失敗した曲は[評価結果JSON](../benchmarks/data/gtzan-mini-tempo-downbeat.json)を参照する。
 
 従来方式は上記基準コミットを選択した別作業ディレクトリで、同じ50曲と評価スクリプトを使用して測定する。新方式は次の順で実行する。
 
 1. `uv run python scripts/download_beat_model.py`で拍解析モデルを取得・検証する。
 2. `uv run python scripts/evaluate_tempo_downbeat.py --audio-root <GTZAN-mini>/genres --annotations-root <annotations>/gtzan/annotations/beats --split evaluation --output app/benchmark/new-tempo.json`で拍解析を測定する。
 3. `scripts/prepare_babyslakh_benchmark.ps1`で正解MIDI付き音源を取得する。
-4. `uv run python -m scripts.evaluate_onset_correction --dataset-root app/benchmark/public-data/babyslakh_16k --output app/benchmark/onset-comparison.json`で発音時刻補正を測定する。
-5. `uv run python -m scripts.evaluate_application_onset_correction --dataset-root app/benchmark/public-data/babyslakh_16k --output app/benchmark/application-onset-comparison.json`でアプリの直接採譜・音源分離後採譜を比較する。`--work-dir`には新しい作業ディレクトリを指定すると、分離音源と採譜イベントを新規計算できる。
-
-## アプリの検証
-
-| 検証 | 結果 |
-|---|---|
-| `uv run pytest -q` | 追加比較後は346件成功、1件失敗、終了コード1 |
-| `npm test -- --run` | 381件成功、終了コード0 |
-| `npm run typecheck` | 終了コード0 |
-| `npm run dist:win` | EXE生成成功、終了コード0 |
-| `npm run smoke:packaged` | 8／48／96 kHzの3条件で終了コード0 |
-
-Pythonの失敗は`test_portable_build_includes_release_documents`である。作業開始前からの未コミットのリリースノート編集が、既存テストの要求する`SHA-256`表記を削除している。同ファイルを変更せず、読み取り値だけを基準コミットの内容へ置き換えた単独試験では1件成功、終了コード0だった。
-
-生成したEXEの内蔵バックエンドと実HTTP/SSEによる受入試験では、small／medium／largeの登録、同梱final0による拍解析、medium・CUDA・float16によるTrack00010の20秒採譜が成功した。アプリ既定の楽器候補追加を適用し、416音符を出力、発音時刻の共通ずれ15.9725 msを補正した。8／48／96 kHzの各EXE試験はローカル音声再生、SoundFont再生、MusicXML表示、100,000音符描画、終了時のプロセス残留0件を確認した。既存`UserData`の3ファイルはビルド前後のSHA-256が一致した。
+4. `uv run python -m scripts.evaluate_application_onset_correction --dataset-root app/benchmark/public-data/babyslakh_16k --output app/benchmark/application-onset-comparison.json`でアプリの直接採譜・音源分離後採譜を比較する。`--work-dir`には新しい作業ディレクトリを指定すると、分離音源と採譜イベントを新規計算できる。

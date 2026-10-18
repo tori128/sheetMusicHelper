@@ -354,6 +354,7 @@ function Test-ZipSelfExtractor {
     $process = Start-Process `
         -FilePath $Path `
         -ArgumentList "--verify" `
+        -WindowStyle Hidden `
         -Wait `
         -PassThru
     if ($process.ExitCode -ne 0) {

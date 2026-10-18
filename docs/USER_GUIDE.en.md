@@ -36,6 +36,8 @@ The model distribution page does not specify license terms for the weight; revie
 
 ##### Download the source-separation model
 
+![Project](assets/sepa.png)
+
 The BS-RoFormer SW Fixed model weight is not included with the application. When it is unavailable, the new-project screen displays **音源分離モデルがありません (Source-separation model is unavailable)**.
 Confirm that you have the right to obtain and use the model because its distribution page does not state license terms for the weight.
 
