@@ -50,6 +50,19 @@ in Section 5 of CC BY-NC 4.0. The bundled attribution notice is
 - medium SHA-256: `ac80adbdf85d87231735fd948af7013441c0afced316c4e9067fd5d8a7fb97ec`
 - large SHA-256: `ac4eb6ea87dfc26b6ca6b954c6b967ab87ad4c7d08e078b25214f13ed051f397`
 
+## Beat This!
+
+- Use: MuScriptor 0.3.0 beat analysis and onset-time correction
+- Model: `final0` (published weights bundled without modification)
+- Code and model weight license: MIT
+- Copyright: Copyright (c) 2024 Institute of Computational Perception, JKU Linz, Austria
+- Source: <https://github.com/CPJKU/beat_this>
+- Model URL: <https://cloud.cp.jku.at/public.php/dav/files/7ik4RrBKTS273gp/final0.ckpt>
+- File size: 81,058,141 bytes
+- SHA-256: `8c328b45f59d8dd3dff219253ff6a8d6482be57d0133a29140e2febbf8eb8331`
+- Bundled path: `resources/models/beat-this/final0.ckpt`
+- License text and model notice: `app/resources/licenses/Beat_This/`
+
 ## BS-RoFormer
 
 - Component: BS-RoFormer SW Fixed inference code and model

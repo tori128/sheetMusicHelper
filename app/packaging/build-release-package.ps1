@@ -244,9 +244,18 @@ $forbiddenWeightExtensions = @(
 $unexpectedWeights = @(
     Get-ChildItem -LiteralPath $portableStage -Recurse -File |
         Where-Object {
-            $_.Extension.ToLowerInvariant() -in $forbiddenWeightExtensions
+            $_.Extension.ToLowerInvariant() -in $forbiddenWeightExtensions -and
+            $_.FullName -ne (Join-Path $portableStage "resources\models\beat-this\final0.ckpt")
         }
 )
+$beatModelPath = Join-Path $portableStage "resources\models\beat-this\final0.ckpt"
+if (
+    (Get-Item -LiteralPath $beatModelPath).Length -ne 81058141 -or
+    (Get-FileHash -LiteralPath $beatModelPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne
+        "8c328b45f59d8dd3dff219253ff6a8d6482be57d0133a29140e2febbf8eb8331"
+) {
+    throw "Beat This! final0 checksum does not match."
+}
 if ($unexpectedWeights.Count -ne 0) {
     $paths = $unexpectedWeights.FullName -join [Environment]::NewLine
     throw "Unexpected model weights found in the release package:`n$paths"

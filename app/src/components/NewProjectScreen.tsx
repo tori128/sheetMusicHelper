@@ -145,23 +145,55 @@ export function NewProjectScreen({
 
   async function loadAudioPath(path: string) {
     measurePositionRequestId.current += 1;
+    const requestId = measurePositionRequestId.current;
     setMeasurePositionAnalyzing(false);
     setBusy(true);
     setError(null);
     setMessage(null);
     try {
-      const [info, tempo] = await Promise.all([
+      const [infoResult, tempoResult] = await Promise.allSettled([
         client.inspectAudio(path),
         client.estimateTempo(path, numerator, denominator),
       ]);
+      if (measurePositionRequestId.current !== requestId) {
+        return;
+      }
+      if (infoResult.status === "rejected") {
+        throw infoResult.reason;
+      }
+      const info = infoResult.value;
       setAudio(info);
       setName(fileStem(path));
-      setBpm(tempo.bpm);
-      setBeatOffsetSec(tempo.beatOffsetSec);
+      if (tempoResult.status === "fulfilled") {
+        const tempo = tempoResult.value;
+        setBpm(tempo.bpm);
+        const detectedNumerator = tempo.beatsPerBar;
+        if (
+          detectedNumerator != null && Number.isInteger(detectedNumerator) &&
+          detectedNumerator >= 2 && detectedNumerator <= 12
+        ) {
+          setNumerator(detectedNumerator);
+          setDenominator(4);
+          const detectedTempo = await client.estimateTempo(path, detectedNumerator, 4);
+          if (measurePositionRequestId.current !== requestId) {
+            return;
+          }
+          setBeatOffsetSec(detectedTempo.beatOffsetSec);
+        } else {
+          setBeatOffsetSec(tempo.beatOffsetSec);
+        }
+      } else {
+        setBeatOffsetSec(0);
+        throw tempoResult.reason;
+      }
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : String(reason));
+      if (measurePositionRequestId.current === requestId) {
+        setError(reason instanceof Error ? reason.message : String(reason));
+      }
     } finally {
-      setBusy(false);
+      if (measurePositionRequestId.current === requestId) {
+        setBusy(false);
+      }
     }
   }
 

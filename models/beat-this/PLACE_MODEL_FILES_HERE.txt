@@ -1,0 +1,10 @@
+Beat This! final0 for MuScriptor 0.3.0 beat analysis
+
+Run: uv run python scripts/download_beat_model.py
+File: final0.ckpt
+Source: https://github.com/CPJKU/beat_this
+Download: https://cloud.cp.jku.at/public.php/dav/files/7ik4RrBKTS273gp/final0.ckpt
+License: MIT (code and published model weights)
+Size: 81058141 bytes
+SHA-256: 8c328b45f59d8dd3dff219253ff6a8d6482be57d0133a29140e2febbf8eb8331
+The Windows build includes the verified file under resources/models/beat-this.

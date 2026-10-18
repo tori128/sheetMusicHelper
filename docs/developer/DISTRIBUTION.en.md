@@ -32,6 +32,16 @@ The distribution decisions are as follows.
 - BS-RoFormer SW Fixed: downloaded after the in-application warning is acknowledged and excluded from the Windows application package.
 - MuScriptor small, medium, and large: distributed without modification as self-extracting ZIP files on the same GitHub Release because CC BY-NC 4.0 permits reproduction and sharing for non-commercial purposes.
 
+### Beat Analysis Model
+
+Beat This! final0 weights use the MIT License and are bundled at
+`resources/models/beat-this/final0.ckpt` in the Windows application. Build and
+distribution checks verify the 81,058,141-byte size and SHA-256
+`8c328b45f59d8dd3dff219253ff6a8d6482be57d0133a29140e2febbf8eb8331`.
+Sources are <https://github.com/CPJKU/beat_this> and
+<https://cloud.cp.jku.at/public.php/dav/files/7ik4RrBKTS273gp/final0.ckpt>.
+Include `resources/licenses/Beat_This/LICENSE` and `MODEL_NOTICE.txt`.
+
 ### LGPL Components
 
 The package contains a minimal Windows build of FFmpeg 8.1.2 created from official source with `scripts/build_ffmpeg_lgpl.ps1`. GPL, nonfree features, and external libraries are disabled; only the audio formats and Wave output used by EarCopy Assist are enabled. This configuration is licensed under GNU LGPL version 2.1 or later.

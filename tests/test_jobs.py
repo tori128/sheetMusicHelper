@@ -25,6 +25,57 @@ from earcopy_service.stem_separation import StemSeparationCancelled
 from earcopy_service.transcription_cache import TranscriptionResultCache
 
 
+@pytest.fixture(autouse=True)
+def stub_beat_detector(monkeypatch):
+    monkeypatch.setattr("earcopy_service.jobs.analyze_beats", lambda _path: None)
+
+
+def test_job_applies_onset_correction_once_to_cached_events(tmp_path, monkeypatch):
+    from muscriptor.utils.beats import BeatGrid
+
+    grid = BeatGrid(bpm=120, beats_per_bar=4, first_downbeat=0.1,
+                    beats=0.1 + numpy.arange(64) * 0.5)
+    monkeypatch.setattr("earcopy_service.jobs.analyze_beats", lambda _path: grid)
+
+    class RepeatedPianoBackend(FakeBackend):
+        calls = 0
+
+        def transcribe(self, audio_path, instruments, on_event, **kwargs):
+            self.calls += 1
+            for index in range(60):
+                on_event(BackendNoteStart(index, "acoustic_piano", 60, 0.13 + index * 0.5))
+                on_event(BackendNoteEnd(index, 0.43 + index * 0.5))
+            on_event(BackendProgress(1, 1))
+
+    audio = tmp_path / "source.wav"
+    audio.write_bytes(b"test audio")
+    model = tmp_path / "model.safetensors"
+    model.write_bytes(b"test model")
+    backend = RepeatedPianoBackend()
+    manager = TranscriptionJobManager(
+        backend_factory=lambda: backend, audio_preparer=lambda path: path,
+        transcription_cache=TranscriptionResultCache(tmp_path / "cache" / "transcriptions"),
+    )
+    project = create_project("timing", PRESET_BY_KEY["general-band"])
+    request = TranscriptionJobRequest(audioPath=str(audio), modelPath=str(model),
+                                      tracks=project.tracks[:1], backend="CPU")
+    note_ids = []
+    for _ in range(2):
+        job_id = manager.start(request)
+        assert manager.wait_for_terminal(job_id) == "completed"
+        events = [event.data for event in manager.events(job_id)]
+        result = next(event for event in events if event["type"] == "transcription_input_result")
+        notes = result["notes"]
+        assert len(notes) == 60
+        assert notes[0]["rawStartSec"] == pytest.approx(0.1)
+        assert notes[-1]["rawStartSec"] == pytest.approx(29.6)
+        partial = next(event for event in events if event["type"] == "partial_result")
+        assert partial["onsetCorrectionSec"] == pytest.approx(0.03)
+        note_ids.append([note["id"] for note in notes])
+    assert note_ids[0] == note_ids[1]
+    assert backend.calls == 1
+
+
 class FakeBackend:
     def capabilities(self):
         raise NotImplementedError

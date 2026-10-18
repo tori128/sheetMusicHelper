@@ -481,7 +481,8 @@ def test_user_preset_can_be_deleted(tmp_path) -> None:
     assert client.delete(f"/api/v1/presets/{preset.id}").status_code == 404
 
 
-def test_transcription_job_streams_sse() -> None:
+def test_transcription_job_streams_sse(monkeypatch) -> None:
+    monkeypatch.setattr("earcopy_service.jobs.analyze_beats", lambda _path: None)
     project = create_project("api job", PRESET_BY_KEY["string-quartet"])
     manager = TranscriptionJobManager(
         backend_factory=ApiFakeBackend,

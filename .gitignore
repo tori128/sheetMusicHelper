@@ -38,6 +38,8 @@ tools/libsndfile-lgpl/
 # Local machine-learning model files; keep only placement guides.
 /models/**
 !/models/README.txt
+!/models/beat-this/
+!/models/beat-this/PLACE_MODEL_FILES_HERE.txt
 !/models/bs-roformer/
 !/models/bs-roformer/sw-fixed/
 !/models/bs-roformer/sw-fixed/PLACE_MODEL_FILES_HERE.txt

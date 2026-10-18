@@ -16,6 +16,7 @@ from uuid import UUID, uuid4
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .audio import prepare_analysis_audio
+from .beat_analysis import analyze_beats, correct_note_timing
 from .backends import (
     BackendCapabilities,
     BackendEvent,
@@ -613,6 +614,9 @@ class TranscriptionJobManager:
             analysis_audio = self._audio_preparer(Path(job.request.audio_path))
             if job.cancel_requested.is_set():
                 raise _Cancelled
+            beat_grid = analyze_beats(analysis_audio)
+            if job.cancel_requested.is_set():
+                raise _Cancelled
             direct_track_ids = (
                 all_track_ids
                 if automatic_instruments
@@ -942,7 +946,9 @@ class TranscriptionJobManager:
                         else MUSCRIPTOR_CHUNK_DURATION_SEC
                     ),
                 )
-                published_notes = postprocessing.notes
+                published_notes, onset_delay_sec = correct_note_timing(
+                    postprocessing.notes, beat_grid,
+                )
                 publish_input_result(
                     (
                         "timing_reference"
@@ -950,7 +956,7 @@ class TranscriptionJobManager:
                         else "primary"
                     ),
                     primary_transcription_pass,
-                    postprocessing.notes,
+                    published_notes,
                 )
                 timing_guide_unmodified_note_count: int | None = None
                 timing_guide_note_discarded_count = 0
@@ -1011,18 +1017,19 @@ class TranscriptionJobManager:
                             else MUSCRIPTOR_CHUNK_DURATION_SEC
                         ),
                     )
-                    timing_guide_unmodified_note_count = len(
-                        unmodified_postprocessing.notes
+                    corrected_reference_notes, _ = correct_note_timing(
+                        unmodified_postprocessing.notes, beat_grid,
                     )
+                    timing_guide_unmodified_note_count = len(corrected_reference_notes)
                     publish_input_result(
                         "timing_reference",
                         "separated_audio",
-                        unmodified_postprocessing.notes,
+                        corrected_reference_notes,
                     )
                     if job.request.timing_guide_note_filter:
                         timing_guide_filter = filter_timing_guide_notes(
                             published_notes,
-                            unmodified_postprocessing.notes,
+                            corrected_reference_notes,
                         )
                         published_notes = timing_guide_filter.notes
                         timing_guide_note_discarded_count = (
@@ -1162,6 +1169,7 @@ class TranscriptionJobManager:
                     job,
                     {
                         "type": "partial_result",
+                        "onsetCorrectionSec": onset_delay_sec,
                         "inputName": input_name,
                         "completedInputs": index + 1,
                         "totalInputs": len(transcription_inputs),

@@ -41,6 +41,19 @@ EarCopy AssistのGitHub Releaseは、公式の`small`、`medium`、`large`モデ
 - medium SHA-256：`ac80adbdf85d87231735fd948af7013441c0afced316c4e9067fd5d8a7fb97ec`
 - large SHA-256：`ac4eb6ea87dfc26b6ca6b954c6b967ab87ad4c7d08e078b25214f13ed051f397`
 
+## Beat This!
+
+- 用途：MuScriptor 0.3.0の拍解析と発音時刻補正
+- モデル：`final0`（配布重みを無改変で同梱）
+- コードとモデル重みのライセンス：MIT
+- 著作権表示：Copyright (c) 2024 Institute of Computational Perception, JKU Linz, Austria
+- 取得元：<https://github.com/CPJKU/beat_this>
+- モデルURL：<https://cloud.cp.jku.at/public.php/dav/files/7ik4RrBKTS273gp/final0.ckpt>
+- ファイルサイズ：81,058,141 bytes
+- SHA-256：`8c328b45f59d8dd3dff219253ff6a8d6482be57d0133a29140e2febbf8eb8331`
+- 同梱位置：`resources/models/beat-this/final0.ckpt`
+- ライセンス本文とモデル通知：`app/resources/licenses/Beat_This/`
+
 ## BS-RoFormer
 
 - 対象：BS-RoFormer SW Fixedの推論コードとモデル

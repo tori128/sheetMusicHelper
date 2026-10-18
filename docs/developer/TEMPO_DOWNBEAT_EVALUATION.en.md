@@ -4,6 +4,8 @@
 
 ## Overview
 
+This document records the earlier Librosa evaluation. See the [MuScriptor 0.3.0 beat analysis and onset correction comparison](MUSCRIPTOR_030_EVALUATION.en.md) for the current method and the immediately preceding Librosa method measured again on the same 50 tracks.
+
 EarCopy Assist tempo, beat, and downbeat estimation was evaluated with the public GTZAN mini dataset and Beat This! Annotations v1.1. On 50 tracks excluded from parameter selection, the proportion within 4% BPM error was 0.7200, beat macro F1 was 0.7651, and downbeat macro F1 was 0.2665.
 
 ## Evaluation Data

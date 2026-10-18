@@ -4,12 +4,13 @@ import contextlib
 import gc
 import logging
 import re
-import threading
 import warnings
 from collections.abc import Callable
 from importlib import import_module
 from pathlib import Path
 from typing import Any, Literal
+
+from ..torch_runtime import MODEL_INITIALIZATION_LOCK
 
 from .base import (
     BackendCapabilities,
@@ -21,7 +22,6 @@ from .base import (
 )
 
 
-_MODEL_LOAD_LOCK = threading.Lock()
 _LOGGER = logging.getLogger(__name__)
 _RUNAWAY_CHUNK_PATTERN = re.compile(
     r"^chunk (?P<index>\d+) \(seek=(?P<seek>\d+(?:\.\d+)?)s\) "
@@ -314,7 +314,7 @@ def _load_model(
 
     # MuScriptor 0.3.0 otherwise creates both the model and its FP32 state
     # dictionary on CUDA before converting the model to FP16.
-    with _MODEL_LOAD_LOCK:
+    with MODEL_INITIALIZATION_LOCK:
         original_dtype = torch.get_default_dtype()
         model_module.load_file = load_weights_on_cpu
         torch.set_default_dtype(torch.float16)

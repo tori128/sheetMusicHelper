@@ -14,8 +14,9 @@
     "build:electron": "node -e \"require('fs').rmSync('dist-electron',{recursive:true,force:true})\" && tsc -p tsconfig.electron.json",
     "build:icon": "powershell -NoProfile -ExecutionPolicy Bypass -File ../scripts/build_app_icon.ps1",
     "build:libsndfile": "powershell -NoProfile -ExecutionPolicy Bypass -File ../scripts/build_libsndfile_lgpl.ps1",
-    "build:backend": "npm run build:libsndfile && uv run --project .. pyinstaller --noconfirm --distpath backend-dist --workpath backend-build packaging/earcopy_service.spec",
-    "build:backend:clean": "npm run build:libsndfile && uv run --project .. pyinstaller --noconfirm --clean --distpath backend-dist --workpath backend-build packaging/earcopy_service.spec",
+    "build:beat-model": "uv run --project .. python ../scripts/download_beat_model.py",
+    "build:backend": "npm run build:libsndfile && npm run build:beat-model && uv run --project .. pyinstaller --noconfirm --distpath backend-dist --workpath backend-build packaging/earcopy_service.spec",
+    "build:backend:clean": "npm run build:libsndfile && npm run build:beat-model && uv run --project .. pyinstaller --noconfirm --clean --distpath backend-dist --workpath backend-build packaging/earcopy_service.spec",
     "verify:muscriptor-models": "powershell -NoProfile -ExecutionPolicy Bypass -File packaging/verify-muscriptor-models.ps1",
     "dist:win": "npm run assert:app-stopped && npm run build:icon && npm run build && npm run build:backend && electron-builder --win --dir --config.directories.output=release-staging && powershell -NoProfile -ExecutionPolicy Bypass -File packaging/promote-packaged-build.ps1",
     "package:release": "npm run assert:app-stopped && powershell -NoProfile -ExecutionPolicy Bypass -File packaging/build-release-package.ps1 && npm run verify:release",
@@ -62,6 +63,10 @@
       "package.json"
     ],
     "extraResources": [
+      {
+        "from": "../models/beat-this/final0.ckpt",
+        "to": "models/beat-this/final0.ckpt"
+      },
       {
         "from": "backend-dist/earcopy_service",
         "to": "backend"

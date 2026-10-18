@@ -100,6 +100,14 @@ if (soundFontHash !== expectedSoundFontHash) {
 }
 console.log(`packaged-soundfont-hash: ${soundFontHash}`);
 
+const beatModelHash = createHash("sha256")
+  .update(readFileSync(join(dirname(executable), "resources", "models", "beat-this", "final0.ckpt")))
+  .digest("hex");
+if (beatModelHash !== "8c328b45f59d8dd3dff219253ff6a8d6482be57d0133a29140e2febbf8eb8331") {
+  throw new Error(`Beat This! final0 SHA-256 mismatch: ${beatModelHash}`);
+}
+console.log(`packaged-beat-model-hash: ${beatModelHash}`);
+
 const bundledStemWeightPath = join(
   dirname(executable),
   "resources",

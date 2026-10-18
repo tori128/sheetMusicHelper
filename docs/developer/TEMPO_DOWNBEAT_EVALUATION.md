@@ -4,6 +4,8 @@
 
 ## 概要
 
+この文書は旧Librosa方式の測定記録である。現行方式と直前のLibrosa方式を同じ50曲で再測定した結果は、[MuScriptor 0.3.0の拍解析・発音時刻補正の比較](MUSCRIPTOR_030_EVALUATION.md)を参照する。
+
 EarCopy Assistのテンポ、拍、小節先頭推定を、公開データセットGTZAN miniとBeat This! Annotations v1.1で評価した。条件選択に使用していない50曲において、BPM誤差4%以内の割合は0.7200、拍macro F1は0.7651、小節先頭macro F1は0.2665だった。
 
 ## 評価データ

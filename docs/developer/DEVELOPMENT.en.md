@@ -15,6 +15,7 @@ This document defines the environment, commands, and acceptance criteria for cha
 
 ```powershell
 uv sync --extra dev
+uv run python scripts/download_beat_model.py
 
 cd app
 npm ci
@@ -28,9 +29,13 @@ models/
 │  ├─ small/
 │  ├─ medium/
 │  └─ large/
+├─ beat-this/
+│  └─ final0.ckpt
 └─ bs-roformer/
    └─ sw-fixed/
 ```
+
+The Beat This! final0 beat model is downloaded to `models/beat-this/final0.ckpt`. The build verifies its 81,058,141-byte size and SHA-256, then bundles it under `resources/models/beat-this/` in the Windows application.
 
 ## Repository Structure
 
@@ -111,6 +116,7 @@ uv run python scripts/smoke_stem_separation.py `
 ```
 
 The public-dataset comparison procedure is in [Transcription Methods on a Public Dataset](../TRANSCRIPTION_METHOD_BENCHMARK.en.md#reproduction). Conditions and results for tempo, beat, and downbeat estimation are in the [Public Tempo, Beat, and Downbeat Evaluation](TEMPO_DOWNBEAT_EVALUATION.en.md).
+The [beat analysis and onset correction comparison](MUSCRIPTOR_030_EVALUATION.en.md) records the MuScriptor 0.3.0 measurements and correction conditions.
 
 ## Change Checklist
 
@@ -130,7 +136,7 @@ The public-dataset comparison procedure is in [Transcription Methods on a Public
 - Project format 5 stores notes after common post-processing and before transcription-option processing for each transcription input, together with reference notes used for pitch false-positive reduction, in `transcription.inputResults`. Changing transcription options recalculates note selection from these stored values.
 - Analysis-audio, separated-audio, and transcription caches each retain the 10 most recently used entries. Reusing an entry updates its last-used time, and separated-audio entries from a different format version are deleted.
 - Shutdown regression tests require zero remaining `EarCopyAssist.exe` and `earcopy_service.exe` processes.
-- Confirm zero occurrences of model weights in the repository; model weights other than MuScriptor in the package; user audio; `UserData`; private keys; tokens; Windows SIDs; phone numbers; and absolute user-directory paths.
+- Confirm zero occurrences of model weights in the repository; model weights other than MuScriptor and verified Beat This! final0 in the package; user audio; `UserData`; private keys; tokens; Windows SIDs; phone numbers; and absolute user-directory paths.
 - Validation reports list each command, exit code, passed count, and failed count.
 
 ## Documentation Rules
@@ -150,6 +156,7 @@ git diff --check
 git ls-files models
 git check-ignore -v models/muscriptor/small/model.safetensors
 git check-ignore -v models/bs-roformer/sw-fixed/BS-Rofo-SW-Fixed.ckpt
+git check-ignore -v models/beat-this/final0.ckpt
 ```
 
 Follow the [Release and Distribution Checklist](DISTRIBUTION.en.md) for Windows builds, corresponding source, licenses, and pre-release validation. To build the Windows package with GitHub Actions, use the standard GitHub-hosted Windows runner and `HF_TOKEN` Secret described under [Packaging with GitHub Actions](DISTRIBUTION.en.md#packaging-with-github-actions).

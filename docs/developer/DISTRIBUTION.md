@@ -40,6 +40,16 @@ Music-Source-Separation-TrainingリポジトリはMITだが、チェックポイ
 - BS-RoFormer SW Fixed：Windows本体パッケージには同梱せず、アプリ内の警告確認後に取得する。
 - MuScriptor small／medium／large：CC BY-NC 4.0が非商用目的の複製と共有を許諾するため、改変せず同じGitHub Releaseのモデル自己解凍ZIPとして配布する。
 
+### 拍解析モデル
+
+Beat This! final0はMIT Licenseのモデル重みであり、Windows本体の
+`resources/models/beat-this/final0.ckpt`へ同梱する。ビルドと配布検査は、
+81,058,141 bytesとSHA-256
+`8c328b45f59d8dd3dff219253ff6a8d6482be57d0133a29140e2febbf8eb8331`を検証する。
+取得元は<https://github.com/CPJKU/beat_this>および
+<https://cloud.cp.jku.at/public.php/dav/files/7ik4RrBKTS273gp/final0.ckpt>である。
+`resources/licenses/Beat_This/LICENSE`と`MODEL_NOTICE.txt`を同梱する。
+
 ### LGPLコンポーネント
 
 同梱物は公式ソースから`scripts/build_ffmpeg_lgpl.ps1`で作成する

@@ -18,6 +18,7 @@
 
 ```powershell
 uv sync --extra dev
+uv run python scripts/download_beat_model.py
 
 cd app
 npm ci
@@ -27,6 +28,8 @@ npm ci
 Windows本体パッケージとは別のモデル自己解凍ZIPとして作成する。利用者はWindows本体の
 展開先の親フォルダーを展開先として選択し、`models/muscriptor/`へ配置する。
 BS-RoFormer SW FixedはWindows本体パッケージへ同梱しない。
+拍解析用のBeat This! final0は`models/beat-this/final0.ckpt`へ取得し、ビルド時に
+81,058,141 bytesとSHA-256を検証してWindows本体の`resources/models/beat-this/`へ同梱する。
 未配置の場合は、新規プロジェクト画面でライセンス`Unknown`、配布ページ、
 699,412,152 bytes、保存先、SHA-256を表示する。利用者が警告を確認した後、
 ローカルPythonサービスは配布URLから一時ファイルへ取得し、ファイルサイズと
@@ -38,6 +41,8 @@ models/
 │  ├─ small/
 │  ├─ medium/
 │  └─ large/
+├─ beat-this/
+│  └─ final0.ckpt
 └─ bs-roformer/
    └─ sw-fixed/
 ```
@@ -129,6 +134,8 @@ uv run python scripts/smoke_stem_separation.py `
 [採譜方式の比較](../TRANSCRIPTION_METHOD_BENCHMARK.md#再現手順)に記載する。
 テンポ・拍・小節先頭推定の測定条件と結果は
 [テンポ・拍・小節先頭推定の公開評価](TEMPO_DOWNBEAT_EVALUATION.md)に記載する。
+MuScriptor 0.3.0導入時の再測定と発音時刻補正の条件は
+[拍解析・発音時刻補正の比較](MUSCRIPTOR_030_EVALUATION.md)に記載する。
 
 ## 変更時の確認
 
@@ -175,7 +182,7 @@ uv run python scripts/smoke_stem_separation.py `
 - 解析用音声、分離音源、採譜結果のキャッシュは、種類ごとに最終使用10件を保持する。
   キャッシュを再利用した場合は最終使用時刻を更新し、現行形式と異なる分離音源を削除する。
 - 終了回帰試験はElectronと内蔵サービスの残留プロセス数が0であることを確認する。
-- リポジトリのモデル重みと、配布物のMuScriptor以外のモデル重み、利用者の音源、`UserData`、秘密鍵、
+- リポジトリのモデル重みと、配布物のMuScriptorおよび検証済みBeat This! final0以外のモデル重み、利用者の音源、`UserData`、秘密鍵、
   トークン、Windows SID、電話番号、利用者ディレクトリの絶対パスの検出数が0であることを
   確認する。
 - 検証報告には、実行したコマンド、終了コード、成功件数、失敗件数を記載する。
@@ -200,6 +207,7 @@ git diff --check
 git ls-files models
 git check-ignore -v models/muscriptor/small/model.safetensors
 git check-ignore -v models/bs-roformer/sw-fixed/BS-Rofo-SW-Fixed.ckpt
+git check-ignore -v models/beat-this/final0.ckpt
 ```
 
 Windows版のビルド、対応ソース、ライセンス、公開前検査は

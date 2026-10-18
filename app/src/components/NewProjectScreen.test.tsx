@@ -114,6 +114,39 @@ function renderScreen(
 }
 
 describe("NewProjectScreen stem separation", () => {
+  it.each([true, false])("keeps selected audio usable when tempo detection succeeds=%s", async (detected) => {
+    Object.defineProperty(window, "desktopApi", {
+      configurable: true,
+      value: { selectAudioFile: vi.fn().mockResolvedValue("D:\\music\\song.wav") },
+    });
+    const estimateTempo = detected
+      ? vi.fn().mockResolvedValue({ bpm: 120, beatOffsetSec: 0.2, beatsPerBar: 3 })
+      : vi.fn().mockRejectedValue(new Error("一定のテンポを推定できませんでした"));
+    const client = {
+      inspectAudio: vi.fn().mockResolvedValue({
+        absolutePath: "D:\\music\\song.wav", sha256: "a".repeat(64),
+        durationSec: 30, sampleRate: 48000, channels: 2, codecName: "pcm_s16le",
+      }),
+      estimateTempo,
+    } as unknown as LocalApiClient;
+    render(<NewProjectScreen client={client} instruments={instruments} presets={presets}
+      models={[registeredModel]} backends={backends} stemSeparation={availableStemSeparation}
+      onModelsChange={vi.fn()} onPresetsChange={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: /音源ファイルを選択/ }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "採譜を開始" })).toBeEnabled());
+    if (detected) {
+      expect(screen.getByLabelText("拍子の分子")).toHaveValue(3);
+      expect(estimateTempo).toHaveBeenLastCalledWith("D:\\music\\song.wav", 3, 4);
+    } else {
+      expect(screen.getByText("一定のテンポを推定できませんでした")).toBeInTheDocument();
+      fireEvent.change(screen.getByLabelText("BPM"), { target: { value: "110" } });
+      fireEvent.blur(screen.getByLabelText("BPM"));
+    }
+    fireEvent.click(screen.getByRole("button", { name: "採譜を開始" }));
+    expect(projectStore.getSnapshot().project?.sourceAudio?.absolutePath).toBe("D:\\music\\song.wav");
+    expect(projectStore.getSnapshot().project?.tempo.bpm).toBe(detected ? 120 : 110);
+  });
+
   it("registers a selected model and updates the model list", async () => {
     Object.defineProperty(window, "desktopApi", {
       configurable: true,

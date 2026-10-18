@@ -10,7 +10,7 @@ from collections import defaultdict
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-from earcopy_service.tempo_estimation import estimate_tempo
+from earcopy_service.tempo_estimation import TempoUnavailableError, estimate_tempo
 
 
 MATCH_TOLERANCE_SEC = 0.07
@@ -32,12 +32,13 @@ class TrackResult:
     genre: str
     numerator: int
     reference_bpm: float
-    estimated_bpm: float
-    estimated_measure_offset_sec: float
-    tempo_absolute_percent_error: float
+    estimated_bpm: float | None
+    estimated_measure_offset_sec: float | None
+    tempo_absolute_percent_error: float | None
     beat: EventMetrics
     downbeat: EventMetrics
     elapsed_sec: float
+    failure_reason: str | None = None
 
 
 def read_annotations(path: Path) -> tuple[list[float], list[int]]:
@@ -145,11 +146,23 @@ def evaluate_track(
     ]
     duration_sec = audio_duration(audio_path)
     started = time.perf_counter()
-    estimate = estimate_tempo(
-        audio_path,
-        numerator=numerator,
-        denominator=4,
-    )
+    try:
+        estimate = estimate_tempo(
+            audio_path,
+            numerator=numerator,
+            denominator=4,
+        )
+    except TempoUnavailableError as exc:
+        return TrackResult(
+            track=audio_path.stem, genre=audio_path.parent.name,
+            numerator=numerator, reference_bpm=reference_bpm(beat_times),
+            estimated_bpm=None, estimated_measure_offset_sec=None,
+            tempo_absolute_percent_error=None,
+            beat=match_events(beat_times, []),
+            downbeat=match_events(downbeat_times, []),
+            elapsed_sec=time.perf_counter() - started,
+            failure_reason=str(exc),
+        )
     elapsed_sec = time.perf_counter() - started
     beat_period_sec = 60.0 / estimate.bpm
     predicted_beats = periodic_events(
@@ -203,14 +216,18 @@ def summarize(results: list[TrackResult]) -> dict[str, object]:
     by_genre = defaultdict(list)
     for result in results:
         by_genre[result.genre].append(result)
-    tempo_errors = [result.tempo_absolute_percent_error for result in results]
+    tempo_errors = [
+        result.tempo_absolute_percent_error for result in results
+        if result.tempo_absolute_percent_error is not None
+    ]
     return {
         "trackCount": len(results),
+        "detectedTrackCount": len(tempo_errors),
         "tempo": {
-            "meanAbsolutePercentError": statistics.mean(tempo_errors),
-            "medianAbsolutePercentError": statistics.median(tempo_errors),
+            "meanAbsolutePercentError": statistics.mean(tempo_errors) if tempo_errors else None,
+            "medianAbsolutePercentError": statistics.median(tempo_errors) if tempo_errors else None,
             "accuracyWithin4Percent": sum(error <= 4.0 for error in tempo_errors)
-            / len(tempo_errors),
+            / len(results),
         },
         "beat": aggregate_events(results, "beat"),
         "downbeat": aggregate_events(results, "downbeat"),
@@ -269,7 +286,7 @@ def main() -> None:
         results.append(result)
         print(
             f"[{index}/{len(audio_paths)}] {result.track}: "
-            f"BPM={result.estimated_bpm:.1f}, "
+            f"BPM={result.estimated_bpm}, "
             f"downbeat F1={result.downbeat.f1:.3f}",
             flush=True,
         )

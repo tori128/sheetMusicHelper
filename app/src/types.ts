@@ -158,6 +158,7 @@ export interface TempoEstimate {
   bpm: number;
   sampleRate: number;
   beatOffsetSec: number;
+  beatsPerBar: number | null;
 }
 
 export type TranscriptionJobStatus =

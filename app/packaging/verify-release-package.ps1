@@ -201,6 +201,8 @@ try {
         "$portableName/resources/backend/_internal/torch/lib/torch_cuda.dll",
         "$portableName/resources/backend/_internal/torch/lib/cublasLt64_12.dll",
         "$portableName/resources/soundfonts/MuseScore_General.sf3",
+        "$portableName/resources/models/beat-this/final0.ckpt",
+        "$portableName/resources/licenses/Beat_This/MODEL_NOTICE.txt",
         "$portableName/resources/licenses/MuScriptor/MODEL_NOTICE.txt"
     )
     foreach ($entry in $requiredWindowsEntries) {
@@ -214,7 +216,8 @@ try {
             Where-Object {
                 $_ -match "(^|/)UserData(/|$)" -or
                 $_ -match "\.(ecaproj|wav|mp3|m4a|flac|ogg|aac|log|dmp)$" -or
-                $_ -match "\.(safetensors|ckpt|pt|pth|onnx|th|gguf)$"
+                ($_ -match "\.(safetensors|ckpt|pt|pth|onnx|th|gguf)$" -and
+                 $_ -ne "$portableName/resources/models/beat-this/final0.ckpt")
             }
     )
     if ($forbiddenWindowsEntries.Count -ne 0) {
