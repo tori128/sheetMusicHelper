@@ -103,7 +103,7 @@ def test_analysis_passes_only_local_checkpoint_and_caches_results(tmp_path, monk
     def detect(wave, sr, **kwargs):
         calls.append((wave, sr, kwargs))
         return grid
-    monkeypatch.setattr(beat_analysis, 'detect_grid', detect)
+    monkeypatch.setattr(beat_analysis, 'detect_beat_grid', detect)
     beat_analysis._analyze_audio.cache_clear()
     assert beat_analysis.analyze_beats(audio) is grid
     assert beat_analysis.analyze_beats(audio) is grid

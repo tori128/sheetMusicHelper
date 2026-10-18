@@ -4,7 +4,7 @@
 
 ## Evaluation Conditions
 
-On 2026-10-18, MuScriptor 0.3.0 and Beat This! final0 beat analysis were compared with the immediately preceding Librosa method. The evaluation used 50 of the 100 30-second GTZAN mini recordings, at odd filename positions within each genre. These tracks were excluded from parameter selection for this update. Both methods received the same reference time signature.
+On 2026-10-19, EarCopy Assist 0.1.5 beat analysis, using MuScriptor 0.3.0, Beat This! final0, and Soft-L1 robust tempo fitting, was compared with the preceding Librosa baseline. The evaluation used 50 of the 100 30-second GTZAN mini recordings, at odd filename positions within each genre. These tracks were excluded from parameter selection for this update. Both methods received the same reference time signature.
 
 | Dataset | Revision |
 |---|---|
@@ -15,15 +15,15 @@ On 2026-10-18, MuScriptor 0.3.0 and Beat This! final0 beat analysis were compare
 
 Reference BPM came from the median reference beat interval. Estimated BPM and downbeat offset generated evenly spaced beat sequences; events were matched one to one within 70 ms and F1 was averaged across tracks. Rejected constant-tempo estimates counted as incorrect BPM and zero beat/downbeat F1.
 
-| Metric | Immediately preceding Librosa method | MuScriptor 0.3.0 |
+| Metric | Immediately preceding Librosa method | EarCopy Assist 0.1.5 |
 |---|---:|---:|
-| Tracks with a tempo estimate | 50 / 50 | 34 / 50 |
-| BPM error within 4% | 54% | 64% |
-| Beat macro F1 | 0.7347 | 0.6515 |
-| Downbeat macro F1 | 0.3203 | 0.4917 |
-| Processing time for 50 tracks | 7.91 seconds | 152.06 seconds |
+| Tracks with a tempo estimate | 50 / 50 | 41 / 50 |
+| BPM error within 4% | 54% | 74% |
+| Beat macro F1 | 0.7347 | 0.7437 |
+| Downbeat macro F1 | 0.3203 | 0.5517 |
+| Processing time for 50 tracks | 7.91 seconds | 473.79 seconds |
 
-BPM and downbeat metrics improved, but 16 tracks were rejected and beat macro F1 decreased. The application preserves the selected audio and permits transcription with manually entered BPM and time signature. Automatic meter accuracy was outside this comparison. Processing times represent one CPU measurement per condition, including model loading.
+Tempo was returned for 41/50 tracks; 37/50 estimates were within 4% of reference BPM. The remaining nine tracks permit transcription with manually entered BPM and time signature. Automatic meter accuracy was outside this comparison. The current run used two PyTorch CPU threads while CUDA transcription and a PyInstaller build were active. Timings include model loading and different concurrent workloads; they are not a controlled latency comparison.
 
 See the [evaluation JSON](../benchmarks/data/gtzan-mini-tempo-downbeat.json) for per-track metrics and the [beat analysis and onset correction evaluation](MUSCRIPTOR_030_EVALUATION.en.md) for model and implementation conditions.
 

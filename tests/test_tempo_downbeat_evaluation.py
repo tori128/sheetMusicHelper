@@ -82,7 +82,7 @@ def test_recorded_evaluation_uses_untouched_tracks() -> None:
     current = result["tempo"]["muscriptor030"]["summary"]
     baseline = result["tempo"]["legacy"]["summary"]
     assert current["trackCount"] == baseline["trackCount"] == 50
-    assert current["detectedTrackCount"] == 34
-    assert current["tempo"]["accuracyWithin4Percent"] == 0.64
+    assert current["detectedTrackCount"] == 41
+    assert current["tempo"]["accuracyWithin4Percent"] == 0.74
     assert baseline["tempo"]["accuracyWithin4Percent"] == 0.54
-    assert current["downbeat"]["macroF1"] == pytest.approx(0.49171856316143475)
+    assert current["downbeat"]["macroF1"] == pytest.approx(0.5517408435062957)

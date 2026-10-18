@@ -7,7 +7,9 @@
     "torch": "2.2.2+cu121",
     "beatDevice": "CPU",
     "transcriptionDevice": "CUDA",
-    "transcriptionDtype": "float16"
+    "transcriptionDtype": "float16",
+    "beatThreads": 2,
+    "concurrentWorkload": "CUDA transcription of a 269.54-second recording and PyInstaller build"
   },
   "beatModel": {
     "name": "Beat This! final0",
@@ -1362,36 +1364,36 @@
       "toleranceSec": 0.07,
       "summary": {
         "trackCount": 50,
-        "detectedTrackCount": 34,
+        "detectedTrackCount": 41,
         "tempo": {
-          "meanAbsolutePercentError": 4.581513207457624,
-          "medianAbsolutePercentError": 0.13682997899846744,
-          "accuracyWithin4Percent": 0.64
+          "meanAbsolutePercentError": 11.20628966470966,
+          "medianAbsolutePercentError": 0.1692237161757244,
+          "accuracyWithin4Percent": 0.74
         },
         "beat": {
-          "microPrecision": 0.9652082235108065,
-          "microRecall": 0.6716801173881145,
-          "microF1": 0.7921263248972529,
-          "macroF1": 0.6515063097380747
+          "microPrecision": 0.8967156439066551,
+          "microRecall": 0.7611885546588408,
+          "microF1": 0.8234126984126985,
+          "macroF1": 0.7436564909606486
         },
         "downbeat": {
-          "microPrecision": 0.7265135699373695,
-          "microRecall": 0.4915254237288136,
-          "microF1": 0.586352148272957,
-          "macroF1": 0.49171856316143475
+          "microPrecision": 0.658703071672355,
+          "microRecall": 0.5451977401129944,
+          "microF1": 0.5965996908809892,
+          "macroF1": 0.5517408435062957
         },
-        "elapsedSec": 152.0607274000031,
+        "elapsedSec": 473.7882875999894,
         "genreDownbeatMacroF1": {
-          "blues": 0.0,
+          "blues": 0.1921146953405018,
           "classical": 0.0,
           "country": 0.92,
           "disco": 0.9302325581395349,
-          "hiphop": 0.4,
-          "jazz": 0.2,
+          "hiphop": 0.6,
+          "jazz": 0.3,
           "metal": 0.2,
           "pop": 0.922358478880218,
           "reggae": 0.7945945945945946,
-          "rock": 0.55
+          "rock": 0.6581081081081082
         }
       },
       "tracks": [
@@ -1400,81 +1402,81 @@
           "genre": "blues",
           "numerator": 4,
           "reference_bpm": 67.56756756756758,
-          "estimated_bpm": null,
-          "estimated_measure_offset_sec": null,
-          "tempo_absolute_percent_error": null,
+          "estimated_bpm": 68.0097148313104,
+          "estimated_measure_offset_sec": 0.02,
+          "tempo_absolute_percent_error": 0.6543779503393812,
           "beat": {
             "reference_count": 34,
-            "predicted_count": 0,
-            "matched_count": 0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1": 0.0
+            "predicted_count": 34,
+            "matched_count": 30,
+            "precision": 0.8823529411764706,
+            "recall": 0.8823529411764706,
+            "f1": 0.8823529411764706
           },
           "downbeat": {
             "reference_count": 8,
-            "predicted_count": 0,
+            "predicted_count": 9,
             "matched_count": 0,
             "precision": 0.0,
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 3.911316600000646,
-          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+          "elapsed_sec": 12.08420119999937,
+          "failure_reason": null
         },
         {
           "track": "blues.00003",
           "genre": "blues",
           "numerator": 4,
           "reference_bpm": 62.27296315516354,
-          "estimated_bpm": null,
-          "estimated_measure_offset_sec": null,
-          "tempo_absolute_percent_error": null,
+          "estimated_bpm": 187.3658769499727,
+          "estimated_measure_offset_sec": 0.6,
+          "tempo_absolute_percent_error": 200.87837073549747,
           "beat": {
             "reference_count": 31,
-            "predicted_count": 0,
-            "matched_count": 0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1": 0.0
+            "predicted_count": 93,
+            "matched_count": 22,
+            "precision": 0.23655913978494625,
+            "recall": 0.7096774193548387,
+            "f1": 0.3548387096774194
           },
           "downbeat": {
             "reference_count": 8,
-            "predicted_count": 0,
-            "matched_count": 0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1": 0.0
+            "predicted_count": 23,
+            "matched_count": 8,
+            "precision": 0.34782608695652173,
+            "recall": 1.0,
+            "f1": 0.5161290322580645
           },
-          "elapsed_sec": 3.033823499999926,
-          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+          "elapsed_sec": 10.80534550000084,
+          "failure_reason": null
         },
         {
           "track": "blues.00005",
           "genre": "blues",
           "numerator": 4,
           "reference_bpm": 68.49315068493152,
-          "estimated_bpm": null,
-          "estimated_measure_offset_sec": null,
-          "tempo_absolute_percent_error": null,
+          "estimated_bpm": 68.61423521451486,
+          "estimated_measure_offset_sec": 0.22,
+          "tempo_absolute_percent_error": 0.17678341319167964,
           "beat": {
             "reference_count": 35,
-            "predicted_count": 0,
-            "matched_count": 0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1": 0.0
+            "predicted_count": 35,
+            "matched_count": 13,
+            "precision": 0.37142857142857144,
+            "recall": 0.37142857142857144,
+            "f1": 0.37142857142857144
           },
           "downbeat": {
             "reference_count": 9,
-            "predicted_count": 0,
-            "matched_count": 0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1": 0.0
+            "predicted_count": 9,
+            "matched_count": 4,
+            "precision": 0.4444444444444444,
+            "recall": 0.4444444444444444,
+            "f1": 0.4444444444444444
           },
-          "elapsed_sec": 2.7503477000000203,
-          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+          "elapsed_sec": 10.194030800001201,
+          "failure_reason": null
         },
         {
           "track": "blues.00007",
@@ -1500,17 +1502,17 @@
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 2.7796357000006537,
-          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+          "elapsed_sec": 9.617114099997707,
+          "failure_reason": "一定のテンポを推定できませんでした。BPMと拍子を指定してください"
         },
         {
           "track": "blues.00009",
           "genre": "blues",
           "numerator": 4,
           "reference_bpm": 81.96721311475417,
-          "estimated_bpm": 81.92860507272235,
+          "estimated_bpm": 81.92735165359584,
           "estimated_measure_offset_sec": 0.04,
-          "tempo_absolute_percent_error": 0.04710181127882659,
+          "tempo_absolute_percent_error": 0.04863098261317272,
           "beat": {
             "reference_count": 40,
             "predicted_count": 41,
@@ -1527,7 +1529,7 @@
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 2.730406900000162,
+          "elapsed_sec": 9.28271339999992,
           "failure_reason": null
         },
         {
@@ -1554,8 +1556,8 @@
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 2.7568136999998387,
-          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+          "elapsed_sec": 8.915453400000843,
+          "failure_reason": "一定のテンポを推定できませんでした。BPMと拍子を指定してください"
         },
         {
           "track": "classical.00003",
@@ -1581,8 +1583,8 @@
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 2.891332799999873,
-          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+          "elapsed_sec": 9.45223679999981,
+          "failure_reason": "一定のテンポを推定できませんでした。BPMと拍子を指定してください"
         },
         {
           "track": "classical.00005",
@@ -1608,8 +1610,8 @@
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 2.903781300000446,
-          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+          "elapsed_sec": 11.723486599999887,
+          "failure_reason": "一定のテンポを推定できませんでした。BPMと拍子を指定してください"
         },
         {
           "track": "classical.00007",
@@ -1635,8 +1637,8 @@
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 2.7816917000000103,
-          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+          "elapsed_sec": 10.121646200001123,
+          "failure_reason": "一定のテンポを推定できませんでした。BPMと拍子を指定してください"
         },
         {
           "track": "classical.00009",
@@ -1662,17 +1664,17 @@
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 2.8122137999998813,
-          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+          "elapsed_sec": 9.45207179999852,
+          "failure_reason": "一定のテンポを推定できませんでした。BPMと拍子を指定してください"
         },
         {
           "track": "country.00001",
           "genre": "country",
           "numerator": 4,
           "reference_bpm": 129.03225806451616,
-          "estimated_bpm": 128.8849499031109,
+          "estimated_bpm": 128.8807591691882,
           "estimated_measure_offset_sec": 0.44,
-          "tempo_absolute_percent_error": 0.1141638250890679,
+          "tempo_absolute_percent_error": 0.11741164387916994,
           "beat": {
             "reference_count": 64,
             "predicted_count": 64,
@@ -1689,7 +1691,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 3.0300518999993074,
+          "elapsed_sec": 9.502634299999045,
           "failure_reason": null
         },
         {
@@ -1697,9 +1699,9 @@
           "genre": "country",
           "numerator": 4,
           "reference_bpm": 80.10680907877163,
-          "estimated_bpm": 80.01621341660221,
+          "estimated_bpm": 80.0246155300451,
           "estimated_measure_offset_sec": 1.38,
-          "tempo_absolute_percent_error": 0.11309358494149292,
+          "tempo_absolute_percent_error": 0.10260494666029302,
           "beat": {
             "reference_count": 39,
             "predicted_count": 40,
@@ -1716,7 +1718,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 3.1186572999995406,
+          "elapsed_sec": 10.471378999998706,
           "failure_reason": null
         },
         {
@@ -1724,9 +1726,9 @@
           "genre": "country",
           "numerator": 4,
           "reference_bpm": 130.71895424836612,
-          "estimated_bpm": 130.3536232620197,
+          "estimated_bpm": 130.35537197705014,
           "estimated_measure_offset_sec": 1.54,
-          "tempo_absolute_percent_error": 0.27947820455500144,
+          "tempo_absolute_percent_error": 0.2781404375567221,
           "beat": {
             "reference_count": 66,
             "predicted_count": 66,
@@ -1743,7 +1745,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 3.5781514999998763,
+          "elapsed_sec": 10.337949099997786,
           "failure_reason": null
         },
         {
@@ -1751,9 +1753,9 @@
           "genre": "country",
           "numerator": 4,
           "reference_bpm": 50.54759898904797,
-          "estimated_bpm": 101.05012878937983,
+          "estimated_bpm": 101.05106383951461,
           "estimated_measure_offset_sec": 1.38,
-          "tempo_absolute_percent_error": 99.91083812165662,
+          "tempo_absolute_percent_error": 99.91268796250661,
           "beat": {
             "reference_count": 26,
             "predicted_count": 51,
@@ -1770,7 +1772,7 @@
             "recall": 0.8571428571428571,
             "f1": 0.6
           },
-          "elapsed_sec": 3.223192200000085,
+          "elapsed_sec": 10.518404200000077,
           "failure_reason": null
         },
         {
@@ -1778,9 +1780,9 @@
           "genre": "country",
           "numerator": 4,
           "reference_bpm": 96.61835748792267,
-          "estimated_bpm": 96.63328326370697,
+          "estimated_bpm": 96.62722084669174,
           "estimated_measure_offset_sec": 1.32,
-          "tempo_absolute_percent_error": 0.0154481779367567,
+          "tempo_absolute_percent_error": 0.009173576325994194,
           "beat": {
             "reference_count": 49,
             "predicted_count": 49,
@@ -1797,7 +1799,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 2.835866100000203,
+          "elapsed_sec": 9.728414199998952,
           "failure_reason": null
         },
         {
@@ -1805,9 +1807,9 @@
           "genre": "disco",
           "numerator": 4,
           "reference_bpm": 234.3749999999998,
-          "estimated_bpm": 116.95653263640945,
+          "estimated_bpm": 116.9562604911015,
           "estimated_measure_offset_sec": 1.54,
-          "tempo_absolute_percent_error": 50.09854607513192,
+          "tempo_absolute_percent_error": 50.098662190463315,
           "beat": {
             "reference_count": 115,
             "predicted_count": 59,
@@ -1824,7 +1826,7 @@
             "recall": 0.4827586206896552,
             "f1": 0.6511627906976745
           },
-          "elapsed_sec": 2.538542000000234,
+          "elapsed_sec": 9.543847200002347,
           "failure_reason": null
         },
         {
@@ -1832,9 +1834,9 @@
           "genre": "disco",
           "numerator": 4,
           "reference_bpm": 126.05042016806746,
-          "estimated_bpm": 126.41400586922167,
+          "estimated_bpm": 126.41321218662135,
           "estimated_measure_offset_sec": 0.04,
-          "tempo_absolute_percent_error": 0.28844465624900384,
+          "tempo_absolute_percent_error": 0.28781500138608535,
           "beat": {
             "reference_count": 64,
             "predicted_count": 64,
@@ -1851,7 +1853,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 2.978317699999934,
+          "elapsed_sec": 8.474867499997345,
           "failure_reason": null
         },
         {
@@ -1859,9 +1861,9 @@
           "genre": "disco",
           "numerator": 4,
           "reference_bpm": 108.69565217391312,
-          "estimated_bpm": 108.34191018408744,
+          "estimated_bpm": 108.33913734914933,
           "estimated_measure_offset_sec": 1.64,
-          "tempo_absolute_percent_error": 0.32544263063962414,
+          "tempo_absolute_percent_error": 0.32799363878268856,
           "beat": {
             "reference_count": 53,
             "predicted_count": 54,
@@ -1878,7 +1880,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 3.7221901000002617,
+          "elapsed_sec": 8.506169899999804,
           "failure_reason": null
         },
         {
@@ -1886,9 +1888,9 @@
           "genre": "disco",
           "numerator": 4,
           "reference_bpm": 129.31034482758608,
-          "estimated_bpm": 129.27941417440286,
+          "estimated_bpm": 129.26423718629772,
           "estimated_measure_offset_sec": 0.82,
-          "tempo_absolute_percent_error": 0.0239197051283562,
+          "tempo_absolute_percent_error": 0.035656575929663974,
           "beat": {
             "reference_count": 64,
             "predicted_count": 64,
@@ -1905,7 +1907,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 3.507402799999909,
+          "elapsed_sec": 8.491466199997376,
           "failure_reason": null
         },
         {
@@ -1913,9 +1915,9 @@
           "genre": "disco",
           "numerator": 4,
           "reference_bpm": 129.3103448275856,
-          "estimated_bpm": 129.12595424155427,
+          "estimated_bpm": 129.12548492083826,
           "estimated_measure_offset_sec": 1.38,
-          "tempo_absolute_percent_error": 0.1425953865308936,
+          "tempo_absolute_percent_error": 0.14295832788460597,
           "beat": {
             "reference_count": 65,
             "predicted_count": 64,
@@ -1932,7 +1934,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 3.3172817000004216,
+          "elapsed_sec": 8.206636699997034,
           "failure_reason": null
         },
         {
@@ -1940,36 +1942,36 @@
           "genre": "hiphop",
           "numerator": 4,
           "reference_bpm": 90.63444108761342,
-          "estimated_bpm": null,
-          "estimated_measure_offset_sec": null,
-          "tempo_absolute_percent_error": null,
+          "estimated_bpm": 91.02913287391883,
+          "estimated_measure_offset_sec": 2.44,
+          "tempo_absolute_percent_error": 0.43547660422362533,
           "beat": {
             "reference_count": 46,
-            "predicted_count": 0,
-            "matched_count": 0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1": 0.0
+            "predicted_count": 45,
+            "matched_count": 44,
+            "precision": 0.9777777777777777,
+            "recall": 0.9565217391304348,
+            "f1": 0.967032967032967
           },
           "downbeat": {
             "reference_count": 11,
-            "predicted_count": 0,
-            "matched_count": 0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1": 0.0
+            "predicted_count": 11,
+            "matched_count": 11,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
           },
-          "elapsed_sec": 3.3034237000001667,
-          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+          "elapsed_sec": 9.991135500000382,
+          "failure_reason": null
         },
         {
           "track": "hiphop.00003",
           "genre": "hiphop",
           "numerator": 4,
           "reference_bpm": 93.16770186335403,
-          "estimated_bpm": 93.05951447209843,
+          "estimated_bpm": 93.05943183221463,
           "estimated_measure_offset_sec": 1.14,
-          "tempo_absolute_percent_error": 0.11612113328100826,
+          "tempo_absolute_percent_error": 0.11620983342295367,
           "beat": {
             "reference_count": 47,
             "predicted_count": 46,
@@ -1986,7 +1988,7 @@
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 3.068771299999753,
+          "elapsed_sec": 9.887002600000415,
           "failure_reason": null
         },
         {
@@ -1994,9 +1996,9 @@
           "genre": "hiphop",
           "numerator": 4,
           "reference_bpm": 141.50943396226432,
-          "estimated_bpm": 141.53070216377756,
+          "estimated_bpm": 141.52117658919354,
           "estimated_measure_offset_sec": 0.8,
-          "tempo_absolute_percent_error": 0.01502952906935432,
+          "tempo_absolute_percent_error": 0.008298123029981818,
           "beat": {
             "reference_count": 71,
             "predicted_count": 70,
@@ -2013,7 +2015,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 2.8419745000001058,
+          "elapsed_sec": 8.543983299998217,
           "failure_reason": null
         },
         {
@@ -2021,9 +2023,9 @@
           "genre": "hiphop",
           "numerator": 4,
           "reference_bpm": 121.45748987854213,
-          "estimated_bpm": 120.89622430241408,
+          "estimated_bpm": 120.89638197455265,
           "estimated_measure_offset_sec": 0.82,
-          "tempo_absolute_percent_error": 0.46210865767876325,
+          "tempo_absolute_percent_error": 0.4619788409513403,
           "beat": {
             "reference_count": 60,
             "predicted_count": 60,
@@ -2040,7 +2042,7 @@
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 2.8237385000002178,
+          "elapsed_sec": 9.005881000000954,
           "failure_reason": null
         },
         {
@@ -2048,16 +2050,16 @@
           "genre": "hiphop",
           "numerator": 4,
           "reference_bpm": 103.27022375215155,
-          "estimated_bpm": 103.10361269026228,
+          "estimated_bpm": 103.09759429638297,
           "estimated_measure_offset_sec": 0.32,
-          "tempo_absolute_percent_error": 0.1613350449294432,
+          "tempo_absolute_percent_error": 0.1671628563359141,
           "beat": {
             "reference_count": 52,
             "predicted_count": 52,
-            "matched_count": 52,
-            "precision": 1.0,
-            "recall": 1.0,
-            "f1": 1.0
+            "matched_count": 51,
+            "precision": 0.9807692307692307,
+            "recall": 0.9807692307692307,
+            "f1": 0.9807692307692307
           },
           "downbeat": {
             "reference_count": 13,
@@ -2067,7 +2069,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 3.342623200000162,
+          "elapsed_sec": 8.64326119999896,
           "failure_reason": null
         },
         {
@@ -2094,44 +2096,44 @@
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 3.556556499999715,
-          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+          "elapsed_sec": 8.473558099998627,
+          "failure_reason": "一定のテンポを推定できませんでした。BPMと拍子を指定してください"
         },
         {
           "track": "jazz.00004",
           "genre": "jazz",
           "numerator": 3,
           "reference_bpm": 62.89308176100625,
-          "estimated_bpm": null,
-          "estimated_measure_offset_sec": null,
-          "tempo_absolute_percent_error": null,
+          "estimated_bpm": 62.701109900987355,
+          "estimated_measure_offset_sec": 1.56,
+          "tempo_absolute_percent_error": 0.3052352574300445,
           "beat": {
             "reference_count": 31,
-            "predicted_count": 0,
-            "matched_count": 0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1": 0.0
+            "predicted_count": 31,
+            "matched_count": 16,
+            "precision": 0.5161290322580645,
+            "recall": 0.5161290322580645,
+            "f1": 0.5161290322580645
           },
           "downbeat": {
             "reference_count": 10,
-            "predicted_count": 0,
-            "matched_count": 0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1": 0.0
+            "predicted_count": 10,
+            "matched_count": 5,
+            "precision": 0.5,
+            "recall": 0.5,
+            "f1": 0.5
           },
-          "elapsed_sec": 3.594440300000315,
-          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+          "elapsed_sec": 8.689047799998662,
+          "failure_reason": null
         },
         {
           "track": "jazz.00006",
           "genre": "jazz",
           "numerator": 4,
           "reference_bpm": 132.7433628318584,
-          "estimated_bpm": 133.10739745237814,
+          "estimated_bpm": 133.0940932874475,
           "estimated_measure_offset_sec": 0.92,
-          "tempo_absolute_percent_error": 0.2742394141248646,
+          "tempo_absolute_percent_error": 0.2642169432104454,
           "beat": {
             "reference_count": 67,
             "predicted_count": 67,
@@ -2148,7 +2150,7 @@
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 3.3179183000002013,
+          "elapsed_sec": 8.514000999999553,
           "failure_reason": null
         },
         {
@@ -2156,9 +2158,9 @@
           "genre": "jazz",
           "numerator": 4,
           "reference_bpm": 108.89292196007239,
-          "estimated_bpm": 109.47463758576562,
+          "estimated_bpm": 109.51529664488362,
           "estimated_measure_offset_sec": 1.16,
-          "tempo_absolute_percent_error": 0.5342088495949552,
+          "tempo_absolute_percent_error": 0.5715474188849845,
           "beat": {
             "reference_count": 55,
             "predicted_count": 55,
@@ -2175,7 +2177,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 3.2818050000005314,
+          "elapsed_sec": 8.715252200003306,
           "failure_reason": null
         },
         {
@@ -2183,16 +2185,16 @@
           "genre": "jazz",
           "numerator": 4,
           "reference_bpm": 112.35955056179779,
-          "estimated_bpm": 112.8655070583617,
+          "estimated_bpm": 112.83472429921723,
           "estimated_measure_offset_sec": 0.08,
-          "tempo_absolute_percent_error": 0.4503012819418808,
+          "tempo_absolute_percent_error": 0.4229046263033007,
           "beat": {
             "reference_count": 57,
             "predicted_count": 57,
-            "matched_count": 55,
-            "precision": 0.9649122807017544,
-            "recall": 0.9649122807017544,
-            "f1": 0.9649122807017544
+            "matched_count": 57,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
           },
           "downbeat": {
             "reference_count": 14,
@@ -2202,7 +2204,7 @@
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 3.2847552000002906,
+          "elapsed_sec": 8.787922399998934,
           "failure_reason": null
         },
         {
@@ -2210,27 +2212,27 @@
           "genre": "metal",
           "numerator": 4,
           "reference_bpm": 156.65796344647484,
-          "estimated_bpm": null,
-          "estimated_measure_offset_sec": null,
-          "tempo_absolute_percent_error": null,
+          "estimated_bpm": 156.00617499658597,
+          "estimated_measure_offset_sec": 0.0,
+          "tempo_absolute_percent_error": 0.41605829384572907,
           "beat": {
             "reference_count": 78,
-            "predicted_count": 0,
-            "matched_count": 0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1": 0.0
+            "predicted_count": 79,
+            "matched_count": 78,
+            "precision": 0.9873417721518988,
+            "recall": 1.0,
+            "f1": 0.9936305732484078
           },
           "downbeat": {
             "reference_count": 20,
-            "predicted_count": 0,
+            "predicted_count": 20,
             "matched_count": 0,
             "precision": 0.0,
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 3.516426300000603,
-          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+          "elapsed_sec": 8.677595199998905,
+          "failure_reason": null
         },
         {
           "track": "metal.00003",
@@ -2256,17 +2258,17 @@
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 3.090700600000673,
-          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+          "elapsed_sec": 8.391626200002065,
+          "failure_reason": "一定のテンポを推定できませんでした。BPMと拍子を指定してください"
         },
         {
           "track": "metal.00005",
           "genre": "metal",
           "numerator": 4,
           "reference_bpm": 154.2416452442162,
-          "estimated_bpm": 154.27740890793575,
+          "estimated_bpm": 154.27549774333218,
           "estimated_measure_offset_sec": 0.0,
-          "tempo_absolute_percent_error": 0.023186775311517267,
+          "tempo_absolute_percent_error": 0.02194770359353627,
           "beat": {
             "reference_count": 77,
             "predicted_count": 78,
@@ -2283,7 +2285,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 2.6881617999997616,
+          "elapsed_sec": 8.668630700001813,
           "failure_reason": null
         },
         {
@@ -2310,17 +2312,17 @@
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 2.591557499999908,
-          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+          "elapsed_sec": 8.779138499998226,
+          "failure_reason": "一定のテンポを推定できませんでした。BPMと拍子を指定してください"
         },
         {
           "track": "metal.00009",
           "genre": "metal",
           "numerator": 4,
           "reference_bpm": 113.63636363636354,
-          "estimated_bpm": 113.4714911581771,
+          "estimated_bpm": 113.46987662696286,
           "estimated_measure_offset_sec": 0.28,
-          "tempo_absolute_percent_error": 0.14508778080406629,
+          "tempo_absolute_percent_error": 0.14650856827260111,
           "beat": {
             "reference_count": 57,
             "predicted_count": 57,
@@ -2337,7 +2339,7 @@
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 2.627005699999245,
+          "elapsed_sec": 8.710540000000037,
           "failure_reason": null
         },
         {
@@ -2345,9 +2347,9 @@
           "genre": "pop",
           "numerator": 4,
           "reference_bpm": 105.6338028169018,
-          "estimated_bpm": 105.97765713211464,
+          "estimated_bpm": 105.977701645717,
           "estimated_measure_offset_sec": 0.52,
-          "tempo_absolute_percent_error": 0.32551541840148496,
+          "tempo_absolute_percent_error": 0.3255575579450538,
           "beat": {
             "reference_count": 52,
             "predicted_count": 53,
@@ -2364,7 +2366,7 @@
             "recall": 1.0,
             "f1": 0.962962962962963
           },
-          "elapsed_sec": 2.6449357999999847,
+          "elapsed_sec": 8.716671700000006,
           "failure_reason": null
         },
         {
@@ -2372,9 +2374,9 @@
           "genre": "pop",
           "numerator": 4,
           "reference_bpm": 92.30769230769226,
-          "estimated_bpm": 92.28396408428392,
+          "estimated_bpm": 92.2836920748517,
           "estimated_measure_offset_sec": 1.46,
-          "tempo_absolute_percent_error": 0.025705575359036,
+          "tempo_absolute_percent_error": 0.02600025224394406,
           "beat": {
             "reference_count": 47,
             "predicted_count": 46,
@@ -2391,7 +2393,7 @@
             "recall": 0.9166666666666666,
             "f1": 0.9565217391304348
           },
-          "elapsed_sec": 3.1753920000001017,
+          "elapsed_sec": 8.482371999998577,
           "failure_reason": null
         },
         {
@@ -2399,9 +2401,9 @@
           "genre": "pop",
           "numerator": 4,
           "reference_bpm": 85.34850640113805,
-          "estimated_bpm": 85.28503210023288,
+          "estimated_bpm": 85.2758802041175,
           "estimated_measure_offset_sec": 1.28,
-          "tempo_absolute_percent_error": 0.07437072256055788,
+          "tempo_absolute_percent_error": 0.08509369417574923,
           "beat": {
             "reference_count": 42,
             "predicted_count": 42,
@@ -2418,7 +2420,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 3.1428332000004957,
+          "elapsed_sec": 9.347489300002053,
           "failure_reason": null
         },
         {
@@ -2426,9 +2428,9 @@
           "genre": "pop",
           "numerator": 4,
           "reference_bpm": 63.42494714587738,
-          "estimated_bpm": 63.44284407510195,
+          "estimated_bpm": 63.44264407024462,
           "estimated_measure_offset_sec": 0.52,
-          "tempo_absolute_percent_error": 0.028217491744071475,
+          "tempo_absolute_percent_error": 0.027902150752342127,
           "beat": {
             "reference_count": 32,
             "predicted_count": 32,
@@ -2445,7 +2447,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 2.9404647999999725,
+          "elapsed_sec": 10.26365850000002,
           "failure_reason": null
         },
         {
@@ -2453,16 +2455,16 @@
           "genre": "pop",
           "numerator": 4,
           "reference_bpm": 105.4481546572935,
-          "estimated_bpm": 105.3686884563428,
+          "estimated_bpm": 105.35112953773351,
           "estimated_measure_offset_sec": 0.0,
-          "tempo_absolute_percent_error": 0.07536044723491858,
+          "tempo_absolute_percent_error": 0.09201215504938783,
           "beat": {
             "reference_count": 51,
             "predicted_count": 53,
-            "matched_count": 43,
-            "precision": 0.8113207547169812,
-            "recall": 0.8431372549019608,
-            "f1": 0.826923076923077
+            "matched_count": 42,
+            "precision": 0.7924528301886793,
+            "recall": 0.8235294117647058,
+            "f1": 0.8076923076923077
           },
           "downbeat": {
             "reference_count": 12,
@@ -2472,7 +2474,7 @@
             "recall": 0.75,
             "f1": 0.6923076923076924
           },
-          "elapsed_sec": 2.860620899999958,
+          "elapsed_sec": 9.47338800000216,
           "failure_reason": null
         },
         {
@@ -2480,16 +2482,16 @@
           "genre": "reggae",
           "numerator": 4,
           "reference_bpm": 78.3289817232375,
-          "estimated_bpm": 77.8385873504417,
+          "estimated_bpm": 77.85497302293257,
           "estimated_measure_offset_sec": 2.68,
-          "tempo_absolute_percent_error": 0.6260701492693119,
+          "tempo_absolute_percent_error": 0.6051511073893016,
           "beat": {
             "reference_count": 39,
             "predicted_count": 39,
-            "matched_count": 37,
-            "precision": 0.9487179487179487,
-            "recall": 0.9487179487179487,
-            "f1": 0.9487179487179487
+            "matched_count": 36,
+            "precision": 0.9230769230769231,
+            "recall": 0.9230769230769231,
+            "f1": 0.9230769230769231
           },
           "downbeat": {
             "reference_count": 9,
@@ -2499,7 +2501,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 2.8913663000003,
+          "elapsed_sec": 9.408896699998877,
           "failure_reason": null
         },
         {
@@ -2507,9 +2509,9 @@
           "genre": "reggae",
           "numerator": 4,
           "reference_bpm": 147.7832512315272,
-          "estimated_bpm": 148.24634902068834,
+          "estimated_bpm": 148.24165465162235,
           "estimated_measure_offset_sec": 0.78,
-          "tempo_absolute_percent_error": 0.31336283733237075,
+          "tempo_absolute_percent_error": 0.31018631426438603,
           "beat": {
             "reference_count": 73,
             "predicted_count": 74,
@@ -2526,7 +2528,7 @@
             "recall": 1.0,
             "f1": 0.972972972972973
           },
-          "elapsed_sec": 3.148389199999656,
+          "elapsed_sec": 10.224980300001334,
           "failure_reason": null
         },
         {
@@ -2534,9 +2536,9 @@
           "genre": "reggae",
           "numerator": 4,
           "reference_bpm": 156.24999999999986,
-          "estimated_bpm": 156.1817798786028,
+          "estimated_bpm": 156.1886038029627,
           "estimated_measure_offset_sec": 0.7,
-          "tempo_absolute_percent_error": 0.043660877694110284,
+          "tempo_absolute_percent_error": 0.039293566103788216,
           "beat": {
             "reference_count": 78,
             "predicted_count": 78,
@@ -2553,7 +2555,7 @@
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 2.8935129999999845,
+          "elapsed_sec": 10.063847599998553,
           "failure_reason": null
         },
         {
@@ -2561,9 +2563,9 @@
           "genre": "reggae",
           "numerator": 4,
           "reference_bpm": 151.89873417721535,
-          "estimated_bpm": 152.1538664207615,
+          "estimated_bpm": 152.15578286001391,
           "estimated_measure_offset_sec": 0.68,
-          "tempo_absolute_percent_error": 0.16796206033454392,
+          "tempo_absolute_percent_error": 0.1692237161757244,
           "beat": {
             "reference_count": 74,
             "predicted_count": 76,
@@ -2580,7 +2582,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 2.8859659999998257,
+          "elapsed_sec": 11.02062709999882,
           "failure_reason": null
         },
         {
@@ -2588,9 +2590,9 @@
           "genre": "reggae",
           "numerator": 4,
           "reference_bpm": 157.89473684210532,
-          "estimated_bpm": 157.8977713147257,
+          "estimated_bpm": 157.8971743360548,
           "estimated_measure_offset_sec": 0.68,
-          "tempo_absolute_percent_error": 0.0019218326595771859,
+          "tempo_absolute_percent_error": 0.001543746168007942,
           "beat": {
             "reference_count": 79,
             "predicted_count": 79,
@@ -2607,7 +2609,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 2.8832228000001123,
+          "elapsed_sec": 9.336840200001461,
           "failure_reason": null
         },
         {
@@ -2615,9 +2617,9 @@
           "genre": "rock",
           "numerator": 4,
           "reference_bpm": 75.47169811320738,
-          "estimated_bpm": 75.37278145549716,
+          "estimated_bpm": 75.36115472426769,
           "estimated_measure_offset_sec": 2.34,
-          "tempo_absolute_percent_error": 0.13106457146604128,
+          "tempo_absolute_percent_error": 0.14646999034508848,
           "beat": {
             "reference_count": 37,
             "predicted_count": 37,
@@ -2634,7 +2636,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 2.983231799999885,
+          "elapsed_sec": 10.365907399998832,
           "failure_reason": null
         },
         {
@@ -2642,9 +2644,9 @@
           "genre": "rock",
           "numerator": 4,
           "reference_bpm": 94.7867298578199,
-          "estimated_bpm": 94.67528596828402,
+          "estimated_bpm": 94.67302526619251,
           "estimated_measure_offset_sec": 0.72,
-          "tempo_absolute_percent_error": 0.11757330346036561,
+          "tempo_absolute_percent_error": 0.11995834416690301,
           "beat": {
             "reference_count": 48,
             "predicted_count": 48,
@@ -2661,7 +2663,7 @@
             "recall": 1.0,
             "f1": 1.0
           },
-          "elapsed_sec": 2.850193500000387,
+          "elapsed_sec": 10.136270200000581,
           "failure_reason": null
         },
         {
@@ -2669,43 +2671,43 @@
           "genre": "rock",
           "numerator": 4,
           "reference_bpm": 99.337748344371,
-          "estimated_bpm": null,
-          "estimated_measure_offset_sec": null,
-          "tempo_absolute_percent_error": null,
+          "estimated_bpm": 199.4798700892255,
+          "estimated_measure_offset_sec": 0.78,
+          "tempo_absolute_percent_error": 100.80973588982008,
           "beat": {
             "reference_count": 50,
-            "predicted_count": 0,
-            "matched_count": 0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1": 0.0
+            "predicted_count": 100,
+            "matched_count": 43,
+            "precision": 0.43,
+            "recall": 0.86,
+            "f1": 0.5733333333333333
           },
           "downbeat": {
             "reference_count": 12,
-            "predicted_count": 0,
-            "matched_count": 0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1": 0.0
+            "predicted_count": 25,
+            "matched_count": 10,
+            "precision": 0.4,
+            "recall": 0.8333333333333334,
+            "f1": 0.5405405405405406
           },
-          "elapsed_sec": 2.8842979000000923,
-          "failure_reason": "\u4e00\u5b9a\u306e\u30c6\u30f3\u30dd\u3092\u63a8\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002BPM\u3068\u62cd\u5b50\u3092\u6307\u5b9a\u3057\u3066\u304f\u3060\u3055\u3044"
+          "elapsed_sec": 9.439998999998352,
+          "failure_reason": null
         },
         {
           "track": "rock.00007",
           "genre": "rock",
           "numerator": 4,
           "reference_bpm": 89.8203592814371,
-          "estimated_bpm": 89.61003695380968,
+          "estimated_bpm": 89.6207799233443,
           "estimated_measure_offset_sec": 0.2,
-          "tempo_absolute_percent_error": 0.2341588580918649,
+          "tempo_absolute_percent_error": 0.22219835200998975,
           "beat": {
             "reference_count": 45,
             "predicted_count": 45,
-            "matched_count": 31,
-            "precision": 0.6888888888888889,
-            "recall": 0.6888888888888889,
-            "f1": 0.6888888888888889
+            "matched_count": 30,
+            "precision": 0.6666666666666666,
+            "recall": 0.6666666666666666,
+            "f1": 0.6666666666666666
           },
           "downbeat": {
             "reference_count": 12,
@@ -2715,7 +2717,7 @@
             "recall": 0.75,
             "f1": 0.75
           },
-          "elapsed_sec": 2.8872707999998966,
+          "elapsed_sec": 9.908905200001755,
           "failure_reason": null
         },
         {
@@ -2723,9 +2725,9 @@
           "genre": "rock",
           "numerator": 4,
           "reference_bpm": 74.9063670411985,
-          "estimated_bpm": 74.85706796848125,
+          "estimated_bpm": 74.85487867867792,
           "estimated_measure_offset_sec": 2.4,
-          "tempo_absolute_percent_error": 0.06581426207752458,
+          "tempo_absolute_percent_error": 0.0687369639649645,
           "beat": {
             "reference_count": 38,
             "predicted_count": 37,
@@ -2742,12 +2744,21 @@
             "recall": 0.0,
             "f1": 0.0
           },
-          "elapsed_sec": 2.8581539999995584,
+          "elapsed_sec": 9.689790600001288,
           "failure_reason": null
         }
       ]
     },
-    "same34TracksLegacyMedianAbsolutePercentError": 0.7431666666667435
+    "sameDetectedTracksLegacyMedianAbsolutePercentError": 0.6493333333335221
   },
-  "measuredAt": "2026-10-18"
+  "measuredAt": "2026-10-18",
+  "applicationVersion": "0.1.5",
+  "evaluationDate": "2026-10-19",
+  "gridFit": {
+    "method": "scipy.optimize.least_squares",
+    "loss": "soft_l1",
+    "beatIndex": "Cumulative rounded intervals relative to their median",
+    "maximumMedianAbsoluteResidualFraction": 0.05,
+    "minimumBeats": 8
+  }
 }

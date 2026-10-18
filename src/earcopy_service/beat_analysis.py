@@ -7,8 +7,17 @@ from collections.abc import Sequence
 from functools import lru_cache
 from pathlib import Path
 
+import numpy as np
+from scipy.optimize import least_squares
+from torch import Tensor
 from muscriptor.utils.audio import load_audio
-from muscriptor.utils.beats import BeatDetectionError, BeatGrid, detect_grid
+from muscriptor.utils.beats import (
+    MAX_TEMPO_RESIDUAL,
+    MIN_BEATS,
+    BeatDetectionError,
+    BeatGrid,
+    infer_beats_per_bar,
+)
 
 from .models import Note
 from .torch_runtime import MODEL_INITIALIZATION_LOCK
@@ -16,6 +25,55 @@ from .torch_runtime import MODEL_INITIALIZATION_LOCK
 BEAT_MODEL_SHA256 = "8c328b45f59d8dd3dff219253ff6a8d6482be57d0133a29140e2febbf8eb8331"
 BEAT_MODEL_BYTES = 81_058_141
 _LOGGER = logging.getLogger(__name__)
+
+
+def fit_beat_grid(beats: np.ndarray, downbeats: np.ndarray) -> BeatGrid:
+    beats = np.asarray(beats, dtype=float)
+    downbeats = np.asarray(downbeats, dtype=float)
+    if len(beats) < MIN_BEATS:
+        raise BeatDetectionError(f"Only {len(beats)} beats detected, need at least {MIN_BEATS}")
+    intervals = np.diff(beats)
+    if not np.all(np.isfinite(beats)) or np.any(intervals <= 0):
+        raise BeatDetectionError("Beat times must be finite and strictly increasing")
+
+    period = float(np.median(intervals))
+    # Count missed beats as multiple steps and extra detections as zero steps.
+    indices = np.concatenate(([0], np.cumsum(np.maximum(0, np.rint(intervals / period)))))
+    centered_indices = indices - np.mean(indices)
+    fit = least_squares(
+        lambda parameters: beats - (parameters[0] * centered_indices + parameters[1]),
+        [period, float(np.median(beats - period * centered_indices))],
+        loss="soft_l1",
+        f_scale=MAX_TEMPO_RESIDUAL * period,
+    )
+    period = float(fit.x[0])
+    residuals = np.abs(beats - (period * centered_indices + fit.x[1]))
+    median_residual = float(np.median(residuals))
+    if not fit.success or period <= 0 or median_residual > MAX_TEMPO_RESIDUAL * period:
+        raise BeatDetectionError(
+            f"No consistent tempo: median beat residual {median_residual * 1000:.1f} ms"
+        )
+    _LOGGER.info(
+        "Detected %.3f BPM from %d beats (median absolute residual %.1f ms)",
+        60.0 / period, len(beats), median_residual * 1000,
+    )
+    return BeatGrid(
+        bpm=60.0 / period,
+        beats_per_bar=infer_beats_per_bar(beats, downbeats),
+        first_downbeat=float(downbeats[0]) if len(downbeats) else float(beats[0]),
+        beats=beats,
+    )
+
+
+def detect_beat_grid(waveform: Tensor, sample_rate: int, *, checkpoint: str, device: str) -> BeatGrid:
+    from beat_this.inference import Audio2Beats
+
+    if waveform.shape[-1] < sample_rate:
+        raise BeatDetectionError("Audio is too short to detect a tempo")
+    beats, downbeats = Audio2Beats(
+        checkpoint_path=checkpoint, device=device, dbn=False,
+    )(waveform.mean(dim=0).detach().cpu().numpy(), sample_rate)
+    return fit_beat_grid(beats, downbeats)
 
 
 def beat_model_path() -> Path:
@@ -51,7 +109,7 @@ def _analyze_audio(
     _verify_model(model_path, model_size, model_modified_ns)
     try:
         with MODEL_INITIALIZATION_LOCK:
-            return detect_grid(
+            return detect_beat_grid(
                 load_audio(audio_path, target_sr=16_000),
                 16_000,
                 checkpoint=str(model_path),

@@ -4,7 +4,7 @@
 
 ## Scope
 
-On 2026-10-18, the previous Librosa method (commit `9d248cd7bd2cc06ecd270ca5b2faa91febae4d60`) was compared with MuScriptor 0.3.0 beat analysis. Onset correction was evaluated before and after correction of the same MuScriptor medium transcription. The small, medium, and large transcription model weights are unchanged.
+On 2026-10-19, the previous Librosa method (commit `9d248cd7bd2cc06ecd270ca5b2faa91febae4d60`) was compared with EarCopy Assist 0.1.5 beat analysis using MuScriptor 0.3.0 and robust tempo fitting. Onset correction was evaluated on 2026-10-18 before and after correction of the same MuScriptor medium transcription. The small, medium, and large transcription model weights are unchanged.
 
 The environment was Windows, Python 3.11.15, MuScriptor 0.3.0, Beat This! 1.1.0, and PyTorch 2.2.2+cu121. Beat analysis used CPU; transcription used an NVIDIA GeForce RTX 3060 Laptop GPU and float16. The beat model was Beat This! final0, 81,058,141 bytes, SHA-256 `8c328b45f59d8dd3dff219253ff6a8d6482be57d0133a29140e2febbf8eb8331`.
 
@@ -14,15 +14,15 @@ The evaluation used the 50 tracks at odd filename positions within each genre, f
 
 Reference BPM was calculated from the median reference beat interval. Both methods received the same reference time signature. Their BPM and downbeat offset generated the evenly spaced beat and downbeat sequences displayed by the application. Events were matched one to one within 70 ms, and F1 was averaged across tracks. Tracks rejected by the new constant-tempo estimator counted as incorrect BPM estimates and zero beat and downbeat F1.
 
-| Metric | Previous method | MuScriptor 0.3.0 |
+| Metric | Previous method | EarCopy Assist 0.1.5 |
 |---|---:|---:|
-| Tracks with a tempo estimate | 50 / 50 | 34 / 50 |
-| BPM error within 4% | 27 / 50 (54%) | 32 / 50 (64%) |
-| Beat macro F1 | 0.7347 | 0.6515 |
-| Downbeat macro F1 | 0.3203 | 0.4917 |
-| Processing time for 50 tracks | 7.91 seconds | 152.06 seconds |
+| Tracks with a tempo estimate | 50 / 50 | 41 / 50 |
+| BPM error within 4% | 27 / 50 (54%) | 37 / 50 (74%) |
+| Beat macro F1 | 0.7347 | 0.7437 |
+| Downbeat macro F1 | 0.3203 | 0.5517 |
+| Processing time for 50 tracks | 7.91 seconds | 473.79 seconds |
 
-Downbeat and BPM metrics improved, but 16 tracks were rejected by the constant-tempo estimator and beat macro F1 decreased. The application preserves the selected audio in that case and allows transcription with manually entered BPM and time signature. Processing time includes model loading and represents one measurement on this environment.
+Tempo was returned for 41/50 tracks; 37/50 estimates were within 4% of reference BPM. The remaining nine tracks permit transcription with manually entered BPM and time signature. The current run used two PyTorch CPU threads while CUDA transcription and a PyInstaller build were active. Timings include model loading and different concurrent workloads; they are not a controlled latency comparison.
 
 ## Direct and Separated Transcription Using the Application Pipeline
 
@@ -62,7 +62,7 @@ See the [additional application-pipeline comparison JSON](../benchmarks/data/mus
 
 ## Implementation and Conditions
 
-Beat analysis explicitly passes the local final0 checkpoint to MuScriptor `detect_grid` and uses results accepted by its constant-tempo test. Onset correction references the original audio's beat analysis and runs after shared postprocessing for each direct or separated transcription input and each reference transcription. MuScriptor `with_onset_delay` calculates the correction using the official conditions, including at least 40 distinct onset times, phase concentration of at least 0.5, and absolute correction of at most 40 ms. Corrections that cross the audio origin preserve note duration and limit the onset to 0 seconds.
+Beat This! `Audio2Beats` detects beat times using an explicitly supplied local final0 checkpoint. Beat indices accumulate beat intervals rounded relative to their median, accounting for missed and extra detections. SciPy `least_squares` fits a line with Soft-L1 loss. At least eight beats are required, and the median absolute residual must be within 5% of the fitted beat period. Meter estimation and onset correction use MuScriptor utilities; correction retains the original detected beat times. Onset correction references the original audio's beat analysis and runs after shared postprocessing for each direct or separated transcription input and each reference transcription. MuScriptor `with_onset_delay` calculates the correction using the official conditions, including at least 40 distinct onset times, phase concentration of at least 0.5, and absolute correction of at most 40 ms. Corrections that cross the audio origin preserve note duration and limit the onset to 0 seconds.
 
 The transcription cache stores events before correction; reuse applies correction once. Saved transcription-input notes contain corrected times, which are reused when transcription options are recalculated. The Windows application bundles the beat model at `resources/models/beat-this/final0.ckpt`.
 
