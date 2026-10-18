@@ -25,7 +25,7 @@ describe("AboutDialog", () => {
       value: {
         getAboutInfo: vi.fn().mockResolvedValue({
           appVersion: "0.1.0",
-          engineVersion: "0.2.2",
+          engineVersion: "0.3.0",
           notices: [
             { name: "THIRD_PARTY_NOTICES.txt", text: "notices" },
             { name: "MuScriptor/LICENSE", text: "MIT License" },
@@ -42,7 +42,7 @@ describe("AboutDialog", () => {
 
     await waitFor(() => {
       expect(screen.getByText("0.1.0")).toBeInTheDocument();
-      expect(screen.getByText("0.2.2")).toBeInTheDocument();
+      expect(screen.getByText("0.3.0")).toBeInTheDocument();
     });
     expect(screen.getByText("MuScriptor small")).toBeInTheDocument();
     expect(screen.getByText("a".repeat(64))).toBeInTheDocument();

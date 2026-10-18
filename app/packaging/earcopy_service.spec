@@ -82,6 +82,7 @@ runtime_distributions = [
     "annotated-types",
     "anyio",
     "audioread",
+    "beat-this",
     "certifi",
     "cffi",
     "charset-normalizer",

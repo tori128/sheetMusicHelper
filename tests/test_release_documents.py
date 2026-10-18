@@ -727,6 +727,7 @@ def test_portable_build_includes_release_documents() -> None:
     ).read_text(encoding="utf-8")
     for distribution in (
         "muscriptor",
+        "beat-this",
         "rotary-embedding-torch",
         "torch",
         "soxr",

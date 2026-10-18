@@ -441,7 +441,7 @@ async function verifySmokeWindow(window: BrowserWindow): Promise<void> {
         "Backend/libsndfile/COPYING",
         "Backend/libsndfile/README.txt",
         "Backend/python/Python-3.11/LICENSE.txt",
-        "Backend/python/muscriptor-0.2.2/licenses/LICENSE",
+        "Backend/python/muscriptor-0.3.0/licenses/LICENSE",
         "SpessaSynth-Core-LICENSE.txt",
         "SpessaSynth-Lib-LICENSE.txt",
       ];
@@ -656,7 +656,7 @@ function registerIpc(): void {
   ipcMain.handle("service:get-connection", async () => serviceManager.start());
   ipcMain.handle("app:get-about", async () => ({
     appVersion: app.getVersion(),
-    engineVersion: "0.2.2",
+    engineVersion: "0.3.0",
     notices: await readLicenseNotices(),
   }));
   ipcMain.handle("soundfont:load", async () => {

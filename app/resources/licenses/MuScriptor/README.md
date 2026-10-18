@@ -1,6 +1,6 @@
 # MuScriptor
 
-- Component: MuScriptor 0.2.2 Python package and official Web UI
+- Component: MuScriptor 0.3.0 Python package and official Web UI
 - Copyright: Copyright (c) 2026 Kyutai x Mirelo
 - Source: <https://github.com/muscriptor/muscriptor>
 - License: MIT

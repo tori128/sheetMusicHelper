@@ -20,7 +20,7 @@ user acknowledges that warning. `Unknown` does not constitute a license grant.
 
 ### Code
 
-- Component: MuScriptor 0.2.2 Python package and official Web UI
+- Component: MuScriptor 0.3.0 Python package and official Web UI
 - Use in EarCopy Assist: model loading and note-event generation
 - Initial implementation reference: note-event display, piano roll, and
   synchronized source/SoundFont playback design
@@ -188,6 +188,7 @@ The following inventory lists the packages used at application runtime.
 | annotated-types | 0.8.0 | MIT | <https://github.com/annotated-types/annotated-types> |
 | anyio | 4.14.2 | MIT | <https://github.com/agronholm/anyio> |
 | audioread | 3.1.0 | MIT | <https://github.com/beetbox/audioread> |
+| beat-this | 1.1.0 | MIT | <https://github.com/CPJKU/beat_this> |
 | certifi | 2026.7.22 | MPL-2.0 | <https://github.com/certifi/python-certifi> |
 | cffi | 2.1.0 | MIT-0 | <https://github.com/python-cffi/cffi> |
 | charset-normalizer | 3.4.9 | MIT | <https://github.com/jawah/charset_normalizer> |
@@ -216,7 +217,7 @@ The following inventory lists the packages used at application runtime.
 | mido | 1.3.3 | MIT | <https://github.com/mido/mido> |
 | mpmath | 1.3.0 | BSD-3-Clause | <https://github.com/mpmath/mpmath> |
 | msgpack | 1.2.1 | Apache-2.0 | <https://github.com/msgpack/msgpack-python> |
-| muscriptor | 0.2.2 | MIT | <https://github.com/muscriptor/muscriptor> |
+| muscriptor | 0.3.0 | MIT | <https://github.com/muscriptor/muscriptor> |
 | narwhals | 2.24.0 | MIT | <https://github.com/narwhals-dev/narwhals> |
 | networkx | 3.6.1 | BSD-3-Clause | <https://github.com/networkx/networkx> |
 | numba | 0.66.0 | BSD | <https://github.com/numba/numba> |

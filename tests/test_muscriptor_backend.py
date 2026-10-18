@@ -3,6 +3,7 @@ from types import SimpleNamespace
 import warnings
 
 import pytest
+from muscriptor.events import NoteEndEvent, NoteStartEvent, ProgressEvent
 
 import earcopy_service.backends.muscriptor as muscriptor_backend
 from earcopy_service.backends import (
@@ -39,15 +40,16 @@ class FakeModel:
             batch_size,
             beam_size,
         )
-        yield SimpleNamespace(completed=0, total=1)
-        yield SimpleNamespace(
+        yield ProgressEvent(completed=0, total=1)
+        start = NoteStartEvent(
             index=3,
             instrument="violin",
             pitch=72,
             start_time=1.25,
         )
-        yield SimpleNamespace(start_event_index=3, end_time=1.75)
-        yield SimpleNamespace(completed=1, total=1)
+        yield start
+        yield NoteEndEvent(start_event=start, end_time=1.75)
+        yield ProgressEvent(completed=1, total=1)
 
 
 class FakeGenerationStep:
