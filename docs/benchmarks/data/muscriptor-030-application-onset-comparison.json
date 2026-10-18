@@ -1,0 +1,1214 @@
+{
+  "conditions": {
+    "applicationCommit": "44a9e9ea643a1a27e3fac3adde42ae658b53e694",
+    "evaluationScriptSha256": "e77287b629d55573052acf80b8a032829c3ba373561e8c6bb8f8c1f063e63169",
+    "modelSha256": "ac80adbdf85d87231735fd948af7013441c0afced316c4e9067fd5d8a7fb97ec",
+    "beatModelSha256": "8c328b45f59d8dd3dff219253ff6a8d6482be57d0133a29140e2febbf8eb8331",
+    "separationModelSha256": "24e7d35ee9c64415673d3fd33e06a67cac2c103c5df6267ba1576459c775916e",
+    "modelVariant": "medium",
+    "backend": "CUDA",
+    "dtype": "float16",
+    "profile": "high_accuracy",
+    "instrumentSelection": "fixed",
+    "familyExpansion": true,
+    "familyDuplicateCollapse": true,
+    "drumOnsetGuide": true,
+    "timingGuideNoteFilter": true,
+    "velocityFromStemAmplitude": true
+  },
+  "dataset": {
+    "name": "BabySlakh",
+    "version": "v2",
+    "doi": "10.5281/zenodo.4603870",
+    "archiveUrl": "https://zenodo.org/records/4603870/files/babyslakh_16k.tar.gz?download=1",
+    "archiveMd5": "311096dc2bde7d61c97e930edbfc7f78",
+    "datasetDirectory": "babyslakh_16k"
+  },
+  "environment": {
+    "torch": "2.2.2+cu121",
+    "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU"
+  },
+  "cases": [
+    {
+      "referenceNotes": 235,
+      "beforeNotes": 266,
+      "afterNotes": 266,
+      "commonNoteIds": 266,
+      "pairedMatches120Ms": 41,
+      "beforeMaeMs": 16.86341463414617,
+      "afterMaeMs": 14.886778673605257,
+      "before": {
+        "20": {
+          "matches": 31,
+          "f1": 0.12375249500998003
+        },
+        "50": {
+          "matches": 41,
+          "f1": 0.16367265469061876
+        },
+        "120": {
+          "matches": 41,
+          "f1": 0.16367265469061876
+        }
+      },
+      "after": {
+        "20": {
+          "matches": 30,
+          "f1": 0.11976047904191617
+        },
+        "50": {
+          "matches": 41,
+          "f1": 0.16367265469061876
+        },
+        "120": {
+          "matches": 41,
+          "f1": 0.16367265469061876
+        }
+      },
+      "coldCorrectedJobSec": 25.66369669999949,
+      "cachedUncorrectedJobSec": 1.8407329999990907,
+      "correctionCalculationSec": 0.0010815999994520098,
+      "primaryInputs": [
+        {
+          "name": "direct",
+          "notes": 266,
+          "correctionMs": 9.765417945403163,
+          "invalidChunks": 0,
+          "referenceNotes": null,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        }
+      ],
+      "baselinePrimaryCacheHits": [
+        true
+      ],
+      "baselineReferenceCacheHits": [
+        null
+      ],
+      "separatedSources": [],
+      "track": "Track00001",
+      "mode": "direct",
+      "audioSha256": "8ccfaa51493070100bd2ea1d2d83ca0c696df4072cae0289d78e12764db23d1e",
+      "referenceMidiSha256": "d605f26ed872e07114703ceb2d505eeb65bca8c6483f30b77d292a8a5eb029e3",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "fixedInstruments": [
+        "acoustic_piano",
+        "organ",
+        "clean_electric_guitar",
+        "distorted_electric_guitar",
+        "electric_bass",
+        "voice",
+        "drums"
+      ]
+    },
+    {
+      "referenceNotes": 235,
+      "beforeNotes": 195,
+      "afterNotes": 195,
+      "commonNoteIds": 195,
+      "pairedMatches120Ms": 23,
+      "beforeMaeMs": 17.060869565217132,
+      "afterMaeMs": 17.35215455630341,
+      "before": {
+        "20": {
+          "matches": 19,
+          "f1": 0.08837209302325581
+        },
+        "50": {
+          "matches": 21,
+          "f1": 0.09767441860465116
+        },
+        "120": {
+          "matches": 23,
+          "f1": 0.10697674418604651
+        }
+      },
+      "after": {
+        "20": {
+          "matches": 19,
+          "f1": 0.08837209302325581
+        },
+        "50": {
+          "matches": 21,
+          "f1": 0.09767441860465116
+        },
+        "120": {
+          "matches": 23,
+          "f1": 0.10697674418604651
+        }
+      },
+      "coldCorrectedJobSec": 39.0660270999997,
+      "cachedUncorrectedJobSec": 2.28050710000025,
+      "correctionCalculationSec": 0.0022062000007281313,
+      "primaryInputs": [
+        {
+          "name": "drums",
+          "notes": 84,
+          "correctionMs": -1.9666171994421875,
+          "invalidChunks": 0,
+          "referenceNotes": null,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "bass",
+          "notes": 25,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": 25,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "piano",
+          "notes": 30,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": 27,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "guitar",
+          "notes": 2,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": 4,
+          "filterDiscarded": 19,
+          "filterMerged": 0
+        },
+        {
+          "name": "vocals",
+          "notes": 0,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": null,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "other",
+          "notes": 54,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": 60,
+          "filterDiscarded": 4,
+          "filterMerged": 2
+        }
+      ],
+      "baselinePrimaryCacheHits": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "baselineReferenceCacheHits": [
+        null,
+        true,
+        true,
+        true,
+        null,
+        true
+      ],
+      "separatedSources": [
+        {
+          "type": "drums",
+          "sha256": "bc16b78c0f85a9a737e2c3ec9fdafa157cb311a7fb2a2a7634a705def3eb974a"
+        },
+        {
+          "type": "bass",
+          "sha256": "4c758925f6e8ef581a6eadbf51da9021a7a95fb9e8b8bd05dbf4f7b39dfa8d39"
+        },
+        {
+          "type": "vocals",
+          "sha256": "9540c9ecc6410cf318aae9d8079e834b555cbfdd731844743c17c2f9f6262822"
+        },
+        {
+          "type": "other",
+          "sha256": "00df817a35309d82a1f8f812bc4eb9ea09814610e3cf2ce5d06cfca8bce2d92d"
+        },
+        {
+          "type": "piano",
+          "sha256": "83bc23290f2379fc0b1882c32a99d4d124134856c9c0b2146d391f951387eabe"
+        },
+        {
+          "type": "guitar",
+          "sha256": "0bddc4839f856fb6e20e6ad4bd0ad9b6a9c873cd6d3ca0afbea2b5e4d99075bb"
+        }
+      ],
+      "track": "Track00001",
+      "mode": "separated",
+      "audioSha256": "8ccfaa51493070100bd2ea1d2d83ca0c696df4072cae0289d78e12764db23d1e",
+      "referenceMidiSha256": "d605f26ed872e07114703ceb2d505eeb65bca8c6483f30b77d292a8a5eb029e3",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "fixedInstruments": [
+        "acoustic_piano",
+        "organ",
+        "clean_electric_guitar",
+        "distorted_electric_guitar",
+        "electric_bass",
+        "voice",
+        "drums"
+      ]
+    },
+    {
+      "referenceNotes": 371,
+      "beforeNotes": 396,
+      "afterNotes": 396,
+      "commonNoteIds": 396,
+      "pairedMatches120Ms": 114,
+      "beforeMaeMs": 17.506140350877235,
+      "afterMaeMs": 6.372339285320597,
+      "before": {
+        "20": {
+          "matches": 80,
+          "f1": 0.20860495436766624
+        },
+        "50": {
+          "matches": 113,
+          "f1": 0.29465449804432853
+        },
+        "120": {
+          "matches": 114,
+          "f1": 0.29726205997392435
+        }
+      },
+      "after": {
+        "20": {
+          "matches": 113,
+          "f1": 0.29465449804432853
+        },
+        "50": {
+          "matches": 113,
+          "f1": 0.29465449804432853
+        },
+        "120": {
+          "matches": 115,
+          "f1": 0.29986962190352023
+        }
+      },
+      "coldCorrectedJobSec": 20.519902800000636,
+      "cachedUncorrectedJobSec": 3.521844200000487,
+      "correctionCalculationSec": 0.0026573000013740966,
+      "primaryInputs": [
+        {
+          "name": "direct",
+          "notes": 396,
+          "correctionMs": 18.687407736848815,
+          "invalidChunks": 0,
+          "referenceNotes": null,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        }
+      ],
+      "baselinePrimaryCacheHits": [
+        true
+      ],
+      "baselineReferenceCacheHits": [
+        null
+      ],
+      "separatedSources": [],
+      "track": "Track00004",
+      "mode": "direct",
+      "audioSha256": "6558d1feb0c61724fb449aab83807d58c4a9e9dfa1e1f25d0d42191a3f95db73",
+      "referenceMidiSha256": "56d9aac4929cdf4724f55f94c44b3795bd30b2c931cca79dbaa5f5ca333019ae",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "fixedInstruments": [
+        "acoustic_piano",
+        "electric_piano",
+        "organ",
+        "clean_electric_guitar",
+        "electric_bass",
+        "synth_strings",
+        "voice",
+        "synth_pad",
+        "drums"
+      ]
+    },
+    {
+      "referenceNotes": 371,
+      "beforeNotes": 343,
+      "afterNotes": 343,
+      "commonNoteIds": 343,
+      "pairedMatches120Ms": 112,
+      "beforeMaeMs": 9.801785714285792,
+      "afterMaeMs": 7.778708055943995,
+      "before": {
+        "20": {
+          "matches": 108,
+          "f1": 0.3025210084033613
+        },
+        "50": {
+          "matches": 112,
+          "f1": 0.3137254901960784
+        },
+        "120": {
+          "matches": 112,
+          "f1": 0.3137254901960784
+        }
+      },
+      "after": {
+        "20": {
+          "matches": 108,
+          "f1": 0.3025210084033613
+        },
+        "50": {
+          "matches": 112,
+          "f1": 0.3137254901960784
+        },
+        "120": {
+          "matches": 112,
+          "f1": 0.3137254901960784
+        }
+      },
+      "coldCorrectedJobSec": 55.54800169999908,
+      "cachedUncorrectedJobSec": 2.4225045000002865,
+      "correctionCalculationSec": 0.002940899999885005,
+      "primaryInputs": [
+        {
+          "name": "drums",
+          "notes": 125,
+          "correctionMs": 5.4665043427934545,
+          "invalidChunks": 0,
+          "referenceNotes": null,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "bass",
+          "notes": 30,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": 32,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "piano",
+          "notes": 37,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": 32,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "guitar",
+          "notes": 0,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": 0,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "vocals",
+          "notes": 0,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": null,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "other",
+          "notes": 151,
+          "correctionMs": 16.801420796846216,
+          "invalidChunks": 0,
+          "referenceNotes": 133,
+          "filterDiscarded": 1,
+          "filterMerged": 9
+        }
+      ],
+      "baselinePrimaryCacheHits": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "baselineReferenceCacheHits": [
+        null,
+        true,
+        true,
+        true,
+        null,
+        true
+      ],
+      "separatedSources": [
+        {
+          "type": "drums",
+          "sha256": "1c1002ef78202b00e1df3bbc133364b5068d7d2841e0b035d7463b482d4cfa61"
+        },
+        {
+          "type": "bass",
+          "sha256": "ba7b6fcaf3668e715735a16843c2c61bab648c6cfd41f4bc74eb4ec64bdf06e3"
+        },
+        {
+          "type": "vocals",
+          "sha256": "9e0a6a196c2176f2efcf1750e3cd236f91ac1d8948399d4815c4b7f461d13677"
+        },
+        {
+          "type": "other",
+          "sha256": "815ecbc3434619416bb77202b23629c26b10309cfcdea9b7c437e81e5661af54"
+        },
+        {
+          "type": "piano",
+          "sha256": "9b18d8e4c1092bd7677da4c4ee952d33a39007717e34713c27a13849959cfa18"
+        },
+        {
+          "type": "guitar",
+          "sha256": "8d2ba261ccae8a394478947a7c9658aad23b4f276a4f01bc3aa44b32b1029cd7"
+        }
+      ],
+      "track": "Track00004",
+      "mode": "separated",
+      "audioSha256": "6558d1feb0c61724fb449aab83807d58c4a9e9dfa1e1f25d0d42191a3f95db73",
+      "referenceMidiSha256": "56d9aac4929cdf4724f55f94c44b3795bd30b2c931cca79dbaa5f5ca333019ae",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "fixedInstruments": [
+        "acoustic_piano",
+        "electric_piano",
+        "organ",
+        "clean_electric_guitar",
+        "electric_bass",
+        "synth_strings",
+        "voice",
+        "synth_pad",
+        "drums"
+      ]
+    },
+    {
+      "referenceNotes": 421,
+      "beforeNotes": 416,
+      "afterNotes": 416,
+      "commonNoteIds": 416,
+      "pairedMatches120Ms": 241,
+      "beforeMaeMs": 21.141078838174277,
+      "afterMaeMs": 5.719529780727239,
+      "before": {
+        "20": {
+          "matches": 115,
+          "f1": 0.2747909199522103
+        },
+        "50": {
+          "matches": 241,
+          "f1": 0.5758661887694145
+        },
+        "120": {
+          "matches": 241,
+          "f1": 0.5758661887694145
+        }
+      },
+      "after": {
+        "20": {
+          "matches": 241,
+          "f1": 0.5758661887694145
+        },
+        "50": {
+          "matches": 241,
+          "f1": 0.5758661887694145
+        },
+        "120": {
+          "matches": 241,
+          "f1": 0.5758661887694145
+        }
+      },
+      "coldCorrectedJobSec": 19.629488200000196,
+      "cachedUncorrectedJobSec": 1.9746491000005335,
+      "correctionCalculationSec": 0.0016751000002841465,
+      "primaryInputs": [
+        {
+          "name": "direct",
+          "notes": 416,
+          "correctionMs": 15.972533273398662,
+          "invalidChunks": 0,
+          "referenceNotes": null,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        }
+      ],
+      "baselinePrimaryCacheHits": [
+        true
+      ],
+      "baselineReferenceCacheHits": [
+        null
+      ],
+      "separatedSources": [],
+      "track": "Track00010",
+      "mode": "direct",
+      "audioSha256": "0a9cb1a12b8e7d8782e8d8353bd1445351c5d05a56caa69f75de3ef2758f8c39",
+      "referenceMidiSha256": "75111990699d6f5af97d828559b303c8888c8bec9dcde0b36beca0a0e5c7b9a7",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "fixedInstruments": [
+        "acoustic_piano",
+        "acoustic_guitar",
+        "electric_bass",
+        "synth_pad",
+        "drums"
+      ]
+    },
+    {
+      "referenceNotes": 421,
+      "beforeNotes": 468,
+      "afterNotes": 468,
+      "commonNoteIds": 468,
+      "pairedMatches120Ms": 271,
+      "beforeMaeMs": 19.386346863468596,
+      "afterMaeMs": 7.955785453355381,
+      "before": {
+        "20": {
+          "matches": 160,
+          "f1": 0.35995500562429694
+        },
+        "50": {
+          "matches": 270,
+          "f1": 0.6074240719910011
+        },
+        "120": {
+          "matches": 271,
+          "f1": 0.609673790776153
+        }
+      },
+      "after": {
+        "20": {
+          "matches": 265,
+          "f1": 0.5961754780652418
+        },
+        "50": {
+          "matches": 270,
+          "f1": 0.6074240719910011
+        },
+        "120": {
+          "matches": 271,
+          "f1": 0.609673790776153
+        }
+      },
+      "coldCorrectedJobSec": 80.51084900000023,
+      "cachedUncorrectedJobSec": 2.495652500001597,
+      "correctionCalculationSec": 0.005606100003205938,
+      "primaryInputs": [
+        {
+          "name": "drums",
+          "notes": 99,
+          "correctionMs": 9.860282205646486,
+          "invalidChunks": 0,
+          "referenceNotes": null,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "bass",
+          "notes": 36,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": 36,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "piano",
+          "notes": 41,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": 42,
+          "filterDiscarded": 1,
+          "filterMerged": 0
+        },
+        {
+          "name": "guitar",
+          "notes": 197,
+          "correctionMs": 15.787679415470983,
+          "invalidChunks": 0,
+          "referenceNotes": 195,
+          "filterDiscarded": 2,
+          "filterMerged": 16
+        },
+        {
+          "name": "other",
+          "notes": 95,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": 107,
+          "filterDiscarded": 7,
+          "filterMerged": 4
+        }
+      ],
+      "baselinePrimaryCacheHits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "baselineReferenceCacheHits": [
+        null,
+        true,
+        true,
+        true,
+        true
+      ],
+      "separatedSources": [
+        {
+          "type": "drums",
+          "sha256": "8349b6d1ba9cd76f5585464a20785ccb11039948bcda30a72e4455e773ecb019"
+        },
+        {
+          "type": "bass",
+          "sha256": "83b1774bd17bbbb8c52e38f3bbe0e952bce81111cbdedbc7f1b80496f0be2b30"
+        },
+        {
+          "type": "vocals",
+          "sha256": "036e17aa758324e68eda7e85b47aa46dd9c4378f360f0ab676aa665210aef475"
+        },
+        {
+          "type": "other",
+          "sha256": "f9986a6bd85e99b152deb54122629f67bb56d483e14e71047b57d1094bbd1265"
+        },
+        {
+          "type": "piano",
+          "sha256": "b6145bff93cf08fea27269dbe4594a2366712a39574e6315748623f03cc04fe4"
+        },
+        {
+          "type": "guitar",
+          "sha256": "4c74376e374d28fba31e4247de9a7f3b6813ed4623562dd773cbe54163038e87"
+        }
+      ],
+      "track": "Track00010",
+      "mode": "separated",
+      "audioSha256": "0a9cb1a12b8e7d8782e8d8353bd1445351c5d05a56caa69f75de3ef2758f8c39",
+      "referenceMidiSha256": "75111990699d6f5af97d828559b303c8888c8bec9dcde0b36beca0a0e5c7b9a7",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "fixedInstruments": [
+        "acoustic_piano",
+        "acoustic_guitar",
+        "electric_bass",
+        "synth_pad",
+        "drums"
+      ]
+    },
+    {
+      "referenceNotes": 261,
+      "beforeNotes": 223,
+      "afterNotes": 223,
+      "commonNoteIds": 223,
+      "pairedMatches120Ms": 115,
+      "beforeMaeMs": 18.526086956521784,
+      "afterMaeMs": 18.15651077874849,
+      "before": {
+        "20": {
+          "matches": 77,
+          "f1": 0.3181818181818182
+        },
+        "50": {
+          "matches": 109,
+          "f1": 0.45041322314049587
+        },
+        "120": {
+          "matches": 115,
+          "f1": 0.47520661157024796
+        }
+      },
+      "after": {
+        "20": {
+          "matches": 75,
+          "f1": 0.30991735537190085
+        },
+        "50": {
+          "matches": 111,
+          "f1": 0.45867768595041325
+        },
+        "120": {
+          "matches": 115,
+          "f1": 0.47520661157024796
+        }
+      },
+      "coldCorrectedJobSec": 15.38816399999996,
+      "cachedUncorrectedJobSec": 1.5582417999994504,
+      "correctionCalculationSec": 0.0008290999994642334,
+      "primaryInputs": [
+        {
+          "name": "direct",
+          "notes": 223,
+          "correctionMs": -4.7002520887841515,
+          "invalidChunks": 0,
+          "referenceNotes": null,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        }
+      ],
+      "baselinePrimaryCacheHits": [
+        true
+      ],
+      "baselineReferenceCacheHits": [
+        null
+      ],
+      "separatedSources": [],
+      "track": "Track00015",
+      "mode": "direct",
+      "audioSha256": "ed46a332e8691ebbcebce424e357bdd1a5a4660d1cda9a02f56537c22d170fff",
+      "referenceMidiSha256": "f2bc55646d5393696d9f05264f2e04de2f634c08155c94a8cbdbaaebae95579e",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "fixedInstruments": [
+        "acoustic_piano",
+        "distorted_electric_guitar",
+        "electric_bass",
+        "string_ensemble",
+        "voice",
+        "drums"
+      ]
+    },
+    {
+      "referenceNotes": 261,
+      "beforeNotes": 169,
+      "afterNotes": 169,
+      "commonNoteIds": 169,
+      "pairedMatches120Ms": 117,
+      "beforeMaeMs": 20.960683760683736,
+      "afterMaeMs": 19.82494041417324,
+      "before": {
+        "20": {
+          "matches": 76,
+          "f1": 0.35348837209302325
+        },
+        "50": {
+          "matches": 104,
+          "f1": 0.48372093023255813
+        },
+        "120": {
+          "matches": 117,
+          "f1": 0.5441860465116279
+        }
+      },
+      "after": {
+        "20": {
+          "matches": 85,
+          "f1": 0.3953488372093023
+        },
+        "50": {
+          "matches": 105,
+          "f1": 0.4883720930232558
+        },
+        "120": {
+          "matches": 117,
+          "f1": 0.5441860465116279
+        }
+      },
+      "coldCorrectedJobSec": 32.968691000000035,
+      "cachedUncorrectedJobSec": 2.0151991000002454,
+      "correctionCalculationSec": 0.0018435000001773005,
+      "primaryInputs": [
+        {
+          "name": "drums",
+          "notes": 53,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": null,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "bass",
+          "notes": 18,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": 18,
+          "filterDiscarded": 1,
+          "filterMerged": 0
+        },
+        {
+          "name": "piano",
+          "notes": 57,
+          "correctionMs": -4.484517464508684,
+          "invalidChunks": 0,
+          "referenceNotes": 59,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "guitar",
+          "notes": 0,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": 0,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "vocals",
+          "notes": 11,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": null,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "other",
+          "notes": 30,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": 36,
+          "filterDiscarded": 1,
+          "filterMerged": 0
+        }
+      ],
+      "baselinePrimaryCacheHits": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "baselineReferenceCacheHits": [
+        null,
+        true,
+        true,
+        true,
+        null,
+        true
+      ],
+      "separatedSources": [
+        {
+          "type": "drums",
+          "sha256": "33bea6fc36d7867d27ab9f084af3c3a541d4768ab8ed0eaaa18f20d40ddcdc6f"
+        },
+        {
+          "type": "bass",
+          "sha256": "45e41bbcb0e33dc57520e09c5dc158f85b0cb8a5da31009ad0b13e1df4609755"
+        },
+        {
+          "type": "vocals",
+          "sha256": "6e53e31a54a9894e3eca017689835ca0b73d4ec7cf37dfa96821a84bdf4caf1f"
+        },
+        {
+          "type": "other",
+          "sha256": "d2a219773608fc5c352cf8a8949461ac0b52b0260eff9626074adcc11fc232f5"
+        },
+        {
+          "type": "piano",
+          "sha256": "e2a7c7e1cbe926456f2aed15be43aaadca279907b355064e2d7c8c1a0c63cd99"
+        },
+        {
+          "type": "guitar",
+          "sha256": "c33dc1f62e1269f29d288e0e46d67138f768b32aafb469277ff00150571702fa"
+        }
+      ],
+      "track": "Track00015",
+      "mode": "separated",
+      "audioSha256": "ed46a332e8691ebbcebce424e357bdd1a5a4660d1cda9a02f56537c22d170fff",
+      "referenceMidiSha256": "f2bc55646d5393696d9f05264f2e04de2f634c08155c94a8cbdbaaebae95579e",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "fixedInstruments": [
+        "acoustic_piano",
+        "distorted_electric_guitar",
+        "electric_bass",
+        "string_ensemble",
+        "voice",
+        "drums"
+      ]
+    },
+    {
+      "referenceNotes": 139,
+      "beforeNotes": 143,
+      "afterNotes": 143,
+      "commonNoteIds": 143,
+      "pairedMatches120Ms": 28,
+      "beforeMaeMs": 3.621428571429267,
+      "afterMaeMs": 3.621428571429267,
+      "before": {
+        "20": {
+          "matches": 28,
+          "f1": 0.19858156028368795
+        },
+        "50": {
+          "matches": 28,
+          "f1": 0.19858156028368795
+        },
+        "120": {
+          "matches": 28,
+          "f1": 0.19858156028368795
+        }
+      },
+      "after": {
+        "20": {
+          "matches": 28,
+          "f1": 0.19858156028368795
+        },
+        "50": {
+          "matches": 28,
+          "f1": 0.19858156028368795
+        },
+        "120": {
+          "matches": 28,
+          "f1": 0.19858156028368795
+        }
+      },
+      "coldCorrectedJobSec": 10.45113769999989,
+      "cachedUncorrectedJobSec": 1.4610026000009384,
+      "correctionCalculationSec": 0.0005037999999331078,
+      "primaryInputs": [
+        {
+          "name": "direct",
+          "notes": 143,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": null,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        }
+      ],
+      "baselinePrimaryCacheHits": [
+        true
+      ],
+      "baselineReferenceCacheHits": [
+        null
+      ],
+      "separatedSources": [],
+      "track": "Track00018",
+      "mode": "direct",
+      "audioSha256": "9af49fb09026f43631cdfde2877a981e280acc18bac9f09ba8bbc073a8041c0a",
+      "referenceMidiSha256": "fdacfe7fe67fa17c48ea547805c3d126c5304fdc696db5245171dcfec8419b7c",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "fixedInstruments": [
+        "acoustic_piano",
+        "organ",
+        "acoustic_guitar",
+        "distorted_electric_guitar",
+        "acoustic_bass",
+        "electric_bass",
+        "string_ensemble",
+        "synth_strings",
+        "voice",
+        "synth_lead",
+        "synth_pad",
+        "drums"
+      ]
+    },
+    {
+      "referenceNotes": 139,
+      "beforeNotes": 123,
+      "afterNotes": 123,
+      "commonNoteIds": 123,
+      "pairedMatches120Ms": 20,
+      "beforeMaeMs": 17.425000000000146,
+      "afterMaeMs": 17.425000000000146,
+      "before": {
+        "20": {
+          "matches": 15,
+          "f1": 0.11450381679389313
+        },
+        "50": {
+          "matches": 20,
+          "f1": 0.15267175572519084
+        },
+        "120": {
+          "matches": 20,
+          "f1": 0.15267175572519084
+        }
+      },
+      "after": {
+        "20": {
+          "matches": 15,
+          "f1": 0.11450381679389313
+        },
+        "50": {
+          "matches": 20,
+          "f1": 0.15267175572519084
+        },
+        "120": {
+          "matches": 20,
+          "f1": 0.15267175572519084
+        }
+      },
+      "coldCorrectedJobSec": 31.840073800000027,
+      "cachedUncorrectedJobSec": 1.8805015000016283,
+      "correctionCalculationSec": 0.0012437999994290294,
+      "primaryInputs": [
+        {
+          "name": "drums",
+          "notes": 0,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": null,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "bass",
+          "notes": 11,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": 11,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "piano",
+          "notes": 15,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": 15,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "guitar",
+          "notes": 0,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": 0,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "vocals",
+          "notes": 0,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": null,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        },
+        {
+          "name": "other",
+          "notes": 97,
+          "correctionMs": 0.0,
+          "invalidChunks": 0,
+          "referenceNotes": 97,
+          "filterDiscarded": 0,
+          "filterMerged": 0
+        }
+      ],
+      "baselinePrimaryCacheHits": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "baselineReferenceCacheHits": [
+        null,
+        true,
+        true,
+        true,
+        null,
+        true
+      ],
+      "separatedSources": [
+        {
+          "type": "drums",
+          "sha256": "0cc3b2437fd80e535a00ebbb022859ebcb32ba14a4923077f57dfb734a453916"
+        },
+        {
+          "type": "bass",
+          "sha256": "c02a36d54964f44bbbb0c16ecd211049d2158914ef93f59013e1d5568fdbb0f8"
+        },
+        {
+          "type": "vocals",
+          "sha256": "d68bfbbd69af6210e12fec66d603f161806c29bda6def9e5960eb2afeed14cd0"
+        },
+        {
+          "type": "other",
+          "sha256": "d880fbf8cf5111efe1b221965c9cd60c118716d6a5333f53692741a9a59f3ff0"
+        },
+        {
+          "type": "piano",
+          "sha256": "2a6f85c1c949a53995ffd8136ffcdf21032974b6ad7b501980a720c3da723c97"
+        },
+        {
+          "type": "guitar",
+          "sha256": "ba16505fde64f10381b6bb997c420940bfe45d642d82e5eff3bf0538bae5871f"
+        }
+      ],
+      "track": "Track00018",
+      "mode": "separated",
+      "audioSha256": "9af49fb09026f43631cdfde2877a981e280acc18bac9f09ba8bbc073a8041c0a",
+      "referenceMidiSha256": "fdacfe7fe67fa17c48ea547805c3d126c5304fdc696db5245171dcfec8419b7c",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "fixedInstruments": [
+        "acoustic_piano",
+        "organ",
+        "acoustic_guitar",
+        "distorted_electric_guitar",
+        "acoustic_bass",
+        "electric_bass",
+        "string_ensemble",
+        "synth_strings",
+        "voice",
+        "synth_lead",
+        "synth_pad",
+        "drums"
+      ]
+    }
+  ],
+  "summary": {
+    "direct": {
+      "cases": 5,
+      "referenceNotes": 1427,
+      "beforeNotes": 1444,
+      "afterNotes": 1444,
+      "pairedMatches120Ms": 539,
+      "beforeMaeMs": 18.578849721706906,
+      "afterMaeMs": 9.09946200529819,
+      "beforeP95AbsoluteErrorMs": 35.60000000000052,
+      "afterP95AbsoluteErrorMs": 30.03025208878323,
+      "coldCorrectedJobsSec": 91.65238940000017,
+      "cachedUncorrectedJobsSec": 10.3564707000005,
+      "correctionCalculationSec": 0.006746900000507594,
+      "correctedPrimaryInputs": 4,
+      "primaryInputs": 5,
+      "beforeF1": {
+        "20": 0.23058167885754094,
+        "50": 0.3706025774991292,
+        "120": 0.37547892720306514
+      },
+      "afterF1": {
+        "20": 0.3392546151166841,
+        "50": 0.3719958202716823,
+        "120": 0.3761755485893417
+      }
+    },
+    "separated": {
+      "cases": 5,
+      "referenceNotes": 1427,
+      "beforeNotes": 1298,
+      "afterNotes": 1298,
+      "pairedMatches120Ms": 543,
+      "beforeMaeMs": 17.57790055248617,
+      "afterMaeMs": 11.22348203200421,
+      "beforeP95AbsoluteErrorMs": 34.000000000000696,
+      "afterP95AbsoluteErrorMs": 29.64606571805727,
+      "coldCorrectedJobsSec": 239.93364259999908,
+      "cachedUncorrectedJobsSec": 11.094364700004007,
+      "correctionCalculationSec": 0.013840500003425404,
+      "correctedPrimaryInputs": 6,
+      "primaryInputs": 29,
+      "beforeF1": {
+        "20": 0.27743119266055044,
+        "50": 0.3867889908256881,
+        "120": 0.3985321100917431
+      },
+      "afterF1": {
+        "20": 0.36110091743119266,
+        "50": 0.3875229357798165,
+        "120": 0.3985321100917431
+      }
+    }
+  }
+}

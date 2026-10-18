@@ -24,7 +24,7 @@ Reference BPM was calculated from the median reference beat interval. Both metho
 
 Downbeat and BPM metrics improved, but 16 tracks were rejected by the constant-tempo estimator and beat macro F1 decreased. The application preserves the selected audio in that case and allows transcription with manually entered BPM and time signature. Processing time includes model loading and represents one measurement on this environment.
 
-## Onset Correction
+## Onset Correction with Restricted Direct-Transcription Candidates
 
 The evaluation used seconds 60–80 of the five tracks already defined in the BabySlakh v2 evaluation configuration `babyslakh_v2.json`: Track00001, Track00004, Track00010, Track00015, and Track00018. Total audio duration was 100 seconds. Each segment was transcribed once using MuScriptor medium, CUDA, float16, high accuracy, specified instruments, and direct transcription. The official MuScriptor common timing-offset correction was applied to the same notes after shared postprocessing.
 
@@ -42,6 +42,42 @@ SciPy linear assignment matched notes one to one by MIDI pitch and instrument, w
 
 Correction was applied to four of the five segments. Mean absolute error decreased by 53.13%, but Track00015 increased from 16.08 ms to 16.30 ms and Track00018 received a 0 ms correction. Pitch, instrument, and note count were unchanged. These five segments do not establish an improvement rate for other recordings, model sizes, or transcription after source separation.
 
+## Direct and Separated Transcription Using the Application Pipeline
+
+The same five tracks at seconds 60–80 were processed in direct and separated modes through `TranscriptionJobManager` at commit `44a9e9ea643a1a27e3fac3adde42ae658b53e694`. Conditions were MuScriptor medium, CUDA, float16, high accuracy, and specified instruments. The same `fixedInstruments` were used, with the application's default instrument-family candidate expansion and duplicate-note removal enabled. The separation model was BS-RoFormer SW Fixed.
+
+Separated transcription enabled all three application defaults: added drums, pitch false-positive reduction, and velocity assignment from separated audio amplitude. Added drums used a 20% gain; only the drums added to Bass passed through a 350 Hz fourth-order Butterworth high-pass filter. Beat analysis used the original audio, and timing correction also applied to reference transcriptions of the unmodified separated audio.
+
+Each condition first ran transcription with correction enabled. A comparison run then reused exactly the same separated audio and cached transcription events, disabling only timing correction. This isolated correction from repeated model inference while retaining the complete application pipeline, including subsequent note selection and velocity assignment. Corresponding note IDs, pitches, detected instruments, output tracks, and note counts were identical across all 10 condition pairs.
+
+One-to-one matching required identical MIDI pitch and detected instrument and a baseline onset difference of at most 120 ms. The same note IDs were tracked before and after correction. F1 used all 1,427 reference notes and all output notes for each condition, with matching recalculated at each tolerance.
+
+| Method | Same matched note pairs | MAE without correction | MAE with correction | Reduction |
+|---|---:|---:|---:|---:|
+| Direct transcription | 539 | 18.58 ms | 9.10 ms | 51.02% |
+| Separated transcription | 543 | 17.58 ms | 11.22 ms | 36.15% |
+
+| Method | 20 ms F1 without correction | 20 ms F1 with correction | 50 ms F1 without correction | 50 ms F1 with correction |
+|---|---:|---:|---:|---:|
+| Direct transcription | 0.2306 | 0.3393 | 0.3706 | 0.3720 |
+| Separated transcription | 0.2774 | 0.3611 | 0.3868 | 0.3875 |
+
+| Track | Direct MAE, without → with correction | Separated MAE, without → with correction |
+|---|---:|---:|
+| Track00001 | 16.86 → 14.89 ms | 17.06 → 17.35 ms |
+| Track00004 | 17.51 → 6.37 ms | 9.80 → 7.78 ms |
+| Track00010 | 21.14 → 5.72 ms | 19.39 → 7.96 ms |
+| Track00015 | 18.53 → 18.16 ms | 20.96 → 19.82 ms |
+| Track00018 | 3.62 → 3.62 ms | 17.43 → 17.43 ms |
+
+Separated transcription applied a nonzero correction to 6 of 29 primary inputs. Error decreased on three tracks, increased on one, and one received a 0 ms correction. At 50 ms tolerance, matched notes increased from 527 to 528, with 1,298 output notes. The principal measured change was reduced onset error for notes already detected.
+
+Total corrected processing time for the five segments was 91.65 seconds in direct mode and 239.93 seconds in separated mode. Direct mode ran first; separated mode reused the prepared WAV and original-audio beat analysis. Separated audio and transcription events were calculated anew for each condition. Calculating correction and changing note times took 6.75 ms and 13.84 ms in total. Processing times represent one measurement per condition on this environment.
+
+This compares timing correction on and off for 20-second segments, the medium model, and specified instruments. The matched-note populations differ between direct and separated modes, so their MAE values alone cannot establish which mode performs better. Correction coverage on 20-second segments may differ from coverage on complete tracks. Instrument-family candidates, audio conversion, and the complete pipeline differ from the earlier 537-pair evaluation.
+
+See the [additional application-pipeline comparison JSON](../benchmarks/data/muscriptor-030-application-onset-comparison.json) for per-track and per-input metrics and SHA-256 values for models, audio, and separated audio.
+
 ## Implementation and Conditions
 
 Beat analysis explicitly passes the local final0 checkpoint to MuScriptor `detect_grid` and uses results accepted by its constant-tempo test. Onset correction references the original audio's beat analysis and runs after shared postprocessing for each direct or separated transcription input and each reference transcription. MuScriptor `with_onset_delay` calculates the correction using the official conditions, including at least 40 distinct onset times, phase concentration of at least 0.5, and absolute correction of at most 40 ms. Corrections that cross the audio origin preserve note duration and limit the onset to 0 seconds.
@@ -58,12 +94,13 @@ Measure the previous method in a separate working directory at the baseline comm
 2. Evaluate beat analysis with `uv run python scripts/evaluate_tempo_downbeat.py --audio-root <GTZAN-mini>/genres --annotations-root <annotations>/gtzan/annotations/beats --split evaluation --output app/benchmark/new-tempo.json`.
 3. Download the audio with reference MIDI using `scripts/prepare_babyslakh_benchmark.ps1`.
 4. Evaluate onset correction with `uv run python -m scripts.evaluate_onset_correction --dataset-root app/benchmark/public-data/babyslakh_16k --output app/benchmark/onset-comparison.json`.
+5. Compare the application pipeline's direct and separated modes with `uv run python -m scripts.evaluate_application_onset_correction --dataset-root app/benchmark/public-data/babyslakh_16k --output app/benchmark/application-onset-comparison.json`. Use a new `--work-dir` to calculate separated audio and transcription events anew.
 
 ## Application Validation
 
 | Validation | Result |
 |---|---|
-| `uv run pytest -q` | 344 passed, 1 failed, exit code 1 |
+| `uv run pytest -q` | After the additional comparison: 346 passed, 1 failed, exit code 1 |
 | `npm test -- --run` | 381 passed, exit code 0 |
 | `npm run typecheck` | Exit code 0 |
 | `npm run dist:win` | EXE generated, exit code 0 |
