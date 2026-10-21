@@ -8,8 +8,16 @@ This document is not legal advice. The publisher should consult a qualified prof
 
 1. Run `git status --ignored` and confirm zero tracked files under `models/` and `UserData/`, zero tracked `.ecaproj` and audio files, and zero tracked generated executables.
 2. Include `LICENSE`, the Japanese and English README files, user guides, third-party notices, this checklist, and lockfiles.
-3. Tag the release commit and state test results, known defects, and usage limitations in the release notes.
+3. Tag the release commit and describe changes for users, corrected defects, and usage limitations in the release notes.
 4. The application is licensed under the MIT License. Keep [`LICENSE`](../../LICENSE), the [README](../../README.en.md), the [User Guide](../USER_GUIDE.en.md), their Japanese versions, package information, and the in-package license display consistent.
+
+## Writing and Reviewing Public Documentation
+
+Write release notes for application users. For each change, describe the user action, previous symptom, or resulting behavior needed to understand that change.
+
+Keep automated-test, type-checking, and build-verification results in CI logs or developer verification records. Document accuracy comparisons in developer evaluation documents, including the evaluation set, input conditions, metric definitions, and measurements. When release notes describe an accuracy improvement, explain the applicable input conditions and effect on users, and reference the corresponding evaluation document.
+
+Before publication, read the generated `RELEASE_NOTES.md` and confirm that each change explains its effect on users. Compare the GitHub Release body with the attached `RELEASE_NOTES.md`, and publish the reviewed text.
 
 ## Publishing the Windows Version
 
