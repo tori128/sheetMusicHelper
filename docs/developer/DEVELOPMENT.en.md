@@ -129,7 +129,7 @@ uv run python scripts/smoke_stem_separation.py `
 ```
 
 The public-dataset comparison procedure is in [Transcription Methods on a Public Dataset](../TRANSCRIPTION_METHOD_BENCHMARK.en.md#reproduction). Conditions and results for tempo, beat, and downbeat estimation are in the [Public Tempo, Beat, and Downbeat Evaluation](TEMPO_DOWNBEAT_EVALUATION.en.md).
-The [beat analysis and onset correction comparison](MUSCRIPTOR_030_EVALUATION.en.md) records the MuScriptor 0.3.0 measurements and correction conditions.
+The [beat analysis and onset correction comparison](MUSCRIPTOR_EVALUATION.en.md) records the MuScriptor 0.4.0 measurements and correction conditions.
 
 ## Change Checklist
 

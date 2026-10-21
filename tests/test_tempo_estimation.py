@@ -31,6 +31,33 @@ def test_measure_phase_respects_requested_denominator(monkeypatch, denominator):
     assert result.beat_offset_sec == pytest.approx(3.2 % (0.5 * 3 * 4 / denominator))
 
 
+def test_nonsteady_beats_return_average_bpm_instead_of_rejecting_audio(monkeypatch):
+    monkeypatch.setattr(tempo_estimation, 'analyze_beats', lambda path: BeatGrid(
+        bpm=136.01, beats_per_bar=4, first_downbeat=0.62, steady=False,
+    ))
+    result = estimate_tempo(Path('source.wav'), numerator=4, denominator=4)
+    assert result.bpm == 136.01
+    assert result.beat_offset_sec == 0.62
+    assert result.beats_per_bar == 4
+
+
+def test_official_detector_regularizes_missing_and_extra_beats(monkeypatch):
+    import beat_this.inference
+    import torch
+
+    regular = 0.1 + np.arange(64) * 0.5
+    tracked = np.sort(np.append(np.delete(regular, [12, 13]), 8.2))
+    monkeypatch.setattr(beat_this.inference, 'Audio2Beats',
+                        lambda **kwargs: lambda *args: (tracked, regular[::4]))
+    grid = beat_analysis.detect_beat_grid(
+        torch.zeros(2, 16000), 16000, checkpoint='local.ckpt', device='cpu',
+    )
+    assert grid.bpm == pytest.approx(120)
+    assert grid.steady
+    assert grid.beats_per_bar == 4
+    np.testing.assert_allclose(grid.beats, regular)
+
+
 def test_unavailable_tempo_is_reported_for_manual_entry(monkeypatch):
     monkeypatch.setattr(tempo_estimation, 'analyze_beats', lambda path: None)
     with pytest.raises(TempoUnavailableError, match='BPM'):

@@ -200,14 +200,14 @@ def test_public_language_pairs_preserve_shared_facts() -> None:
             "docs/TRANSCRIPTION_METHOD_BENCHMARK.md",
             "docs/TRANSCRIPTION_METHOD_BENCHMARK.en.md",
         ): (
-            "0.2306",
-            "0.3393",
-            "0.3706",
-            "0.3720",
-            "0.2774",
-            "0.3611",
-            "0.3868",
-            "0.3875",
+            "0.2291",
+            "0.3370",
+            "0.3682",
+            "0.3696",
+            "0.2771",
+            "0.3607",
+            "0.3864",
+            "0.3871",
             "311096dc2bde7d61c97e930edbfc7f78",
         ),
         (
@@ -215,11 +215,11 @@ def test_public_language_pairs_preserve_shared_facts() -> None:
             "docs/developer/TEMPO_DOWNBEAT_EVALUATION.en.md",
         ): (
             "54%",
-            "74%",
+            "84%",
             "0.7347",
-            "0.7437",
+            "0.7629",
             "0.3203",
-            "0.5517",
+            "0.5746",
             "a61439e86c13037011fde8e0f0743ec55c50bce3",
             "890407d158078527ab396b49fea3c8a83e5734ee",
         ),
@@ -234,7 +234,7 @@ def test_public_language_pairs_preserve_shared_facts() -> None:
 
 
 def test_public_benchmark_uses_latest_application_measurements() -> None:
-    result = json.loads((REPOSITORY_ROOT / "docs/benchmarks/data/muscriptor-030-application-onset-comparison.json").read_text(encoding="utf-8"))
+    result = json.loads((REPOSITORY_ROOT / "docs/benchmarks/data/muscriptor-application-onset-comparison.json").read_text(encoding="utf-8"))
     assert set(result["summary"]) == {"direct", "separated"}
     assert len(result["cases"]) == 10
     for mode in ("direct", "separated"):
@@ -252,7 +252,7 @@ def test_public_benchmark_uses_latest_application_measurements() -> None:
 def test_latest_benchmark_records_application_settings() -> None:
     from earcopy_service.transcription_inputs import default_pitched_timing_guide_gains
 
-    result = json.loads((REPOSITORY_ROOT / "docs/benchmarks/data/muscriptor-030-application-onset-comparison.json").read_text(encoding="utf-8"))
+    result = json.loads((REPOSITORY_ROOT / "docs/benchmarks/data/muscriptor-application-onset-comparison.json").read_text(encoding="utf-8"))
     settings = result["conditions"]
     assert settings["modelVariant"] == "medium"
     assert settings["profile"] == "high_accuracy"
@@ -420,7 +420,7 @@ def test_notices_identify_bundled_assets_and_redistribution_constraints() -> Non
         "scripts/build_libsndfile_lgpl.ps1",
         "EarCopyAssist-<version>-copyleft-sources.zip",
         "Apache-2.0",
-        "torch | 2.2.2+cu121",
+        "torch | 2.5.1+cu121",
     ):
         assert required_text in notices
 

@@ -17,7 +17,7 @@ Hugging Faceから取得します。`Unknown`は利用許諾を意味しませ�
 
 ### コード
 
-- 対象：MuScriptor 0.3.0 Pythonパッケージおよび公式Web UI
+- 対象：MuScriptor 0.4.0 Pythonパッケージおよび公式Web UI
 - 利用箇所：モデルの読み込みと音符イベント生成
 - 初期版で参照した範囲：音符イベント表示、ピアノロール、原音・SoundFont同期再生の設計
 - 著作権表示：Copyright (c) 2026 Kyutai x Mirelo
@@ -43,7 +43,7 @@ EarCopy AssistのGitHub Releaseは、公式の`small`、`medium`、`large`モデ
 
 ## Beat This!
 
-- 用途：MuScriptor 0.3.0の拍解析と発音時刻補正
+- 用途：MuScriptor 0.4.0の拍解析と発音時刻補正
 - モデル：`final0`（配布重みを無改変で同梱）
 - コードとモデル重みのライセンス：MIT
 - 著作権表示：Copyright (c) 2024 Institute of Computational Perception, JKU Linz, Austria
@@ -199,11 +199,11 @@ Electronの`LICENSE.electron.txt`と`LICENSES.chromium.html`を配布パッケ�
 | mido | 1.3.3 | MIT | <https://github.com/mido/mido> |
 | mpmath | 1.3.0 | BSD-3-Clause | <https://github.com/mpmath/mpmath> |
 | msgpack | 1.2.1 | Apache-2.0 | <https://github.com/msgpack/msgpack-python> |
-| muscriptor | 0.3.0 | MIT | <https://github.com/muscriptor/muscriptor> |
+| muscriptor | 0.4.0 | MIT | <https://github.com/muscriptor/muscriptor> |
 | narwhals | 2.24.0 | MIT | <https://github.com/narwhals-dev/narwhals> |
 | networkx | 3.6.1 | BSD-3-Clause | <https://github.com/networkx/networkx> |
 | numba | 0.66.0 | BSD | <https://github.com/numba/numba> |
-| numpy | 1.26.4 | BSD-3-Clause + bundled notices | <https://github.com/numpy/numpy> |
+| numpy | 2.2.6 | BSD-3-Clause + bundled notices | <https://github.com/numpy/numpy> |
 | packaging | 26.2 | Apache-2.0 OR BSD-2-Clause | <https://github.com/pypa/packaging> |
 | platformdirs | 4.11.0 | MIT | <https://github.com/tox-dev/platformdirs> |
 | pooch | 1.9.0 | BSD-3-Clause | <https://github.com/fatiando/pooch> |
@@ -225,10 +225,10 @@ Electronの`LICENSE.electron.txt`と`LICENSES.chromium.html`を配布パッケ�
 | soundfile | 0.14.0 | BSD-3-Clause; bundled libsndfile LGPL-2.1-or-later | <https://github.com/bastibe/python-soundfile> |
 | soxr | 1.1.0 | LGPL-2.1-or-later + bundled notices | <https://github.com/dofuuz/python-soxr> |
 | starlette | 1.3.1 | BSD-3-Clause | <https://github.com/Kludex/starlette> |
-| sympy | 1.14.0 | BSD-3-Clause | <https://github.com/sympy/sympy> |
+| sympy | 1.13.1 | BSD-3-Clause | <https://github.com/sympy/sympy> |
 | threadpoolctl | 3.6.0 | BSD-3-Clause | <https://github.com/joblib/threadpoolctl> |
-| torch | 2.2.2+cu121 | BSD-3-Clause + NOTICE/third-party notices | <https://github.com/pytorch/pytorch> |
-| torchaudio | 2.2.2+cu121 | BSD-2-Clause | <https://github.com/pytorch/audio> |
+| torch | 2.5.1+cu121 | BSD-3-Clause + NOTICE/third-party notices | <https://github.com/pytorch/pytorch> |
+| torchaudio | 2.5.1+cu121 | BSD-2-Clause | <https://github.com/pytorch/audio> |
 | tqdm | 4.69.1 | MPL-2.0 AND MIT | <https://github.com/tqdm/tqdm> |
 | typer | 0.27.0 | MIT | <https://github.com/fastapi/typer> |
 | typing-extensions | 4.16.0 | PSF-2.0 | <https://github.com/python/typing_extensions> |

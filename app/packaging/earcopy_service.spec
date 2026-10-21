@@ -3,7 +3,7 @@ import os
 import sys
 from importlib.metadata import PackageNotFoundError, distribution
 
-from PyInstaller.utils.hooks import collect_all, collect_submodules
+from PyInstaller.utils.hooks import collect_all, collect_submodules, copy_metadata
 
 
 app_root = Path(SPECPATH).parent
@@ -197,6 +197,7 @@ analysis = Analysis(
     binaries=libsndfile_binaries + muscriptor_binaries + media_binaries,
     datas=(
         muscriptor_datas
+        + copy_metadata("earcopy-assist")
         + media_datas
         + libsndfile_datas
         + runtime_license_datas

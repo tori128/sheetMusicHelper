@@ -312,7 +312,7 @@ def _load_model(
         del device
         return load_file(path, device="cpu")
 
-    # MuScriptor 0.3.0 otherwise creates both the model and its FP32 state
+    # MuScriptor otherwise creates both the model and its FP32 state
     # dictionary on CUDA before converting the model to FP16.
     with MODEL_INITIALIZATION_LOCK:
         original_dtype = torch.get_default_dtype()

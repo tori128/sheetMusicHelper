@@ -43,7 +43,7 @@ if (import.meta.env.DEV && developmentWindow.desktopApi === undefined) {
     }),
     getAboutInfo: async () => ({
       appVersion: "development",
-      engineVersion: "0.3.0",
+      engineVersion: "development",
       notices: [],
     }),
     getLocalAudioUrl: async (path) => `file:///${path.replaceAll("\\", "/")}`,

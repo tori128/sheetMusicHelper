@@ -146,8 +146,8 @@ uv run python scripts/smoke_stem_separation.py `
 [採譜方式の比較](../TRANSCRIPTION_METHOD_BENCHMARK.md#再現手順)に記載する。
 テンポ・拍・小節先頭推定の測定条件と結果は
 [テンポ・拍・小節先頭推定の公開評価](TEMPO_DOWNBEAT_EVALUATION.md)に記載する。
-MuScriptor 0.3.0導入時の再測定と発音時刻補正の条件は
-[拍解析・発音時刻補正の比較](MUSCRIPTOR_030_EVALUATION.md)に記載する。
+MuScriptor 0.4.0の再測定と発音時刻補正の条件は
+[拍解析・発音時刻補正の比較](MUSCRIPTOR_EVALUATION.md)に記載する。
 
 ## 変更時の確認
 

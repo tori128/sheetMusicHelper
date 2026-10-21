@@ -1,6 +1,6 @@
 {
   "conditions": {
-    "applicationCommit": "44a9e9ea643a1a27e3fac3adde42ae658b53e694",
+    "applicationCommit": "9d73ee3d851f61c3fa74c2828f9de360a65d21fa",
     "evaluationScriptSha256": "e77287b629d55573052acf80b8a032829c3ba373561e8c6bb8f8c1f063e63169",
     "modelSha256": "ac80adbdf85d87231735fd948af7013441c0afced316c4e9067fd5d8a7fb97ec",
     "beatModelSha256": "8c328b45f59d8dd3dff219253ff6a8d6482be57d0133a29140e2febbf8eb8331",
@@ -14,7 +14,49 @@
     "familyDuplicateCollapse": true,
     "drumOnsetGuide": true,
     "timingGuideNoteFilter": true,
-    "velocityFromStemAmplitude": true
+    "velocityFromStemAmplitude": true,
+    "applicationCommitIsBase": true,
+    "applicationSourceSha256": {
+      "src/earcopy_service/__init__.py": "3ba3fd3c6d7dfb2db698d41b8a85a5a6b7d2883f2c8ce80f60b08df32d27cf31",
+      "src/earcopy_service/__main__.py": "d0bbfd362788ebc130c8ad9e333ad50a5f836f742384cb726728527a08f06e09",
+      "src/earcopy_service/_vendor/__init__.py": "ad33ad15c66cd6040cf2f67b4b4287ab5fcc08355b000a40d55e1fff0f22f808",
+      "src/earcopy_service/_vendor/bs_roformer/__init__.py": "dc3b781638a96b77bf36730d2e002e23be05025dffdff05d72ea72af61266425",
+      "src/earcopy_service/_vendor/bs_roformer/model.py": "97ce5a54103f6b4bc7c5a80e9239d7e5467e4e7688c1efc7db2ae9f80ff33e6f",
+      "src/earcopy_service/api.py": "d0a46b14bc3cfff52c3079637c19ba3a749e5ef4988c30917c56cc2ee97b9d76",
+      "src/earcopy_service/audio.py": "1503c6a78b94974578a9698f8f428251b33f2cdf42e54bd452bebb4891343a57",
+      "src/earcopy_service/backends/__init__.py": "2759703cfd018e6a083aee723084efe490f5be38ecec01613fe5d66a65e41c6b",
+      "src/earcopy_service/backends/base.py": "37f0b676e9640fa2a1f8108bf4291e1b5cb8e9923323351736d475abc671d96e",
+      "src/earcopy_service/backends/muscriptor.py": "44312e49ae8bd050ea2ce11ce3b50856ca573a88f3bf824af014770b6a8fa36e",
+      "src/earcopy_service/backends/muscriptor_cpu.py": "29fa0d5b70d8a87cc72b1d1a8425c63b9f12c9538b9e596cec9b2835385ed91d",
+      "src/earcopy_service/backends/muscriptor_cuda.py": "a31922f024b513c6d2181ee15ae8bafa654c13121611f5a5b02226f264c7a7fe",
+      "src/earcopy_service/beat_analysis.py": "da51d79dbfd3b94ee04b3b1ba72b0c80f21df6723dae6f5d84acfd7133eaf220",
+      "src/earcopy_service/cache_management.py": "1686db3563af3f3227c51c1dfd8e9a8bad073ad4b9a2cf15a592866d1074f252",
+      "src/earcopy_service/diagnostics.py": "eb04bb7d17addf12c9fb2e128bfb49d9a7afe6d771306dfb8700d336de07a7ac",
+      "src/earcopy_service/instrument_routing.py": "c3bdb8046bdf96ca42c64c358a139640b46c79ba27a6b37afec210c00db5b71f",
+      "src/earcopy_service/instruments.py": "4c8e98f31f2599ad7491202ea6a147405b4d04a79a99451adcb790d675da0116",
+      "src/earcopy_service/jobs.py": "77798aa0d479bcda8596daaf18d560f5ab5add6bd11963ee3f53b40d6f9969a4",
+      "src/earcopy_service/midi_export.py": "5a2deefff75282d9c2b76d0e3eee04592425d5e6d507a7be3ca54ef9838599a2",
+      "src/earcopy_service/model_profiles.py": "bfec8a2f3542b1ae30115772e5ea8485cd8aa849177f0890d6977e39ffbd243a",
+      "src/earcopy_service/model_validation.py": "b124cb288c15b14cc3322f73ea7305e29114f1a0aabeca983eb06337e6045ecd",
+      "src/earcopy_service/models.py": "3b2184f93d7d8afd799570259b591a0dcf5f4919aa0952415c1414cafa25ad3c",
+      "src/earcopy_service/musicxml_export.py": "e97ef11a33dccfd505810c4edd86d3d40c187a2f4ef1704b54f7cf1d9dacc787",
+      "src/earcopy_service/note_processing.py": "1c2e6a11e9b67e9524b4cea0b0cdc5260fad6e4d22f01ec7430b33ef311aa04d",
+      "src/earcopy_service/presets.py": "7f85cd4004632c15339acd90a9fbdd6ca94bd99fe29b23ea9914685f321338f6",
+      "src/earcopy_service/project_io.py": "8c96d947d1f2aba57c7a3362c5ffc3b59a22d11842e5e68d06116e7df35f3592",
+      "src/earcopy_service/score_validation.py": "774b580a22c199eda7113ec966c151f816046b209b57a5bcb1a533f83e638f0c",
+      "src/earcopy_service/spectral_difference.py": "049f0ed4a650aebde782f5ee90e0315b8a4498e921002b9a992875136014455c",
+      "src/earcopy_service/stem_separation.py": "8c7d4317c54208de1b45eae3cf429ea9fd04ecba9e5bebcfc1a49d609890115f",
+      "src/earcopy_service/tempo_estimation.py": "5cfa55fb0bc3c7847e553f454303830f64887783912671289a1e4f3c156fcda2",
+      "src/earcopy_service/timebase.py": "de34da0ba5b801462ed663fa5b7bdd6e0d2c9c6646ff3b65853aeb4d3b84ba9f",
+      "src/earcopy_service/torch_runtime.py": "a08ac2b4aaa9ceac7855e1e65306024d8eb51798d5e8877d4f8d2fe508afd985",
+      "src/earcopy_service/transcription_cache.py": "8c98dcc6cd1c4f14b5201a333d95c3185669f9287789f6a60c515e9a2126d66e",
+      "src/earcopy_service/transcription_inputs.py": "8224f8f37000a3b37ccac631c0c01bb14d454b31bcbb81eab4aa75159e49d916",
+      "src/earcopy_service/transcription_option_processing.py": "5be617ade9edec698142751249dcf5a19e8556d0aab7bfe2fb64d32ebe7c7593",
+      "src/earcopy_service/transcription_postprocessing.py": "96d3b6de324db544ea42d3b76f6221af0b357d3f85396acd3ca23c748310e59a",
+      "src/earcopy_service/transcription_profiles.py": "4bb1342a197c4258a9575e42740f1905e79226a23194c2f3c56ca1a08ad72385",
+      "src/earcopy_service/user_presets.py": "0961230cc3fef1b5ef3bb180883ed0322a0ba226b76fdd04979991d7ab9fedd0",
+      "src/earcopy_service/velocity_estimation.py": "acb865475c4ed07145ef39bd07d78633a374e87c0e8569d8239f11fe2a7e5b9f"
+    }
   },
   "dataset": {
     "name": "BabySlakh",
@@ -25,8 +67,13 @@
     "datasetDirectory": "babyslakh_16k"
   },
   "environment": {
-    "torch": "2.2.2+cu121",
-    "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU"
+    "torch": "2.5.1+cu121",
+    "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "muscriptor": "0.4.0",
+    "numpy": "2.2.6",
+    "beatThis": "1.1.0",
+    "beatThreads": 2,
+    "concurrentWorkload": "PyInstaller build and final GTZAN evaluation tracks during early cases"
   },
   "cases": [
     {
@@ -65,9 +112,9 @@
           "f1": 0.16367265469061876
         }
       },
-      "coldCorrectedJobSec": 25.66369669999949,
-      "cachedUncorrectedJobSec": 1.8407329999990907,
-      "correctionCalculationSec": 0.0010815999994520098,
+      "coldCorrectedJobSec": 26.776755299999877,
+      "cachedUncorrectedJobSec": 1.7617537999999513,
+      "correctionCalculationSec": 0.002302900000131558,
       "primaryInputs": [
         {
           "name": "direct",
@@ -88,7 +135,7 @@
       "separatedSources": [],
       "track": "Track00001",
       "mode": "direct",
-      "audioSha256": "8ccfaa51493070100bd2ea1d2d83ca0c696df4072cae0289d78e12764db23d1e",
+      "audioSha256": "d2eea625f54a383a070d641a9947af22d7f6104ed954172f8144cf9aa845f587",
       "referenceMidiSha256": "d605f26ed872e07114703ceb2d505eeb65bca8c6483f30b77d292a8a5eb029e3",
       "startSec": 60.0,
       "durationSec": 20.0,
@@ -104,48 +151,48 @@
     },
     {
       "referenceNotes": 235,
-      "beforeNotes": 195,
-      "afterNotes": 195,
-      "commonNoteIds": 195,
+      "beforeNotes": 197,
+      "afterNotes": 197,
+      "commonNoteIds": 197,
       "pairedMatches120Ms": 23,
       "beforeMaeMs": 17.060869565217132,
-      "afterMaeMs": 17.35215455630341,
+      "afterMaeMs": 17.14372530012016,
       "before": {
         "20": {
           "matches": 19,
-          "f1": 0.08837209302325581
+          "f1": 0.08796296296296297
         },
         "50": {
           "matches": 21,
-          "f1": 0.09767441860465116
+          "f1": 0.09722222222222222
         },
         "120": {
           "matches": 23,
-          "f1": 0.10697674418604651
+          "f1": 0.10648148148148148
         }
       },
       "after": {
         "20": {
           "matches": 19,
-          "f1": 0.08837209302325581
+          "f1": 0.08796296296296297
         },
         "50": {
           "matches": 21,
-          "f1": 0.09767441860465116
+          "f1": 0.09722222222222222
         },
         "120": {
           "matches": 23,
-          "f1": 0.10697674418604651
+          "f1": 0.10648148148148148
         }
       },
-      "coldCorrectedJobSec": 39.0660270999997,
-      "cachedUncorrectedJobSec": 2.28050710000025,
-      "correctionCalculationSec": 0.0022062000007281313,
+      "coldCorrectedJobSec": 38.88158320000002,
+      "cachedUncorrectedJobSec": 1.778170700000146,
+      "correctionCalculationSec": 0.0019045999999889318,
       "primaryInputs": [
         {
           "name": "drums",
-          "notes": 84,
-          "correctionMs": -1.9666171994421875,
+          "notes": 86,
+          "correctionMs": -1.2211363805534192,
           "invalidChunks": 0,
           "referenceNotes": null,
           "filterDiscarded": 0,
@@ -216,32 +263,32 @@
       "separatedSources": [
         {
           "type": "drums",
-          "sha256": "bc16b78c0f85a9a737e2c3ec9fdafa157cb311a7fb2a2a7634a705def3eb974a"
+          "sha256": "946295ef526143c3e344a2da510b717d319f04ef6a4bfb8324abdb62eac318f1"
         },
         {
           "type": "bass",
-          "sha256": "4c758925f6e8ef581a6eadbf51da9021a7a95fb9e8b8bd05dbf4f7b39dfa8d39"
+          "sha256": "b763d2cfd52489d0a4ac3716c9cb22fefe62652d8f1374bee2c25d355fdd10f4"
         },
         {
           "type": "vocals",
-          "sha256": "9540c9ecc6410cf318aae9d8079e834b555cbfdd731844743c17c2f9f6262822"
+          "sha256": "073efae12e0f6531411d1900fe0c83d89ea192946d223f390e41827ee36b24c3"
         },
         {
           "type": "other",
-          "sha256": "00df817a35309d82a1f8f812bc4eb9ea09814610e3cf2ce5d06cfca8bce2d92d"
+          "sha256": "47fa317916412c6d2e1e9e2e1a24fe59be160f390fc06a92db63e7e9e48ce3b9"
         },
         {
           "type": "piano",
-          "sha256": "83bc23290f2379fc0b1882c32a99d4d124134856c9c0b2146d391f951387eabe"
+          "sha256": "c0eb29fa83e3eacb0f889bcad6c6640b6ad72be7fb3f0b56587c41e256df34a3"
         },
         {
           "type": "guitar",
-          "sha256": "0bddc4839f856fb6e20e6ad4bd0ad9b6a9c873cd6d3ca0afbea2b5e4d99075bb"
+          "sha256": "fceea87e01b9451ebd214a45ba2aa8c6184bea315948a5d4772f3b86e74436db"
         }
       ],
       "track": "Track00001",
       "mode": "separated",
-      "audioSha256": "8ccfaa51493070100bd2ea1d2d83ca0c696df4072cae0289d78e12764db23d1e",
+      "audioSha256": "d2eea625f54a383a070d641a9947af22d7f6104ed954172f8144cf9aa845f587",
       "referenceMidiSha256": "d605f26ed872e07114703ceb2d505eeb65bca8c6483f30b77d292a8a5eb029e3",
       "startSec": 60.0,
       "durationSec": 20.0,
@@ -257,48 +304,48 @@
     },
     {
       "referenceNotes": 371,
-      "beforeNotes": 396,
-      "afterNotes": 396,
-      "commonNoteIds": 396,
-      "pairedMatches120Ms": 114,
-      "beforeMaeMs": 17.506140350877235,
-      "afterMaeMs": 6.372339285320597,
+      "beforeNotes": 410,
+      "afterNotes": 410,
+      "commonNoteIds": 410,
+      "pairedMatches120Ms": 113,
+      "beforeMaeMs": 16.669911504424835,
+      "afterMaeMs": 6.69747865448216,
       "before": {
         "20": {
           "matches": 80,
-          "f1": 0.20860495436766624
+          "f1": 0.20486555697823303
         },
         "50": {
           "matches": 113,
-          "f1": 0.29465449804432853
+          "f1": 0.2893725992317542
         },
         "120": {
-          "matches": 114,
-          "f1": 0.29726205997392435
+          "matches": 113,
+          "f1": 0.2893725992317542
         }
       },
       "after": {
         "20": {
           "matches": 113,
-          "f1": 0.29465449804432853
+          "f1": 0.2893725992317542
         },
         "50": {
           "matches": 113,
-          "f1": 0.29465449804432853
+          "f1": 0.2893725992317542
         },
         "120": {
           "matches": 115,
-          "f1": 0.29986962190352023
+          "f1": 0.29449423815621
         }
       },
-      "coldCorrectedJobSec": 20.519902800000636,
-      "cachedUncorrectedJobSec": 3.521844200000487,
-      "correctionCalculationSec": 0.0026573000013740966,
+      "coldCorrectedJobSec": 22.270168300000023,
+      "cachedUncorrectedJobSec": 1.5148612000000412,
+      "correctionCalculationSec": 0.0016221000000768981,
       "primaryInputs": [
         {
           "name": "direct",
-          "notes": 396,
-          "correctionMs": 18.687407736848815,
+          "notes": 410,
+          "correctionMs": 21.296968655024767,
           "invalidChunks": 0,
           "referenceNotes": null,
           "filterDiscarded": 0,
@@ -314,7 +361,7 @@
       "separatedSources": [],
       "track": "Track00004",
       "mode": "direct",
-      "audioSha256": "6558d1feb0c61724fb449aab83807d58c4a9e9dfa1e1f25d0d42191a3f95db73",
+      "audioSha256": "f35d795d423c13f2744356a5c5c1741f3eabd057b9a1217e3e75f0b1dfef618b",
       "referenceMidiSha256": "56d9aac4929cdf4724f55f94c44b3795bd30b2c931cca79dbaa5f5ca333019ae",
       "startSec": 60.0,
       "durationSec": 20.0,
@@ -366,9 +413,9 @@
           "f1": 0.3137254901960784
         }
       },
-      "coldCorrectedJobSec": 55.54800169999908,
-      "cachedUncorrectedJobSec": 2.4225045000002865,
-      "correctionCalculationSec": 0.002940899999885005,
+      "coldCorrectedJobSec": 51.843862800000124,
+      "cachedUncorrectedJobSec": 1.9913920000001326,
+      "correctionCalculationSec": 0.002498000000059619,
       "primaryInputs": [
         {
           "name": "drums",
@@ -444,32 +491,32 @@
       "separatedSources": [
         {
           "type": "drums",
-          "sha256": "1c1002ef78202b00e1df3bbc133364b5068d7d2841e0b035d7463b482d4cfa61"
+          "sha256": "c27e2959ad2e58b05bd50971c891435cebebc68ee66087ed14153d176c0b42c0"
         },
         {
           "type": "bass",
-          "sha256": "ba7b6fcaf3668e715735a16843c2c61bab648c6cfd41f4bc74eb4ec64bdf06e3"
+          "sha256": "8073a828796fccd4e0ef20b0cd7a2de7ef5e2d122fbcfcee11ff7264cedef1c9"
         },
         {
           "type": "vocals",
-          "sha256": "9e0a6a196c2176f2efcf1750e3cd236f91ac1d8948399d4815c4b7f461d13677"
+          "sha256": "f7d6f35713f530e3a4675a9cc90a8c22dbaa97f85cc047a8acccf2373b430c8b"
         },
         {
           "type": "other",
-          "sha256": "815ecbc3434619416bb77202b23629c26b10309cfcdea9b7c437e81e5661af54"
+          "sha256": "5be75fdaf22fe40893e84b3d6ba271f78aff3e8f7e0800dc947cb7e105f9579e"
         },
         {
           "type": "piano",
-          "sha256": "9b18d8e4c1092bd7677da4c4ee952d33a39007717e34713c27a13849959cfa18"
+          "sha256": "d93672a2f85987f68c6dd40a189c013a11555b317fa3424a4247eeba8b0c3fb1"
         },
         {
           "type": "guitar",
-          "sha256": "8d2ba261ccae8a394478947a7c9658aad23b4f276a4f01bc3aa44b32b1029cd7"
+          "sha256": "16fb1dad1be109c0c2030678b5891710216c7993219667b9fcd44da35cd50f9d"
         }
       ],
       "track": "Track00004",
       "mode": "separated",
-      "audioSha256": "6558d1feb0c61724fb449aab83807d58c4a9e9dfa1e1f25d0d42191a3f95db73",
+      "audioSha256": "f35d795d423c13f2744356a5c5c1741f3eabd057b9a1217e3e75f0b1dfef618b",
       "referenceMidiSha256": "56d9aac4929cdf4724f55f94c44b3795bd30b2c931cca79dbaa5f5ca333019ae",
       "startSec": 60.0,
       "durationSec": 20.0,
@@ -521,9 +568,9 @@
           "f1": 0.5758661887694145
         }
       },
-      "coldCorrectedJobSec": 19.629488200000196,
-      "cachedUncorrectedJobSec": 1.9746491000005335,
-      "correctionCalculationSec": 0.0016751000002841465,
+      "coldCorrectedJobSec": 18.73111689999996,
+      "cachedUncorrectedJobSec": 1.5463572999999542,
+      "correctionCalculationSec": 0.0015979999998307903,
       "primaryInputs": [
         {
           "name": "direct",
@@ -544,7 +591,7 @@
       "separatedSources": [],
       "track": "Track00010",
       "mode": "direct",
-      "audioSha256": "0a9cb1a12b8e7d8782e8d8353bd1445351c5d05a56caa69f75de3ef2758f8c39",
+      "audioSha256": "1833df9bc0b037876d0b85305768aa4a09cf2f2046813c037a9db91347e6098f",
       "referenceMidiSha256": "75111990699d6f5af97d828559b303c8888c8bec9dcde0b36beca0a0e5c7b9a7",
       "startSec": 60.0,
       "durationSec": 20.0,
@@ -592,9 +639,9 @@
           "f1": 0.609673790776153
         }
       },
-      "coldCorrectedJobSec": 80.51084900000023,
-      "cachedUncorrectedJobSec": 2.495652500001597,
-      "correctionCalculationSec": 0.005606100003205938,
+      "coldCorrectedJobSec": 56.73402299999998,
+      "cachedUncorrectedJobSec": 1.7167358000001514,
+      "correctionCalculationSec": 0.003750400000171794,
       "primaryInputs": [
         {
           "name": "drums",
@@ -659,32 +706,32 @@
       "separatedSources": [
         {
           "type": "drums",
-          "sha256": "8349b6d1ba9cd76f5585464a20785ccb11039948bcda30a72e4455e773ecb019"
+          "sha256": "cfc24206414d777ea4e1ce7b246d49309aed299638ba39437485d80524a66e02"
         },
         {
           "type": "bass",
-          "sha256": "83b1774bd17bbbb8c52e38f3bbe0e952bce81111cbdedbc7f1b80496f0be2b30"
+          "sha256": "9b02c8dfddae1758c13615f5e311edec440c51ef8b5dfea86ddaa6019251f998"
         },
         {
           "type": "vocals",
-          "sha256": "036e17aa758324e68eda7e85b47aa46dd9c4378f360f0ab676aa665210aef475"
+          "sha256": "7ae8dc1a1fb85fffdeb74dfe89bf65f0c34927ac3ef80a7a19fe290049b8b4f4"
         },
         {
           "type": "other",
-          "sha256": "f9986a6bd85e99b152deb54122629f67bb56d483e14e71047b57d1094bbd1265"
+          "sha256": "eb555b66a991b163d061ce4fb6779f7e3f13da93d033c3cbc8babc213b64bc95"
         },
         {
           "type": "piano",
-          "sha256": "b6145bff93cf08fea27269dbe4594a2366712a39574e6315748623f03cc04fe4"
+          "sha256": "6b8703180117ecceb56bc67c193e4bbb8fb4ef083d4f0219474f3f8fdd68967c"
         },
         {
           "type": "guitar",
-          "sha256": "4c74376e374d28fba31e4247de9a7f3b6813ed4623562dd773cbe54163038e87"
+          "sha256": "139c5a1a73a336ebcd5db42e875c195e82ae7eb71c0a78136c401b669d7c5736"
         }
       ],
       "track": "Track00010",
       "mode": "separated",
-      "audioSha256": "0a9cb1a12b8e7d8782e8d8353bd1445351c5d05a56caa69f75de3ef2758f8c39",
+      "audioSha256": "1833df9bc0b037876d0b85305768aa4a09cf2f2046813c037a9db91347e6098f",
       "referenceMidiSha256": "75111990699d6f5af97d828559b303c8888c8bec9dcde0b36beca0a0e5c7b9a7",
       "startSec": 60.0,
       "durationSec": 20.0,
@@ -698,47 +745,47 @@
     },
     {
       "referenceNotes": 261,
-      "beforeNotes": 223,
-      "afterNotes": 223,
-      "commonNoteIds": 223,
+      "beforeNotes": 228,
+      "afterNotes": 228,
+      "commonNoteIds": 228,
       "pairedMatches120Ms": 115,
       "beforeMaeMs": 18.526086956521784,
       "afterMaeMs": 18.15651077874849,
       "before": {
         "20": {
           "matches": 77,
-          "f1": 0.3181818181818182
+          "f1": 0.3149284253578732
         },
         "50": {
           "matches": 109,
-          "f1": 0.45041322314049587
+          "f1": 0.4458077709611452
         },
         "120": {
           "matches": 115,
-          "f1": 0.47520661157024796
+          "f1": 0.4703476482617587
         }
       },
       "after": {
         "20": {
           "matches": 75,
-          "f1": 0.30991735537190085
+          "f1": 0.3067484662576687
         },
         "50": {
           "matches": 111,
-          "f1": 0.45867768595041325
+          "f1": 0.4539877300613497
         },
         "120": {
           "matches": 115,
-          "f1": 0.47520661157024796
+          "f1": 0.4703476482617587
         }
       },
-      "coldCorrectedJobSec": 15.38816399999996,
-      "cachedUncorrectedJobSec": 1.5582417999994504,
-      "correctionCalculationSec": 0.0008290999994642334,
+      "coldCorrectedJobSec": 12.556197700000212,
+      "cachedUncorrectedJobSec": 1.379666699999916,
+      "correctionCalculationSec": 0.0008248999999977968,
       "primaryInputs": [
         {
           "name": "direct",
-          "notes": 223,
+          "notes": 228,
           "correctionMs": -4.7002520887841515,
           "invalidChunks": 0,
           "referenceNotes": null,
@@ -755,7 +802,7 @@
       "separatedSources": [],
       "track": "Track00015",
       "mode": "direct",
-      "audioSha256": "ed46a332e8691ebbcebce424e357bdd1a5a4660d1cda9a02f56537c22d170fff",
+      "audioSha256": "629eece98a14529c1f904c5eef620d14c52ee8ea549a096e0b77ddbc4aab2e1a",
       "referenceMidiSha256": "f2bc55646d5393696d9f05264f2e04de2f634c08155c94a8cbdbaaebae95579e",
       "startSec": 60.0,
       "durationSec": 20.0,
@@ -770,43 +817,43 @@
     },
     {
       "referenceNotes": 261,
-      "beforeNotes": 169,
-      "afterNotes": 169,
-      "commonNoteIds": 169,
+      "beforeNotes": 170,
+      "afterNotes": 170,
+      "commonNoteIds": 170,
       "pairedMatches120Ms": 117,
       "beforeMaeMs": 20.960683760683736,
       "afterMaeMs": 19.82494041417324,
       "before": {
         "20": {
           "matches": 76,
-          "f1": 0.35348837209302325
+          "f1": 0.35266821345707655
         },
         "50": {
           "matches": 104,
-          "f1": 0.48372093023255813
+          "f1": 0.48259860788863107
         },
         "120": {
           "matches": 117,
-          "f1": 0.5441860465116279
+          "f1": 0.54292343387471
         }
       },
       "after": {
         "20": {
           "matches": 85,
-          "f1": 0.3953488372093023
+          "f1": 0.39443155452436196
         },
         "50": {
           "matches": 105,
-          "f1": 0.4883720930232558
+          "f1": 0.4872389791183295
         },
         "120": {
           "matches": 117,
-          "f1": 0.5441860465116279
+          "f1": 0.54292343387471
         }
       },
-      "coldCorrectedJobSec": 32.968691000000035,
-      "cachedUncorrectedJobSec": 2.0151991000002454,
-      "correctionCalculationSec": 0.0018435000001773005,
+      "coldCorrectedJobSec": 32.45563029999994,
+      "cachedUncorrectedJobSec": 1.800546999999824,
+      "correctionCalculationSec": 0.0020263000001250475,
       "primaryInputs": [
         {
           "name": "drums",
@@ -828,7 +875,7 @@
         },
         {
           "name": "piano",
-          "notes": 57,
+          "notes": 58,
           "correctionMs": -4.484517464508684,
           "invalidChunks": 0,
           "referenceNotes": 59,
@@ -882,32 +929,32 @@
       "separatedSources": [
         {
           "type": "drums",
-          "sha256": "33bea6fc36d7867d27ab9f084af3c3a541d4768ab8ed0eaaa18f20d40ddcdc6f"
+          "sha256": "f374a0ed8749e4a6183f4868791f338ec0a4daa963bbd9acee03f021ed45f206"
         },
         {
           "type": "bass",
-          "sha256": "45e41bbcb0e33dc57520e09c5dc158f85b0cb8a5da31009ad0b13e1df4609755"
+          "sha256": "8237d13ddb86146f201e833d53cadd5aa5c815c22e39b5f92812b9ac114f5408"
         },
         {
           "type": "vocals",
-          "sha256": "6e53e31a54a9894e3eca017689835ca0b73d4ec7cf37dfa96821a84bdf4caf1f"
+          "sha256": "1665407c03553392180a44674471800104d1dc678ce406c4a53d14049fcadfee"
         },
         {
           "type": "other",
-          "sha256": "d2a219773608fc5c352cf8a8949461ac0b52b0260eff9626074adcc11fc232f5"
+          "sha256": "6b50270a0673c561298e1c376abd17aff577cd87d38e10612b9efcd998f45263"
         },
         {
           "type": "piano",
-          "sha256": "e2a7c7e1cbe926456f2aed15be43aaadca279907b355064e2d7c8c1a0c63cd99"
+          "sha256": "1249dbfe318c1c48a7737cfbede2c1aabfc4dabb45406cd6f639776d806a6ac1"
         },
         {
           "type": "guitar",
-          "sha256": "c33dc1f62e1269f29d288e0e46d67138f768b32aafb469277ff00150571702fa"
+          "sha256": "fb7a486c8262e941e863393334a6543c0d197b57627c8735ec7c12ab25f2e1fd"
         }
       ],
       "track": "Track00015",
       "mode": "separated",
-      "audioSha256": "ed46a332e8691ebbcebce424e357bdd1a5a4660d1cda9a02f56537c22d170fff",
+      "audioSha256": "629eece98a14529c1f904c5eef620d14c52ee8ea549a096e0b77ddbc4aab2e1a",
       "referenceMidiSha256": "f2bc55646d5393696d9f05264f2e04de2f634c08155c94a8cbdbaaebae95579e",
       "startSec": 60.0,
       "durationSec": 20.0,
@@ -956,9 +1003,9 @@
           "f1": 0.19858156028368795
         }
       },
-      "coldCorrectedJobSec": 10.45113769999989,
-      "cachedUncorrectedJobSec": 1.4610026000009384,
-      "correctionCalculationSec": 0.0005037999999331078,
+      "coldCorrectedJobSec": 10.104277299999922,
+      "cachedUncorrectedJobSec": 1.3181480000000647,
+      "correctionCalculationSec": 0.0004936000000270724,
       "primaryInputs": [
         {
           "name": "direct",
@@ -979,7 +1026,7 @@
       "separatedSources": [],
       "track": "Track00018",
       "mode": "direct",
-      "audioSha256": "9af49fb09026f43631cdfde2877a981e280acc18bac9f09ba8bbc073a8041c0a",
+      "audioSha256": "f71e694808ccd18df559e5dc8f4a566ac1f70ef07fad07e2cdbc410a1f3a7984",
       "referenceMidiSha256": "fdacfe7fe67fa17c48ea547805c3d126c5304fdc696db5245171dcfec8419b7c",
       "startSec": 60.0,
       "durationSec": 20.0,
@@ -1034,9 +1081,9 @@
           "f1": 0.15267175572519084
         }
       },
-      "coldCorrectedJobSec": 31.840073800000027,
-      "cachedUncorrectedJobSec": 1.8805015000016283,
-      "correctionCalculationSec": 0.0012437999994290294,
+      "coldCorrectedJobSec": 29.423000700000102,
+      "cachedUncorrectedJobSec": 1.8266593999999259,
+      "correctionCalculationSec": 0.0012200000003304012,
       "primaryInputs": [
         {
           "name": "drums",
@@ -1112,32 +1159,32 @@
       "separatedSources": [
         {
           "type": "drums",
-          "sha256": "0cc3b2437fd80e535a00ebbb022859ebcb32ba14a4923077f57dfb734a453916"
+          "sha256": "404769f9f46b671278740eecb9d65a3e41deb7a08fd1d585ea662651de19ea33"
         },
         {
           "type": "bass",
-          "sha256": "c02a36d54964f44bbbb0c16ecd211049d2158914ef93f59013e1d5568fdbb0f8"
+          "sha256": "84c692e88830d280fa676cfa3a70823ed6c540f27a4aefa2d7a57aa2f85abdbf"
         },
         {
           "type": "vocals",
-          "sha256": "d68bfbbd69af6210e12fec66d603f161806c29bda6def9e5960eb2afeed14cd0"
+          "sha256": "dfa21a4964bc3d3db412cf105b4e4a98728ee9b70fea37be33a5e7167d3b3b61"
         },
         {
           "type": "other",
-          "sha256": "d880fbf8cf5111efe1b221965c9cd60c118716d6a5333f53692741a9a59f3ff0"
+          "sha256": "d15d8333fbf5e41a115e00c71e2abd340cb0ac5aed3136a8bcddf11e944d90e8"
         },
         {
           "type": "piano",
-          "sha256": "2a6f85c1c949a53995ffd8136ffcdf21032974b6ad7b501980a720c3da723c97"
+          "sha256": "80df925912e1d8ee40cc70a7927ccd5598161b86d263c45b1729f2becb89b90a"
         },
         {
           "type": "guitar",
-          "sha256": "ba16505fde64f10381b6bb997c420940bfe45d642d82e5eff3bf0538bae5871f"
+          "sha256": "dc4bdc3350a6409fe59a83136dbe4fdfa9cd781e2a3c616b0f399184af7e2383"
         }
       ],
       "track": "Track00018",
       "mode": "separated",
-      "audioSha256": "9af49fb09026f43631cdfde2877a981e280acc18bac9f09ba8bbc073a8041c0a",
+      "audioSha256": "f71e694808ccd18df559e5dc8f4a566ac1f70ef07fad07e2cdbc410a1f3a7984",
       "referenceMidiSha256": "fdacfe7fe67fa17c48ea547805c3d126c5304fdc696db5245171dcfec8419b7c",
       "startSec": 60.0,
       "durationSec": 20.0,
@@ -1161,54 +1208,56 @@
     "direct": {
       "cases": 5,
       "referenceNotes": 1427,
-      "beforeNotes": 1444,
-      "afterNotes": 1444,
-      "pairedMatches120Ms": 539,
-      "beforeMaeMs": 18.578849721706906,
-      "afterMaeMs": 9.09946200529819,
+      "beforeNotes": 1463,
+      "afterNotes": 1463,
+      "pairedMatches120Ms": 538,
+      "beforeMaeMs": 18.40520446096659,
+      "afterMaeMs": 9.172822361125762,
       "beforeP95AbsoluteErrorMs": 35.60000000000052,
-      "afterP95AbsoluteErrorMs": 30.03025208878323,
-      "coldCorrectedJobsSec": 91.65238940000017,
-      "cachedUncorrectedJobsSec": 10.3564707000005,
-      "correctionCalculationSec": 0.006746900000507594,
+      "afterP95AbsoluteErrorMs": 29.219823537849603,
+      "coldCorrectedJobsSec": 90.4385155,
+      "cachedUncorrectedJobsSec": 7.5207869999999275,
+      "correctionCalculationSec": 0.006841500000064116,
       "correctedPrimaryInputs": 4,
       "primaryInputs": 5,
       "beforeF1": {
-        "20": 0.23058167885754094,
-        "50": 0.3706025774991292,
-        "120": 0.37547892720306514
+        "20": 0.2290657439446367,
+        "50": 0.3681660899653979,
+        "120": 0.372318339100346
       },
       "afterF1": {
-        "20": 0.3392546151166841,
-        "50": 0.3719958202716823,
-        "120": 0.3761755485893417
+        "20": 0.3370242214532872,
+        "50": 0.3695501730103806,
+        "120": 0.3737024221453287
       }
     },
     "separated": {
       "cases": 5,
       "referenceNotes": 1427,
-      "beforeNotes": 1298,
-      "afterNotes": 1298,
+      "beforeNotes": 1301,
+      "afterNotes": 1301,
       "pairedMatches120Ms": 543,
       "beforeMaeMs": 17.57790055248617,
-      "afterMaeMs": 11.22348203200421,
+      "afterMaeMs": 11.214653536806763,
       "beforeP95AbsoluteErrorMs": 34.000000000000696,
       "afterP95AbsoluteErrorMs": 29.64606571805727,
-      "coldCorrectedJobsSec": 239.93364259999908,
-      "cachedUncorrectedJobsSec": 11.094364700004007,
-      "correctionCalculationSec": 0.013840500003425404,
+      "coldCorrectedJobsSec": 209.33810000000017,
+      "cachedUncorrectedJobsSec": 9.11350490000018,
+      "correctionCalculationSec": 0.011399300000675794,
       "correctedPrimaryInputs": 6,
       "primaryInputs": 29,
       "beforeF1": {
-        "20": 0.27743119266055044,
-        "50": 0.3867889908256881,
-        "120": 0.3985321100917431
+        "20": 0.27712609970674484,
+        "50": 0.38636363636363635,
+        "120": 0.3980938416422287
       },
       "afterF1": {
-        "20": 0.36110091743119266,
-        "50": 0.3875229357798165,
-        "120": 0.3985321100917431
+        "20": 0.36070381231671556,
+        "50": 0.3870967741935484,
+        "120": 0.3980938416422287
       }
     }
-  }
+  },
+  "applicationVersion": "0.1.6",
+  "evaluationDate": "2026-10-21"
 }

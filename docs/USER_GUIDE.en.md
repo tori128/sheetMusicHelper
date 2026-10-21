@@ -14,8 +14,9 @@ Select Japanese, English, or Chinese from the language control at the top of the
 2. Choose the project name, instrument-selection method, MuScriptor model, processing mode, transcription mode, inference backend, and time signature.
 3. Select **採譜を開始 (Start transcription)**.
 
-The application estimates BPM, downbeat position, and meter with MuScriptor 0.3.0 and Beat This! final0 when an audio file is selected.
-If a constant tempo cannot be estimated, enter BPM and meter to start transcription.
+The application estimates BPM, downbeat position, and meter with MuScriptor 0.4.0 and Beat This! final0 when an audio file is selected.
+For recordings with tempo changes, it uses an average BPM. The piano roll and exports use the same BPM throughout the recording.
+If too few beats can be detected, enter BPM and meter to start transcription.
 When transcription completes and beat analysis succeeded, a common onset-time offset is corrected for each transcription input.
 Correction follows MuScriptor's conditions, including at least 40 distinct onset times and an absolute correction of at most 40 ms.
 Completed results appear while transcription continues.

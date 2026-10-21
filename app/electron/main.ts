@@ -441,7 +441,7 @@ async function verifySmokeWindow(window: BrowserWindow): Promise<void> {
         "Backend/libsndfile/COPYING",
         "Backend/libsndfile/README.txt",
         "Backend/python/Python-3.11/LICENSE.txt",
-        "Backend/python/muscriptor-0.3.0/licenses/LICENSE",
+        `Backend/python/muscriptor-${aboutInfo.engineVersion}/licenses/LICENSE`,
         "SpessaSynth-Core-LICENSE.txt",
         "SpessaSynth-Lib-LICENSE.txt",
       ];
@@ -654,11 +654,16 @@ function registerIpc(): void {
     app.quit();
   });
   ipcMain.handle("service:get-connection", async () => serviceManager.start());
-  ipcMain.handle("app:get-about", async () => ({
-    appVersion: app.getVersion(),
-    engineVersion: "0.3.0",
-    notices: await readLicenseNotices(),
-  }));
+  ipcMain.handle("app:get-about", async () => {
+    const notices = await readLicenseNotices();
+    const engineVersion = notices
+      .map((notice) => /^Backend\/python\/muscriptor-([^/]+)\/licenses\/LICENSE$/.exec(notice.name)?.[1])
+      .find((version) => version !== undefined);
+    if (!engineVersion) {
+      throw new Error("MuScriptorのバージョン情報が見つかりません");
+    }
+    return { appVersion: app.getVersion(), engineVersion, notices };
+  });
   ipcMain.handle("soundfont:load", async () => {
     const soundFontPath = app.isPackaged
       ? join(process.resourcesPath, "soundfonts", "MuseScore_General.sf3")

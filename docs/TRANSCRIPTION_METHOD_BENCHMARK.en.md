@@ -4,54 +4,42 @@
 
 ## Evaluation Conditions
 
-On 2026-10-18, direct and separated transcription were compared through the application using MuScriptor 0.3.0.
+Measured on 2026-10-21 with EarCopy Assist 0.1.6, MuScriptor 0.4.0, PyTorch 2.5.1+cu121, and NumPy 2.2.6 on Windows, Python 3.11.15, and an NVIDIA GeForce RTX 3060 Laptop GPU.
 
-| Item | Condition |
-|---|---|
-| Dataset | BabySlakh v2 |
-| Segments | Seconds 60–80 of Track00001, Track00004, Track00010, Track00015, and Track00018; 100 seconds total |
-| Reference notes | 1,427 notes matched by MIDI pitch and instrument |
-| Transcription | MuScriptor medium, CUDA, float16, high accuracy, specified instruments |
-| Separation | BS-RoFormer SW Fixed |
-| Beat analysis | Original audio, Beat This! final0, CPU |
+The dataset comprised seconds 60–80 of BabySlakh v2 Track00001, Track00004, Track00010, Track00015, and Track00018: 100 seconds and 1,427 reference notes in total. The archive MD5 is `311096dc2bde7d61c97e930edbfc7f78`. Instrument selections came from the [evaluation manifest](../scripts/benchmark_cases/babyslakh_v2.json).
 
-Instrument information came from the [evaluation manifest](../scripts/benchmark_cases/babyslakh_v2.json). The application's default instrument-family candidate expansion and duplicate-note removal were enabled. Separated transcription enabled added drums, pitch false-positive reduction, and velocity assignment from separated audio amplitude. Added drums used a 20% gain; the drums added to Bass used a 350 Hz fourth-order Butterworth high-pass filter.
-
-The BabySlakh v2 archive MD5 is `311096dc2bde7d61c97e930edbfc7f78`.
+MuScriptor medium ran on CUDA in float16, using high-accuracy transcription and specified instruments, family expansion, and duplicate-note removal. Separation used BS-RoFormer SW Fixed. Separated transcription enabled the drum guide, pitch-error filtering, and stem-amplitude velocity. Drum-guide gain was 20%; the drum guide added to Bass used a 350 Hz fourth-order Butterworth high-pass filter.
 
 ## Metrics
 
-F1 uses one-to-one matching by MIDI pitch, detected instrument, and onset time within the tolerance, calculated over all predicted and reference notes. Mean absolute onset error compares the same note IDs matched within 120 ms before correction.
+F1 used one-to-one matches on MIDI pitch, estimated instrument, and onset tolerance, counting all output and reference notes. Mean absolute onset error compared the same note IDs paired within 120 ms before correction. Corrected transcription ran first; uncorrected runs reused the same separated audio and transcription events. Corresponding note IDs, pitches, instruments, output tracks, and note counts were identical across correction states for all ten conditions.
 
 ## Results
 
-Each method used the same separated audio and transcription events to compare MuScriptor 0.3.0 onset correction on and off.
-
-| Method | Predicted notes | Correction | F1 @20 ms | F1 @50 ms | Mean absolute onset error |
+| Method | Output notes | Timing correction | F1 @20 ms | F1 @50 ms | Mean absolute onset error |
 |---|---:|---|---:|---:|---:|
-| Direct | 1,444 | Off | 0.2306 | 0.3706 | 18.58 ms |
-| Direct | 1,444 | On | 0.3393 | 0.3720 | 9.10 ms |
-| Separated | 1,298 | Off | 0.2774 | 0.3868 | 17.58 ms |
-| Separated | 1,298 | On | 0.3611 | 0.3875 | 11.22 ms |
+| Direct | 1,463 | Off | 0.2291 | 0.3682 | 18.41 ms |
+| Direct | 1,463 | On | 0.3370 | 0.3696 | 9.17 ms |
+| After separation | 1,301 | Off | 0.2771 | 0.3864 | 17.58 ms |
+| After separation | 1,301 | On | 0.3607 | 0.3871 | 11.21 ms |
 
-Timing-error matching used 539 pairs for direct transcription and 543 for separated transcription. Separated transcription reduced mean absolute error by 36.15% and applied nonzero correction to 6 of 29 primary inputs. Error decreased on three tracks, increased on one, and remained unchanged on one. At 50 ms tolerance, matched notes increased from 527 to 528.
+The timing-error analysis paired 538 notes for direct transcription and 543 after separation. Mean absolute error fell by 50.16% and 36.20%, respectively. Nonzero correction was applied to 6 of 29 primary separated inputs.
 
-Total corrected processing time for the five segments was 91.65 seconds for direct transcription and 239.93 seconds for separated transcription. Separated mode ran after direct mode and reused the prepared WAV and original-audio beat analysis. Separated audio and transcription events were calculated anew. Calculating correction and changing note times took 6.75 ms and 13.84 ms in total.
+The five corrected jobs took 90.44 seconds directly and 209.34 seconds after separation. Original-audio beat analysis ran on CPU with two threads and was reused for separated transcription. Separated audio and transcription events were newly computed. Timing-correction calculation and note updates totaled 6.84 ms and 11.40 ms. PyInstaller and GTZAN evaluation overlapped with parts of the measurement, so timings cannot support speed comparisons with other runs.
 
-See the [evaluation JSON](benchmarks/data/muscriptor-030-application-onset-comparison.json) for per-track and per-input metrics and model/audio SHA-256 values, and the [beat analysis and onset correction evaluation](developer/MUSCRIPTOR_030_EVALUATION.en.md) for implementation conditions.
+See the [evaluation JSON](benchmarks/data/muscriptor-application-onset-comparison.json) for per-track/input metrics and SHA-256 values, and the [beat analysis and onset correction evaluation](developer/MUSCRIPTOR_EVALUATION.en.md) for implementation conditions.
 
 ## Limitations
 
-- The evaluation covers five synthesized BabySlakh v2 segments totaling 100 seconds; these values do not establish performance on recordings generally or on complete tracks.
-- Conditions were the medium model, CUDA, float16, and instruments specified from dataset information.
-- Matched-note populations differ between methods, so mean absolute error alone cannot establish which separation mode performs better.
-- Processing times represent one measurement per condition on an NVIDIA GeForce RTX 3060 Laptop GPU environment.
+These results cover five synthetic excerpts, the medium model, and specified instruments. They do not establish performance on all real recordings or complete songs. Matched-note sets differ between direct and separated transcription, so mean absolute error alone cannot rank the two modes. Model weights were unchanged, but runtime libraries also changed; output differences from the preceding version cannot be attributed solely to MuScriptor.
 
 ## Reproduction
 
-1. Prepare the audio with `scripts/prepare_babyslakh_benchmark.ps1 -Destination app/benchmark/public-data`.
-2. Download and verify the beat model with `uv run python scripts/download_beat_model.py`.
-3. Compare with `uv run python -m scripts.evaluate_application_onset_correction --dataset-root app/benchmark/public-data/babyslakh_16k --work-dir app/benchmark/latest-onset --output app/benchmark/application-onset-comparison.json`. Use a new working directory to calculate results anew.
+1. `scripts/prepare_babyslakh_benchmark.ps1 -Destination app/benchmark/public-data`
+2. `uv run python scripts/download_beat_model.py`
+3. `uv run python -m scripts.evaluate_application_onset_correction --dataset-root app/benchmark/public-data/babyslakh_16k --work-dir app/benchmark/latest-onset --output app/benchmark/application-onset-comparison.json`
+
+Choose a new work directory to compute fresh results.
 
 ## References
 

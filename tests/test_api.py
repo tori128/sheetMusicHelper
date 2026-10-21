@@ -1,5 +1,6 @@
 import hashlib
 import os
+import tomllib
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
@@ -62,6 +63,10 @@ def test_health_does_not_require_token() -> None:
     response = client.get("/api/v1/health")
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
+    metadata = tomllib.loads(
+        (Path(__file__).resolve().parents[1] / "pyproject.toml").read_text(encoding="utf-8")
+    )
+    assert response.json()["version"] == metadata["project"]["version"]
 
 
 def test_tempo_estimate_endpoint_passes_the_time_signature(

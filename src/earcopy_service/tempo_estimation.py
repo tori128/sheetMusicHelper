@@ -28,7 +28,7 @@ def estimate_tempo(
         raise ValueError("拍子の指定が範囲外です")
     grid = analyze_beats(path)
     if grid is None:
-        raise TempoUnavailableError("一定のテンポを推定できませんでした。BPMと拍子を指定してください")
+        raise TempoUnavailableError("拍を十分に検出できませんでした。BPMと拍子を指定してください")
     if not 20.0 <= grid.bpm <= 300.0:
         raise ValueError(f"BPM推定値が範囲外です: {grid.bpm}")
     measure_duration = (60.0 / grid.bpm) * numerator * 4 / denominator

@@ -4,19 +4,19 @@ build-backend = "hatchling.build"
 
 [project]
 name = "earcopy-assist"
-version = "0.1.5"
+version = "0.1.6"
 description = "耳コピ補助アプリのローカルサービスとプロジェクト基盤"
 readme = "README.md"
 license = { file = "LICENSE" }
-requires-python = ">=3.11,<3.14"
+requires-python = ">=3.11,<3.13"
 dependencies = [
   "einops>=0.8,<1",
   "fastapi>=0.115,<1",
   "httpx>=0.28,<1",
   "librosa>=0.11,<1",
   "mido>=1.3,<2",
-  "muscriptor>=0.3.0,<0.4",
-  "numpy>=1.26,<2",
+  "muscriptor>=0.4.0,<0.5",
+  "numpy>=2,<2.3",
   "packaging>=24,<27",
   "pydantic>=2.10,<3",
   "pyyaml>=6,<7",
@@ -24,8 +24,8 @@ dependencies = [
   "scipy>=1.13,<2",
   "soundfile>=0.12,<1",
   "starlette>=0.46,<2",
-  "torch==2.2.2",
-  "torchaudio==2.2.2",
+  "torch==2.5.1",
+  "torchaudio==2.5.1",
   "uvicorn>=0.34,<1",
 ]
 
@@ -48,6 +48,9 @@ addopts = "-q"
 dev = [
     "pyinstaller>=6.21.0",
 ]
+
+[tool.uv]
+environments = ["sys_platform == 'win32'"]
 
 [[tool.uv.index]]
 name = "pytorch-cu121"

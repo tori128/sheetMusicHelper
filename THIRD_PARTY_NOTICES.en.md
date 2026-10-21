@@ -20,7 +20,7 @@ user acknowledges that warning. `Unknown` does not constitute a license grant.
 
 ### Code
 
-- Component: MuScriptor 0.3.0 Python package and official Web UI
+- Component: MuScriptor 0.4.0 Python package and official Web UI
 - Use in EarCopy Assist: model loading and note-event generation
 - Initial implementation reference: note-event display, piano roll, and
   synchronized source/SoundFont playback design
@@ -52,7 +52,7 @@ in Section 5 of CC BY-NC 4.0. The bundled attribution notice is
 
 ## Beat This!
 
-- Use: MuScriptor 0.3.0 beat analysis and onset-time correction
+- Use: MuScriptor 0.4.0 beat analysis and onset-time correction
 - Model: `final0` (published weights bundled without modification)
 - Code and model weight license: MIT
 - Copyright: Copyright (c) 2024 Institute of Computational Perception, JKU Linz, Austria
@@ -230,11 +230,11 @@ The following inventory lists the packages used at application runtime.
 | mido | 1.3.3 | MIT | <https://github.com/mido/mido> |
 | mpmath | 1.3.0 | BSD-3-Clause | <https://github.com/mpmath/mpmath> |
 | msgpack | 1.2.1 | Apache-2.0 | <https://github.com/msgpack/msgpack-python> |
-| muscriptor | 0.3.0 | MIT | <https://github.com/muscriptor/muscriptor> |
+| muscriptor | 0.4.0 | MIT | <https://github.com/muscriptor/muscriptor> |
 | narwhals | 2.24.0 | MIT | <https://github.com/narwhals-dev/narwhals> |
 | networkx | 3.6.1 | BSD-3-Clause | <https://github.com/networkx/networkx> |
 | numba | 0.66.0 | BSD | <https://github.com/numba/numba> |
-| numpy | 1.26.4 | BSD-3-Clause + bundled notices | <https://github.com/numpy/numpy> |
+| numpy | 2.2.6 | BSD-3-Clause + bundled notices | <https://github.com/numpy/numpy> |
 | packaging | 26.2 | Apache-2.0 OR BSD-2-Clause | <https://github.com/pypa/packaging> |
 | platformdirs | 4.11.0 | MIT | <https://github.com/tox-dev/platformdirs> |
 | pooch | 1.9.0 | BSD-3-Clause | <https://github.com/fatiando/pooch> |
@@ -256,10 +256,10 @@ The following inventory lists the packages used at application runtime.
 | soundfile | 0.14.0 | BSD-3-Clause; bundled libsndfile LGPL-2.1-or-later | <https://github.com/bastibe/python-soundfile> |
 | soxr | 1.1.0 | LGPL-2.1-or-later + bundled notices | <https://github.com/dofuuz/python-soxr> |
 | starlette | 1.3.1 | BSD-3-Clause | <https://github.com/Kludex/starlette> |
-| sympy | 1.14.0 | BSD-3-Clause | <https://github.com/sympy/sympy> |
+| sympy | 1.13.1 | BSD-3-Clause | <https://github.com/sympy/sympy> |
 | threadpoolctl | 3.6.0 | BSD-3-Clause | <https://github.com/joblib/threadpoolctl> |
-| torch | 2.2.2+cu121 | BSD-3-Clause + NOTICE/third-party notices | <https://github.com/pytorch/pytorch> |
-| torchaudio | 2.2.2+cu121 | BSD-2-Clause | <https://github.com/pytorch/audio> |
+| torch | 2.5.1+cu121 | BSD-3-Clause + NOTICE/third-party notices | <https://github.com/pytorch/pytorch> |
+| torchaudio | 2.5.1+cu121 | BSD-2-Clause | <https://github.com/pytorch/audio> |
 | tqdm | 4.69.1 | MPL-2.0 AND MIT | <https://github.com/tqdm/tqdm> |
 | typer | 0.27.0 | MIT | <https://github.com/fastapi/typer> |
 | typing-extensions | 4.16.0 | PSF-2.0 | <https://github.com/python/typing_extensions> |
