@@ -1,0 +1,14 @@
+EarCopy Assist ${VERSION}
+=========================
+
+Source repository: https://github.com/tori128/sheetMusicHelper
+Source commit: ${SOURCE_COMMIT}
+Package created (UTC): ${BUILD_UTC}
+Target: Windows x64 portable
+Build environment: GitHub Actions
+CI run: ${CI_RUN_ID}
+CI run URL: ${CI_RUN_URL}
+
+MuScriptor model weights are downloaded and registered in the application.
+Separate small, medium, and large model packages contain unmodified weights.
+The BS-RoFormer SW Fixed model weight is obtained separately.

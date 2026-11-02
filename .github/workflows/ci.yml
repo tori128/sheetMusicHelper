@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  renderer:
+    name: Renderer
+    runs-on: windows-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test -- --run
+      - name: Check types
+        run: npm run typecheck
+      - name: Compile Electron main process
+        run: npm run build:electron
+      - name: Verify renderer hang shutdown
+        run: npm run smoke:shutdown
+
+  python:
+    name: Python
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - name: Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+      - name: Install dependencies
+        run: uv sync --extra dev --locked
+      - name: Run tests
+        run: uv run pytest -q
+
+  repository-hygiene:
+    name: Repository hygiene
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Check tracked files and sensitive text
+        shell: pwsh
+        run: ./scripts/check_repository_hygiene.ps1

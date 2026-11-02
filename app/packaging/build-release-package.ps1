@@ -1,0 +1,446 @@
+﻿param(
+    [switch]$KeepStaging,
+    [string]$ApplicationRoot
+)
+
+$ErrorActionPreference = "Stop"
+$ProgressPreference = "SilentlyContinue"
+
+. (Join-Path $PSScriptRoot "zip-self-extractor.ps1")
+
+$appRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+$repositoryRoot = (Resolve-Path (Join-Path $appRoot "..")).Path
+. (Join-Path $repositoryRoot "scripts\ci-release-context.ps1")
+$ciRelease = Get-CiReleaseContext
+$packageJsonPath = Join-Path $appRoot "package.json"
+$packageJson = Get-Content -LiteralPath $packageJsonPath -Raw -Encoding utf8 |
+    ConvertFrom-Json
+$version = [string]$packageJson.version
+if ($version -notmatch "^\d+\.\d+\.\d+([-.][0-9A-Za-z.-]+)?$") {
+    throw "Invalid package version: $version"
+}
+$sourceCommit = (& git -C $repositoryRoot rev-parse HEAD).Trim()
+if ($LASTEXITCODE -ne 0 -or $sourceCommit -notmatch "^[0-9a-f]{40}$") {
+    throw "Unable to identify the source commit."
+}
+$trackedChanges = @(& git -C $repositoryRoot status --porcelain --untracked-files=no)
+if ($LASTEXITCODE -ne 0) {
+    throw "Unable to inspect the Git worktree."
+}
+if ($trackedChanges.Count -ne 0) {
+    throw (
+        "Release packages must be built from a clean Git worktree. " +
+        "Commit or restore tracked changes first."
+    )
+}
+$buildUtc = [DateTimeOffset]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
+
+$packagedRoot = if ([string]::IsNullOrWhiteSpace($ApplicationRoot)) {
+    Join-Path $appRoot "release\win-unpacked"
+} else {
+    [IO.Path]::GetFullPath($ApplicationRoot)
+}
+$releaseAssetsRoot = Join-Path $appRoot "release-assets"
+$stagingRoot = Join-Path $releaseAssetsRoot ".staging"
+$templateRoot = Join-Path $PSScriptRoot "release"
+$sourceOfferRoot = Join-Path $appRoot "release-sources"
+$portableName = "EarCopyAssist-$version-win-x64"
+$sourceName = "EarCopyAssist-$version-copyleft-sources"
+$portableStage = Join-Path $stagingRoot $portableName
+$sourceStage = Join-Path $stagingRoot $sourceName
+$completeWindowsArchive = Join-Path $stagingRoot "$portableName-complete.zip"
+$windowsArchive = Join-Path $releaseAssetsRoot "$portableName.zip"
+$windowsSelfExtractor = Join-Path $releaseAssetsRoot "$portableName.exe"
+$sourceArchive = Join-Path $releaseAssetsRoot "$sourceName.zip"
+$releaseNotes = Join-Path $releaseAssetsRoot "RELEASE_NOTES.md"
+$checksums = Join-Path $releaseAssetsRoot "SHA256SUMS.txt"
+$githubAssetLimit = 2GB
+$splitPartSize = "1800m"
+
+function Remove-DirectoryInside {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][string]$Parent
+    )
+
+    if (-not (Test-Path -LiteralPath $Path)) {
+        return
+    }
+    $resolvedPath = [IO.Path]::GetFullPath($Path)
+    $resolvedParent = [IO.Path]::GetFullPath($Parent).TrimEnd(
+        [IO.Path]::DirectorySeparatorChar,
+        [IO.Path]::AltDirectorySeparatorChar
+    ) + [IO.Path]::DirectorySeparatorChar
+    if (-not $resolvedPath.StartsWith(
+        $resolvedParent,
+        [StringComparison]::OrdinalIgnoreCase
+    )) {
+        throw "Refusing to remove a directory outside $resolvedParent`: $resolvedPath"
+    }
+    Remove-Item -LiteralPath $resolvedPath -Recurse -Force
+}
+
+function Set-TemplateContent {
+    param(
+        [Parameter(Mandatory = $true)][string]$Source,
+        [Parameter(Mandatory = $true)][string]$Destination
+    )
+
+    $content = Get-Content -LiteralPath $Source -Raw -Encoding utf8
+    $content = $content.Replace('${VERSION}', $version)
+    $content = $content.Replace('${SOURCE_COMMIT}', $sourceCommit)
+    $content = $content.Replace('${BUILD_UTC}', $buildUtc)
+    $content = $content.Replace('${CI_RUN_ID}', $ciRelease.RunId)
+    $content = $content.Replace('${CI_RUN_URL}', $ciRelease.RunUrl)
+    Set-Content -LiteralPath $Destination -Value $content -Encoding utf8
+}
+
+function New-ZipArchive {
+    param(
+        [Parameter(Mandatory = $true)][string]$Directory,
+        [Parameter(Mandatory = $true)][string]$Destination
+    )
+
+    if (Test-Path -LiteralPath $Destination) {
+        Remove-Item -LiteralPath $Destination -Force
+    }
+    $parent = Split-Path -Parent $Directory
+    $leaf = Split-Path -Leaf $Directory
+    Push-Location $parent
+    try {
+        & tar.exe -a -c -f $Destination $leaf
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to create ZIP archive: $Destination"
+        }
+    } finally {
+        Pop-Location
+    }
+}
+
+function Assert-GitHubAssetSize {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $item = Get-Item -LiteralPath $Path
+    if ($item.Length -ge $githubAssetLimit) {
+        throw (
+            "GitHub Release asset must be smaller than 2 GiB: " +
+            "$($item.Name) ($($item.Length) bytes)"
+        )
+    }
+}
+
+function New-SplitZipArchive {
+    param(
+        [Parameter(Mandatory = $true)][string]$Source,
+        [Parameter(Mandatory = $true)][string]$Destination,
+        [Parameter(Mandatory = $true)][string]$PartSize
+    )
+
+    Split-ZipSelfExtractorArchive `
+        -Source $Source `
+        -Destination $Destination `
+        -PartSize $PartSize
+}
+
+function Get-VerifiedSourceArchive {
+    param(
+        [Parameter(Mandatory = $true)][string]$FileName,
+        [Parameter(Mandatory = $true)][string]$Uri,
+        [Parameter(Mandatory = $true)][string]$Sha256
+    )
+
+    $destination = Join-Path $sourceOfferRoot $FileName
+    if (-not (Test-Path -LiteralPath $destination -PathType Leaf)) {
+        Write-Host "Downloading corresponding source: $FileName"
+        Invoke-WebRequest -Uri $Uri -OutFile $destination
+    }
+
+    $actual = (
+        Get-FileHash -LiteralPath $destination -Algorithm SHA256
+    ).Hash.ToLowerInvariant()
+    if ($actual -ne $Sha256) {
+        throw (
+            "Corresponding source SHA-256 mismatch for $FileName`: " +
+            "expected=$Sha256 actual=$actual"
+        )
+    }
+    return $destination
+}
+
+if (-not (Test-Path -LiteralPath (Join-Path $packagedRoot "EarCopyAssist.exe"))) {
+    throw "Packaged application was not found. Run npm run dist:win first."
+}
+
+New-Item -ItemType Directory -Force -Path $releaseAssetsRoot | Out-Null
+New-Item -ItemType Directory -Force -Path $sourceOfferRoot | Out-Null
+foreach ($staleName in @(
+    "$portableName.exe",
+    "$portableName.zip",
+    "$portableName-core.zip",
+    "$portableName-runtime-1.zip",
+    "$portableName-runtime-2.zip",
+    "$portableName-EXTRACT.cmd",
+    "EarCopyAssist-$version-ffmpeg-source.zip"
+)) {
+    $stalePath = Join-Path $releaseAssetsRoot $staleName
+    if (Test-Path -LiteralPath $stalePath -PathType Leaf) {
+        Remove-Item -LiteralPath $stalePath -Force
+    }
+}
+Get-ChildItem -LiteralPath $releaseAssetsRoot -File |
+    Where-Object {
+        $_.Name -eq "$portableName.exe" -or
+        $_.Name -match "^$([regex]::Escape($portableName))\.zip\.\d{3}$" -or
+        $_.Name -match "^$([regex]::Escape($portableName))\.z\d{2,}$"
+    } |
+    Remove-Item -Force
+Remove-DirectoryInside -Path $stagingRoot -Parent $releaseAssetsRoot
+New-Item -ItemType Directory -Force -Path $stagingRoot | Out-Null
+
+Copy-Item -LiteralPath $packagedRoot -Destination $portableStage -Recurse
+Remove-DirectoryInside `
+    -Path (Join-Path $portableStage "UserData") `
+    -Parent $portableStage
+
+Copy-Item `
+    -LiteralPath (Join-Path $repositoryRoot "README.md") `
+    -Destination (Join-Path $portableStage "README.md")
+Copy-Item `
+    -LiteralPath (Join-Path $repositoryRoot "README.en.md") `
+    -Destination (Join-Path $portableStage "README.en.md")
+Copy-Item `
+    -LiteralPath (Join-Path $repositoryRoot "LICENSE") `
+    -Destination (Join-Path $portableStage "LICENSE")
+Set-TemplateContent `
+    -Source (Join-Path $templateRoot "BUILD_INFO.txt") `
+    -Destination (Join-Path $portableStage "BUILD_INFO.txt")
+Copy-Item `
+    -LiteralPath (Join-Path $repositoryRoot "LICENSE") `
+    -Destination (Join-Path $portableStage "LICENSE.txt")
+Copy-Item `
+    -LiteralPath (Join-Path $repositoryRoot "THIRD_PARTY_NOTICES.md") `
+    -Destination (Join-Path $portableStage "THIRD_PARTY_NOTICES.md")
+Copy-Item `
+    -LiteralPath (Join-Path $repositoryRoot "THIRD_PARTY_NOTICES.en.md") `
+    -Destination (Join-Path $portableStage "THIRD_PARTY_NOTICES.en.md")
+$documentPaths = & git -C $repositoryRoot ls-files -- docs
+if ($LASTEXITCODE -ne 0) { throw "Failed to list release documents." }
+foreach ($documentPath in $documentPaths) {
+    $destination = Join-Path $portableStage $documentPath
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination) |
+        Out-Null
+    Copy-Item -LiteralPath (Join-Path $repositoryRoot $documentPath) -Destination $destination
+}
+Copy-Item `
+    -LiteralPath (Join-Path $templateRoot "models") `
+    -Destination (Join-Path $portableStage "models") `
+    -Recurse
+
+$forbiddenWeightExtensions = @(
+    ".safetensors",
+    ".ckpt",
+    ".pt",
+    ".pth",
+    ".onnx",
+    ".th",
+    ".gguf"
+)
+$unexpectedWeights = @(
+    Get-ChildItem -LiteralPath $portableStage -Recurse -File |
+        Where-Object {
+            $_.Extension.ToLowerInvariant() -in $forbiddenWeightExtensions -and
+            $_.FullName -ne (Join-Path $portableStage "resources\models\beat-this\final0.ckpt")
+        }
+)
+$beatModelPath = Join-Path $portableStage "resources\models\beat-this\final0.ckpt"
+if (
+    (Get-Item -LiteralPath $beatModelPath).Length -ne 81058141 -or
+    (Get-FileHash -LiteralPath $beatModelPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne
+        "8c328b45f59d8dd3dff219253ff6a8d6482be57d0133a29140e2febbf8eb8331"
+) {
+    throw "Beat This! final0 checksum does not match."
+}
+if ($unexpectedWeights.Count -ne 0) {
+    $paths = $unexpectedWeights.FullName -join [Environment]::NewLine
+    throw "Unexpected model weights found in the release package:`n$paths"
+}
+if (Test-Path -LiteralPath (Join-Path $portableStage "UserData")) {
+    throw "UserData must not be included in the release package."
+}
+
+$requiredPortableFiles = @(
+    "EarCopyAssist.exe",
+    "README.md",
+    "BUILD_INFO.txt",
+    "LICENSE.txt",
+    "THIRD_PARTY_NOTICES.md",
+    "THIRD_PARTY_NOTICES.en.md",
+    "docs\USER_GUIDE.md",
+    "docs\USER_GUIDE.en.md",
+    "resources\licenses\EarCopy_Assist_LICENSE.txt",
+    "resources\licenses\THIRD_PARTY_NOTICES.md",
+    "resources\licenses\THIRD_PARTY_NOTICES.en.md",
+    "resources\licenses\MuseScore_General\LICENSE.md",
+    "resources\licenses\MuScriptor\MODEL_NOTICE.txt",
+    "resources\backend\earcopy_service.exe",
+    "resources\backend\_internal\tools\ffmpeg.exe",
+    "resources\backend\_internal\tools\ffprobe.exe",
+    "resources\backend\_internal\licenses\ffmpeg\LICENSE",
+    "resources\backend\_internal\licenses\ffmpeg\README.txt",
+    "resources\backend\_internal\licenses\python\soundfile-0.14.0\COPYING",
+    "resources\backend\_internal\licenses\python\soxr-1.1.0\licenses\COPYING.LGPL",
+    "resources\backend\_internal\licenses\libsndfile\COPYING",
+    "resources\backend\_internal\licenses\libsndfile\README.txt",
+    "resources\backend\_internal\_soundfile_data\libsndfile_x64.dll",
+    "resources\backend\_internal\soxr\soxr_ext.cp311-win_amd64.pyd",
+    "resources\soundfonts\MuseScore_General.sf3"
+)
+foreach ($relativePath in $requiredPortableFiles) {
+    if (-not (Test-Path -LiteralPath (Join-Path $portableStage $relativePath) -PathType Leaf)) {
+        throw "Required release file is missing: $relativePath"
+    }
+}
+
+$ffmpeg = Join-Path $portableStage "resources\backend\_internal\tools\ffmpeg.exe"
+$ffmpegVersion = (& $ffmpeg -version 2>&1) -join "`n"
+if (
+    $ffmpegVersion -notmatch "ffmpeg version 8\.1\.2" -or
+    $ffmpegVersion -notmatch "--disable-gpl" -or
+    $ffmpegVersion -match "--enable-gpl" -or
+    $ffmpegVersion -match "--enable-nonfree"
+) {
+    throw "The packaged FFmpeg is not the expected LGPL-only 8.1.2 build."
+}
+
+$packagedLibsndfile = Join-Path `
+    $portableStage `
+    "resources\backend\_internal\_soundfile_data\libsndfile_x64.dll"
+$builtLibsndfile = Join-Path `
+    $repositoryRoot `
+    "tools\libsndfile-lgpl\bin\libsndfile_x64.dll"
+if (-not (Test-Path -LiteralPath $builtLibsndfile -PathType Leaf)) {
+    throw "Project-built libsndfile DLL is missing. Run npm run build:libsndfile."
+}
+$packagedLibsndfileHash = (
+    Get-FileHash -LiteralPath $packagedLibsndfile -Algorithm SHA256
+).Hash
+$builtLibsndfileHash = (
+    Get-FileHash -LiteralPath $builtLibsndfile -Algorithm SHA256
+).Hash
+if ($packagedLibsndfileHash -ne $builtLibsndfileHash) {
+    throw "The packaged libsndfile is not the project-built minimal DLL."
+}
+
+$soundfont = Join-Path $portableStage "resources\soundfonts\MuseScore_General.sf3"
+$soundfontExpected = "5b85b6c2c61d10b2b91cddd41efcce7b25cd31c8271d511c73afafbef20b6fa3"
+$soundfontActual = (
+    Get-FileHash -LiteralPath $soundfont -Algorithm SHA256
+).Hash.ToLowerInvariant()
+if ($soundfontActual -ne $soundfontExpected) {
+    throw "MuseScore General SHA-256 mismatch: $soundfontActual"
+}
+
+$sourceArchives = @(
+    @{
+        FileName = "ffmpeg-8.1.2.tar.xz"
+        Uri = "https://ffmpeg.org/releases/ffmpeg-8.1.2.tar.xz"
+        Sha256 = "464beb5e7bf0c311e68b45ae2f04e9cc2af88851abb4082231742a74d97b524c"
+    },
+    @{
+        FileName = "libsndfile-1.2.2.tar.xz"
+        Uri = "https://github.com/libsndfile/libsndfile/releases/download/1.2.2/libsndfile-1.2.2.tar.xz"
+        Sha256 = "3799ca9924d3125038880367bf1468e53a1b7e3686a934f098b7e1d286cdb80e"
+    },
+    @{
+        FileName = "soxr-1.1.0.tar.gz"
+        Uri = "https://files.pythonhosted.org/packages/ed/11/27cebce4a108f77afea7c80545115536b45e3f11ebfb914f638fdd9ba847/soxr-1.1.0.tar.gz"
+        Sha256 = "9f228ae21c78fa9359ca98d8a5e8e91f30639e438e574133dace62c5b5309e44"
+    }
+)
+
+New-Item -ItemType Directory -Force -Path $sourceStage | Out-Null
+foreach ($archive in $sourceArchives) {
+    $source = Get-VerifiedSourceArchive `
+        -FileName $archive.FileName `
+        -Uri $archive.Uri `
+        -Sha256 $archive.Sha256
+    Copy-Item -LiteralPath $source -Destination $sourceStage
+}
+Copy-Item `
+    -LiteralPath (Join-Path $repositoryRoot "scripts\build_ffmpeg_lgpl.ps1") `
+    -Destination $sourceStage
+Copy-Item `
+    -LiteralPath (Join-Path $repositoryRoot "scripts\build_libsndfile_lgpl.ps1") `
+    -Destination $sourceStage
+Set-TemplateContent `
+    -Source (Join-Path $templateRoot "COPYLEFT_SOURCES_README.txt") `
+    -Destination (Join-Path $sourceStage "README.txt")
+
+Set-TemplateContent `
+    -Source (Join-Path $templateRoot "RELEASE_NOTES.md") `
+    -Destination $releaseNotes
+
+Write-Output "Creating complete Windows ZIP..."
+New-ZipArchive -Directory $portableStage -Destination $completeWindowsArchive
+
+if (-not $KeepStaging) {
+    Remove-DirectoryInside -Path $portableStage -Parent $stagingRoot
+}
+
+& python (Join-Path $repositoryRoot "scripts\release_privacy.py") `
+    --zip $completeWindowsArchive --kind windows `
+    --report (Join-Path $appRoot "release-validation\windows-privacy.json")
+if ($LASTEXITCODE -ne 0) { throw "Windows distribution privacy verification failed." }
+
+Write-Output "Creating split Windows ZIP volumes..."
+New-SplitZipArchive `
+    -Source $completeWindowsArchive `
+    -Destination $windowsArchive `
+    -PartSize $splitPartSize
+New-ZipSelfExtractor `
+    -ZipVolume $windowsArchive `
+    -Destination $windowsSelfExtractor
+Remove-Item -LiteralPath $completeWindowsArchive -Force
+Remove-Item -LiteralPath $windowsArchive -Force
+
+$windowsVolumes = @(
+    Get-ChildItem -LiteralPath $releaseAssetsRoot -File |
+        Where-Object {
+            $_.Name -eq "$portableName.exe" -or
+            $_.Name -match "^$([regex]::Escape($portableName))\.z\d{2,}$"
+        } |
+        Sort-Object @{ Expression = { $_.Name -eq "$portableName.exe" } }, Name
+)
+if ($windowsVolumes.Count -lt 1) {
+    throw "Windows ZIP self-extractor was not created."
+}
+foreach ($volume in $windowsVolumes) {
+    Assert-GitHubAssetSize -Path $volume.FullName
+}
+
+Write-Output "Creating corresponding source ZIP..."
+New-ZipArchive -Directory $sourceStage -Destination $sourceArchive
+Assert-GitHubAssetSize -Path $sourceArchive
+& python (Join-Path $repositoryRoot "scripts\release_privacy.py") `
+    --zip $sourceArchive --kind sources `
+    --report (Join-Path $appRoot "release-validation\sources-privacy.json")
+if ($LASTEXITCODE -ne 0) { throw "Corresponding source privacy verification failed." }
+
+$checksumAssets = @($windowsVolumes.FullName + @($sourceArchive))
+$checksumLines = foreach ($asset in $checksumAssets) {
+    $item = Get-Item -LiteralPath $asset
+    $hash = (Get-FileHash -LiteralPath $asset -Algorithm SHA256).Hash.ToLowerInvariant()
+    "$hash  $($item.Name)"
+}
+Set-Content -LiteralPath $checksums -Value $checksumLines -Encoding ascii
+
+if (-not $KeepStaging) {
+    Remove-DirectoryInside -Path $stagingRoot -Parent $releaseAssetsRoot
+}
+
+Write-Output ""
+Write-Output "GitHub Release assets:"
+foreach ($path in @($checksumAssets + @($releaseNotes, $checksums))) {
+    $item = Get-Item -LiteralPath $path
+    Write-Output ("  {0} ({1:N0} bytes)" -f $item.FullName, $item.Length)
+}

@@ -1,0 +1,86 @@
+{
+  "dataset": {
+    "name": "BabySlakh",
+    "version": "v2",
+    "doi": "10.5281/zenodo.4603870",
+    "archiveUrl": "https://zenodo.org/records/4603870/files/babyslakh_16k.tar.gz?download=1",
+    "archiveMd5": "311096dc2bde7d61c97e930edbfc7f78",
+    "datasetDirectory": "babyslakh_16k"
+  },
+  "segments": [
+    {
+      "trackId": "Track00001",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "fixedInstruments": [
+        "acoustic_piano",
+        "organ",
+        "clean_electric_guitar",
+        "distorted_electric_guitar",
+        "electric_bass",
+        "voice",
+        "drums"
+      ]
+    },
+    {
+      "trackId": "Track00004",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "fixedInstruments": [
+        "acoustic_piano",
+        "electric_piano",
+        "organ",
+        "clean_electric_guitar",
+        "electric_bass",
+        "synth_strings",
+        "voice",
+        "synth_pad",
+        "drums"
+      ]
+    },
+    {
+      "trackId": "Track00010",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "fixedInstruments": [
+        "acoustic_piano",
+        "acoustic_guitar",
+        "electric_bass",
+        "synth_pad",
+        "drums"
+      ]
+    },
+    {
+      "trackId": "Track00015",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "fixedInstruments": [
+        "acoustic_piano",
+        "distorted_electric_guitar",
+        "electric_bass",
+        "string_ensemble",
+        "voice",
+        "drums"
+      ]
+    },
+    {
+      "trackId": "Track00018",
+      "startSec": 60.0,
+      "durationSec": 20.0,
+      "fixedInstruments": [
+        "acoustic_piano",
+        "organ",
+        "acoustic_guitar",
+        "distorted_electric_guitar",
+        "acoustic_bass",
+        "electric_bass",
+        "string_ensemble",
+        "synth_strings",
+        "voice",
+        "synth_lead",
+        "synth_pad",
+        "drums"
+      ]
+    }
+  ]
+}

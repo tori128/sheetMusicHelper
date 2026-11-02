@@ -1,0 +1,148 @@
+{
+  "name": "earcopy-assist-desktop",
+  "description": "EarCopy Assist",
+  "author": "tori128",
+  "license": "MIT",
+  "private": true,
+  "version": "0.1.7",
+  "type": "module",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "assert:app-stopped": "powershell -NoProfile -ExecutionPolicy Bypass -File packaging/assert-app-not-running.ps1",
+    "dev:renderer": "vite",
+    "build": "node -e \"require('fs').rmSync('dist-electron',{recursive:true,force:true})\" && tsc -p tsconfig.electron.json && tsc --noEmit -p tsconfig.json && vite build",
+    "build:electron": "node -e \"require('fs').rmSync('dist-electron',{recursive:true,force:true})\" && tsc -p tsconfig.electron.json",
+    "build:icon": "powershell -NoProfile -ExecutionPolicy Bypass -File ../scripts/build_app_icon.ps1",
+    "build:libsndfile": "powershell -NoProfile -ExecutionPolicy Bypass -File ../scripts/build_libsndfile_lgpl.ps1",
+    "build:beat-model": "uv run --project .. python ../scripts/download_beat_model.py",
+    "build:backend": "npm run build:libsndfile && npm run build:beat-model && uv run --project .. pyinstaller --noconfirm --distpath backend-dist --workpath backend-build packaging/earcopy_service.spec",
+    "build:backend:clean": "npm run build:libsndfile && npm run build:beat-model && uv run --project .. pyinstaller --noconfirm --clean --distpath backend-dist --workpath backend-build packaging/earcopy_service.spec",
+    "verify:muscriptor-models": "powershell -NoProfile -ExecutionPolicy Bypass -File packaging/verify-muscriptor-models.ps1",
+    "dist:win": "npm run assert:app-stopped && npm run build:icon && npm run build && npm run build:backend && electron-builder --win --dir --config.directories.output=release-staging && powershell -NoProfile -ExecutionPolicy Bypass -File packaging/promote-packaged-build.ps1",
+    "install:local": "powershell -NoProfile -ExecutionPolicy Bypass -File packaging/install-local.ps1",
+    "dist:local": "npm run dist:win && npm run install:local",
+    "package:release": "npm run assert:app-stopped && powershell -NoProfile -ExecutionPolicy Bypass -File packaging/build-release-package.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File packaging/verify-release-package.ps1 -CoreOnly",
+    "smoke:packaged": "npm run assert:app-stopped && node scripts/smoke-packaged.cjs",
+    "smoke:shutdown": "node scripts/smoke-shutdown.cjs",
+    "start": "npm run build && electron .",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.electron.json",
+    "verify:release": "powershell -NoProfile -ExecutionPolicy Bypass -File packaging/verify-release-package.ps1"
+  },
+  "dependencies": {
+    "lucide-react": "^1.31.0",
+    "opensheetmusicdisplay": "^1.9.9",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "spessasynth_core": "^4.3.15",
+    "spessasynth_lib": "^4.3.11"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.0",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "electron": "^43.2.0",
+    "electron-builder": "^26.15.3",
+    "jsdom": "^26.1.0",
+    "typescript": "^5.8.0",
+    "vite": "^7.0.0",
+    "vitest": "^3.2.0"
+  },
+  "build": {
+    "appId": "jp.local.earcopyassist",
+    "productName": "EarCopy Assist",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist-electron/**/*",
+      "dist/renderer/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../models/beat-this/final0.ckpt",
+        "to": "models/beat-this/final0.ckpt"
+      },
+      {
+        "from": "backend-dist/earcopy_service",
+        "to": "backend"
+      },
+      {
+        "from": "resources/soundfonts",
+        "to": "soundfonts"
+      },
+      {
+        "from": "resources/licenses",
+        "to": "licenses"
+      },
+      {
+        "from": "../LICENSE",
+        "to": "licenses/EarCopy_Assist_LICENSE.txt"
+      },
+      {
+        "from": "../THIRD_PARTY_NOTICES.md",
+        "to": "licenses/THIRD_PARTY_NOTICES.md"
+      },
+      {
+        "from": "../THIRD_PARTY_NOTICES.en.md",
+        "to": "licenses/THIRD_PARTY_NOTICES.en.md"
+      },
+      {
+        "from": "node_modules/spessasynth_core/LICENSE",
+        "to": "licenses/SpessaSynth-Core-LICENSE.txt"
+      },
+      {
+        "from": "node_modules/spessasynth_lib/LICENSE",
+        "to": "licenses/SpessaSynth-Lib-LICENSE.txt"
+      },
+      {
+        "from": "node_modules/opensheetmusicdisplay/LICENSE",
+        "to": "licenses/OpenSheetMusicDisplay-LICENSE.txt"
+      },
+      {
+        "from": "node_modules/jszip/LICENSE.markdown",
+        "to": "licenses/JSZip-LICENSE.txt"
+      },
+      {
+        "from": "node_modules/loglevel/LICENSE-MIT",
+        "to": "licenses/loglevel-LICENSE.txt"
+      },
+      {
+        "from": "node_modules/typescript-collections/LICENSE",
+        "to": "licenses/typescript-collections-LICENSE.txt"
+      },
+      {
+        "from": "node_modules/vexflow/LICENSE",
+        "to": "licenses/VexFlow-LICENSE.txt"
+      },
+      {
+        "from": "node_modules/lucide-react/LICENSE",
+        "to": "licenses/Lucide-React-LICENSE.txt"
+      },
+      {
+        "from": "node_modules/react/LICENSE",
+        "to": "licenses/React-LICENSE.txt"
+      },
+      {
+        "from": "node_modules/react-dom/LICENSE",
+        "to": "licenses/React-DOM-LICENSE.txt"
+      },
+      {
+        "from": "node_modules/scheduler/LICENSE",
+        "to": "licenses/React-Scheduler-LICENSE.txt"
+      }
+    ],
+    "win": {
+      "executableName": "EarCopyAssist",
+      "icon": "resources/icon.ico",
+      "target": [
+        "dir"
+      ]
+    }
+  }
+}

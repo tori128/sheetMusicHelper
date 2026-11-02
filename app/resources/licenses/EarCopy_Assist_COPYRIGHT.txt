@@ -1,0 +1,8 @@
+EarCopy Assist
+
+Copyright (c) 2026 tori128
+
+EarCopy Assist is provided under the MIT License.
+See EarCopy_Assist_LICENSE.txt for the license terms.
+
+Third-party components remain subject only to their respective license terms.

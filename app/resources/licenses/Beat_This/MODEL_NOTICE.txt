@@ -1,0 +1,9 @@
+Beat This! final0 model weights
+Copyright (c) 2024 Institute of Computational Perception, JKU Linz, Austria
+License: MIT; see LICENSE
+Source: https://github.com/CPJKU/beat_this
+Weights: https://cloud.cp.jku.at/public.php/dav/files/7ik4RrBKTS273gp/final0.ckpt
+Size: 81058141 bytes
+SHA-256: 8c328b45f59d8dd3dff219253ff6a8d6482be57d0133a29140e2febbf8eb8331
+Modifications: none
+The upstream README licenses the code and published model weights under MIT.
